@@ -14,10 +14,10 @@
 ;; <http://www.gnu.org/licenses/>.
 
 
-;; To use the xlsl-mode, make a directory ~/emacs and copy
-;; xlsl-mode.el into that directory.  Start emacs and then M-x
-;; byte-compile-file ~/emacs/xlsl-mode.el.  This will create
-;; xlsl-mode.elc.
+;; To use the lsl-mode, make a directory ~/emacs and copy
+;; lsl-mode.el into that directory.  Start emacs and then M-x
+;; byte-compile-file ~/emacs/lsl-mode.el.  This will create
+;; lsl-mode.elc.
 ;;
 ;; You may want to customize the font-lock-warning-face (M-x
 ;; customize-face font-lock-warning-face).  The entry for it in your ~/.emacs
@@ -33,20 +33,20 @@
 ;;  '(font-lock-warning-face ((t (:inherit error :foreground "DarkSlateGray1")))))
 ;;
 ;;
-;; To use the xlsl-mode, add the following to your ~/.emacs file:
+;; To use the lsl-mode, add the following to your ~/.emacs file:
 ;;
 
-(load "~/emacs/xlsl-mode.elc")
+(load "~/emacs/lsl-mode.elc")
 (setq auto-mode-alist
        (nconc
-         '(("\\.lsl$" . xlsl-mode))
+         '(("\\.lsl$" . lsl-mode))
          auto-mode-alist))
 
-(defun my-reload-xlsl ()
-  "Reload xlsl mode"
+(defun my-reload-lsl ()
+  "Reload lsl mode"
   (interactive)
-  (unload-feature 'xlsl-mode)
-  (load "~/emacs/xlsl-mode.elc")
+  (unload-feature 'lsl-mode)
+  (load "~/emacs/lsl-mode.elc")
 )
 
 
@@ -59,20 +59,7 @@
 	      tab-width 8
 	      indent-tabs-mode t
 	      c-default-style "gnu")
-(setq tags-revert-without-query 1)
 
-;;
-;; You probably don´t want/need these.  Some of the functions may be
-;; commented out in xlsl-mode.el.
-;;
-;; LSL highlighting
-;;(defun my-xlsl-mode-customizations ()
-;;  "Some customization for xlsl-mode."
-;;  (define-key xlsl-mode-map (kbd "<C-tab>") 'xlsl-complete-symbol)
-;;   (define-key xlsl-mode-map (kbd "<f8>") 'xlsl-copy-all)
-;;   (define-key xlsl-mode-map (kbd "<f9>") 'xlsl-lookup-lsl-ref)
-;;  )
-;;(add-hook 'xlsl-mode-hook 'my-xlsl-mode-customizations)
 
 ;;
 ;; 'goto-matching-fence' is a very useful function you may want to add
