@@ -1,4 +1,3 @@
-test
 SRC=$(wildcard src/*.lsl)
 LIB=$(wildcard ../lib/*.lsl)
 LOC=$(wildcard ./lib/*.h)
