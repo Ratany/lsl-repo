@@ -3,3 +3,5 @@
 *.i
 *.j
 *.clean
+TAGS
+deps
