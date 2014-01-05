@@ -119,3 +119,19 @@
       )
     )
 )
+
+
+;;
+;; Another thing you might want is to automatically start the emacs
+;; server process.  To do that, put the following into your ~/.emacs:
+;;
+(server-start)
+;;
+;; This starts the server process and allows you to use emacsclient
+;; instead of starting another instance of emacs every time.  Using
+;; emacsclient can be a lot faster than starting emacs.  I start emacs
+;; only once after rebooting every couple months and have it running
+;; all the time.  About 450 buffers are re-created on startup through
+;; emacs DeskTop (see http://www.emacswiki.org/emacs/DeskTop), which
+;; can take a while. Visiting a file via emacsclient shows the file
+;; instantly.
