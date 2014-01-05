@@ -11,6 +11,8 @@ LIBDIR=../lib
 LOCDIR=./lib
 TAGS=./TAGS
 
+ITO=../bin/i2o.pl
+
 #FLAGS= -DDEBUG
 SYM=VERSION='version 0.00'
 #VERSION=undefined
@@ -46,7 +48,7 @@ bin/%.o: dbg/%.i
 	@sed -f ../clean-lsl.sed $< > $<.clean
 	@wc -cl $<.clean
 	@astyle --style=allman -f < $<.clean > $<
-	@cat $< | sed -f ../clean-lsl.sed | i2o.pl  `basename $<` > $@
+	@cat $< | sed -f ../clean-lsl.sed | $(ITO)  `basename $<` > $@
 
 %.pdf: %.ltx
 #	@echo $(VERSION) > ./tmp/version.inc
