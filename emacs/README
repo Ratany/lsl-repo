@@ -74,4 +74,48 @@
 ;;  )
 ;;(add-hook 'xlsl-mode-hook 'my-xlsl-mode-customizations)
 
-
+;;
+;; 'goto-matching-fence' is a very useful function you may want to add
+;; to your ~/.emacs (if it doesn´t finally come by default):
+;;
+(defun goto-matching-fence ()
+  (interactive)
+  (let (pos dir (mismatch t) (oldpos (point)))
+    (cond ((eq (char-syntax (following-char)) ?\))
+	   (setq dir -1)
+	   (setq oldpos (+ oldpos 1)))
+	  ((eq (char-syntax (following-char)) ?\()
+	   (setq dir 1)))
+    (if dir
+	(progn
+	  (save-excursion
+	    (save-restriction
+              ;; Scan across one sexp within that range.
+	      (condition-case ()
+		  (setq pos (scan-sexps oldpos dir))
+		(error nil))
+              ;; See if the "matching" paren is the right kind of paren
+              ;; to match the one we started at.
+	      (if pos
+		  (let ((beg (min pos oldpos)) (end (max pos oldpos)))
+		    (and (/= (char-syntax (char-after beg)) ?\$)
+			 (setq mismatch
+			       (not (eq (char-after (1- end))
+                                        ;; This can give nil.
+					(matching-paren (char-after beg))))))))
+	      )
+	    )
+	  )
+      )
+    ;; If they don't properly match, use a different face,
+    ;; or print a message.
+    (if mismatch
+	(message "Paren mismatch")
+      (progn (push-mark)
+	     (cond ((eq dir 1)
+		    (goto-char (- pos 1)))
+		   ((eq dir -1)
+		    (goto-char pos))))
+      )
+    )
+)
