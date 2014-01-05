@@ -1,0 +1,29 @@
+(load "~/emacs/xlsl-mode.elc")
+(setq auto-mode-alist
+       (nconc
+         '(("\\.lsl$" . xlsl-mode))
+         auto-mode-alist))
+
+(defun my-reload-xlsl ()
+  "Reload xlsl mode"
+  (interactive)
+  (unload-feature 'xlsl-mode)
+  (load "~/emacs/xlsl-mode.elc")
+)
+
+(setq-default c-basic-offset 8
+	      tab-width 8
+	      indent-tabs-mode t
+	      c-default-style "gnu")
+(setq tags-revert-without-query 1)
+
+;; LSL highlighting
+;;(defun my-xlsl-mode-customizations ()
+;;  "Some customization for xlsl-mode."
+;;  (define-key xlsl-mode-map (kbd "<C-tab>") 'xlsl-complete-symbol)
+;;   (define-key xlsl-mode-map (kbd "<f8>") 'xlsl-copy-all)
+;;   (define-key xlsl-mode-map (kbd "<f9>") 'xlsl-lookup-lsl-ref)
+;;  )
+;;(add-hook 'xlsl-mode-hook 'my-xlsl-mode-customizations)
+
+font-lock-warning-face

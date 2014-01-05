@@ -1,4 +1,22 @@
 ;-*- coding: utf-8 -*-
+
+;; <Ratany Resident>
+;; This is a modified version of the original.  Syntax highlighting
+;; for macros defined in lslstddef.h has been added, some unused
+;; functionality has been commented out, and changes have been made to
+;; byte-compile without errors with recent versions of emacs.
+;;
+;; A few (new) LSL functions and constants have been added so they are
+;; syntax-highlighted.  You can complete the syntax highlighting and
+;; add your own as needed.
+;;
+;; Keywords for lslstddef.h are in the xlsl-cpp and xlsl-macros
+;; variables; those do not exist in the orgiginal.
+;;
+;; </Ratany Resident>
+
+
+
 ;; lsl-mode_Xah_Lee.el -- Major mode for editing LSL (Linden Scripting Language).
 
 ;; Copyright © 2008 by Xah Lee
