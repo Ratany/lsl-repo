@@ -1,7 +1,6 @@
 *~
 *.o
 *.i
-*.j
 *.clean
 TAGS
 deps

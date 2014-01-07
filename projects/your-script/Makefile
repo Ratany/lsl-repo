@@ -2,7 +2,7 @@ SRC=$(wildcard src/*.lsl)
 LIB=$(wildcard ../lib/*.lsl)
 LOC=$(wildcard ./lib/*.h)
 INC=$(wildcard ../include/*.h)
-DBG=$(subst .lsl,.j,$(subst src,dbg,$(SRC))) $(subst .lsl,.i,$(subst src,dbg,$(SRC)))
+DBG=$(subst .lsl,.i,$(subst src,dbg,$(SRC)))
 OBJ=$(subst .lsl,.o,$(subst src,bin,$(SRC)))
 #HTML=$(subst .txt,.html,$(wildcard doc/*.txt))
 DOC=$(subst .ltx,.pdf,$(wildcard doc/*.ltx))
@@ -40,9 +40,6 @@ dbg/%.i: src/%.lsl
 	@echo -n "//" > $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -D$(SYM) -P $(FLAGS) $< | md5sum >> $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -D$(SYM) -P $(FLAGS) -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< >> $@
-
-dbg/%.j: dbg/%.i
-	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -D$(SYM) -P $(FLAGS) $< > $@
 
 bin/%.o: dbg/%.i
 	@sed -f ../clean-lsl.sed $< > $<.clean
