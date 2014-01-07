@@ -1,0 +1,1617 @@
+
+
+'''This article is currently being worked on.'''
+
+
+==How to make writing LSL scripts easier==
+
+
+'''This article is currently being worked on.'''
+
+
+===About===
+
+This article is about tools you can use to make creating LSL scripts
+easier.  It tries to explain how to combine and use them for this very
+purpose.
+
+The idea of using cpp comes from the
+[http://opengate.ma8p.com/open9.tar.gz source] of the
+[http://ma8p.com/~opengate/ Open Stargate Network] stargates.  It´s
+not my idea, I´m merely using it.
+
+I want to thank the developers of these stargates.  Not only their
+stargates are awesome.  The idea of using cpp for LSL scripts is also
+awesome.  It has made it so much easier to create LSL scripts that I
+have made many I otherwise would never have made.
+
+===Editing this Article===
+
+This article is written in my favourite editor.  When I update the
+article on the wiki, I edit the whole article, delete everything and
+paste the new version in.  That´s simply the easiest and most
+efficient way for me.
+
+Unfortunately, this means that your modifications may be lost when I
+update the article and don´t see them.
+
+'''Please use the "discussion" page of this article to post contributions or to suggest changes so they can be added to the article.'''
+
+===Tools===
+
+This section tries to give an overview of some tools you can use.  It
+does not tell you how to install them.
+
+It´s your computer you´re reading this article with, and you know
+better how to install software on your computer than I do.  How you
+install software also depends on what operating system you are using:
+
+I´m using Linux, which is freely available in many different
+distributions.  I´m using [http://fedoraproject.org/ Fedora], so to
+install [http://www.gnu.org/software/emacs/ Emacs], I run 'yum install
+emacs'.  If you don´t use Fedora, telling you this probably doesn´t
+help you.  Or you switch to Fedora; it works remarkably well.
+
+====Editor====
+
+To create scripts, you do need an editor.  All sl clients I´ve seen
+have one built in, and it´s the worst editor I´ve ever seen.
+Fortunately, you don´t need to use it.
+
+You can use any editor you like.  You probably want an editor that at
+least gets the indentations right and has useful functions like
+'indent-region', 'sort-lines', 'goto-matching-fence',
+'whitespace-cleanup' etc., lets you define macros and write your own
+functions, highlights matching brackets, supports code-folding and
+tags, does customizable syntax highlighting, lets you edit several
+files at once, restores them when you restart the editor and has
+something like 'auto-revert-mode' so you can read the debugging
+messages of your scipts which they write into your chat.txt --- plus
+lots of other things like regexp search/replace that don´t come to
+mind at the moment.
+
+The built-in script editor is useful for replacing the scripts you
+have been working on in your favourite editor and to look at the error
+messages that may appear when your script doesn´t compile.  Don´t use
+it for anything else.
+
+Not using the buit-in script editor has several advantages like:
+
+
+* You can use a decent editor!
+
+* You have all your sources safely on your own storage system.
+
+* Your work does not get lost or becomes troublesome to recover when your sl client crashes, when you suddenly get logged out, when "the server experiences difficulties" again, when the object the script is in is being returned to you or otherwise gets "out of range".
+
+* You don´t need to be logged in to work on your sources.
+
+* You can preprocess and postprocess and do whatever else you like with your sources before uploading a script.
+
+* You can share your sources and work together with others because you can use tools like [http://git-scm.com/ git] and websites like [https://github.com/ github].  (Even when you don´t share your sources, git is a very useful tool.)
+
+* How fast you can move the cursor in the editor does not depend on the FPS-rate of your sl client.
+
+* You can use fonts easier to read for you, simply change the background and foreground colours and switch to the buffer in which you read your emails or write a wiki article like this one ...
+
+* Though it doesn´t crash, a decent editor has an autosave function and allows you to restore files in the unlikely case that this is needed.
+
+* And yes, you can use a decent editor :)
+
+=====Emacs=====
+
+[http://www.gnu.org/software/emacs/ Emacs] is my favourite editor.  It
+does not only get the indentations right and does all the other things
+mentioned above.  It offers much more and has been around since a
+while.  If you had learned to use it twenty-five years ago, that would
+have saved you the time wasted with other editors which nowadays may
+not even exist anymore.
+
+======Syntax Highlighting======
+
+Emacs comes with syntax highlighting for many programming languages.
+It doesn´t come with syntax highlighting for LSL, but LSL syntax
+highlighting modes for emacs are available.
+
+You can use [[Emacs_LSL_Mode]].
+
+A mofied version of lsl-mode is in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+as "emacs/lsl-mode.el".  This version has been modified for use with a
+file I named "lslstddef.h" ("projects/include/lslstddef.h" in the
+repository).  Following sections will refer to and use this file.
+
+======Tags======
+
+Emacs supports so-called tags.  Using tags allows you to find the
+declaration of functions, defines, macros and variables you use in
+your sources without searching.  It doesn´t matter in which file they
+are.  This will be described in following sections.
+
+======Git======
+
+Emacs can support [http://git-scm.com/ git] (and other CVS systems).
+You may need to install additional packages for it.  I haven´t tried
+out any of them yet.
+
+=====Other Editors=====
+
+In case you find that you don´t get along with emacs, you may want to
+check out this [[LSL_Alternate_Editors|page about editors]].  Try
+[http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
+
+You don´t need to try any other editors.
+[http://en.wikipedia.org/wiki/User:Dozen/E_(text_editor_family)#EPM_.28OS.2F2.29 EPM]
+was nice, but it crashed all the time.
+
+In any case, use an editor you are happy with because it does what you
+want.  An editor is one of the most essential tools.  You want your
+tools to work the way you want them to.  You don´t want tools that get
+into your way.
+
+====Automatically replacing Scripts====
+
+The editor built into sl clients comes with buttons like to save and
+to reset the script which is being edited.  There is also a button
+labled "Edit".  As the label of this button suggests, the button is
+for editing the script.  The built-in editor is not for editing the
+script, though it´s not impossible to kinda use it for that.
+
+[[Image:Cpp-wiki-builtineditor.jpg|thumb|Built-in Editor with "Edit" button]]
+
+Open a script in your sl client and click on the edit button of the
+built-in editor.  You might get an error message telling you that the
+debug setting "ExternalEditor" is not set.  Set this debug setting so
+that your favourite editor is used, and click on the edit button
+again.
+
+[[Image:Cpp-wiki-externaleditor.jpg|thumb|Debug Setting "ExternalEditor"]]
+
+Your favourite editor should now start and let you edit the script.
+This works because your sl client saves the script which you see in
+the built-in editor to a file on your storage system.  Then your sl
+client starts whatever you specified in the debug setting as "external
+editor".  To tell your favourite editor which file the script has been
+saved to, the place holder %s is used with the debug setting
+"ExternalEditor".  The place holder is replaced with the name of the
+file your sl client has saved.
+
+Once the script has been saved to a file, your sl client monitors this
+file for changes.  When the file changes --- which it does when you
+edit and then save it with your favourite editor --- your sl client
+replaces the script in the built-in editor with the contents of the
+file.
+
+This is nice because you could write a new script while you are
+offline.  When you are ready to test the script, you could log in with
+your sl client, build a box, create a new script in the box, open the
+script, click on the "Edit" button, delete the contents of the new
+script in your favourite editor, insert the script you have written
+and save it.  Your sl client would notice that the file changed and
+put it into the built-in editor.  It would let the sl server compile
+the script and show you the error messages, if any.  If your script
+compiles and works right away, you´re done --- if not, you can use the
+built-in editor to check the error messages and your favourite editor
+to make changes as needed.
+
+This becomes awkward when you have a lot of scripts: To replace each
+script with the new version, you need to open it, click the "Edit"
+button, delete the script in your favourite editor, put the new
+version in and save it.  In case you get error messages and need to
+change your script, you have to go back to your source, modify it and
+replace it again.
+
+Fortunately, you don´t need to do this.  All that´s needed is
+replacing the file your sl client saved the script to with a new
+version of the file.  You don´t need to use your favourite editor to
+replace the file.  A program which is started by your sl client
+instead of your favourite editor can replace the file for you. It only
+needs to know which file it must replace the file saved by your sl
+client with.
+
+With such a program, you only open the script in the built-in editor
+and to click on the "Edit" button.  The program replaces the script
+for you.
+
+You can easily write such a program yourself.  I wrote one when I got
+tired of replacing all the scripts.  It´s not really a program, but a
+[http://www.perl.org/ perl] script.  It´s written in perl because perl
+is so well suited for the purpose.  It looks like this:
+
+
+<perl>
+#!/bin/perl
+
+
+# This program is free software: you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the
+# License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see
+# <http://www.gnu.org/licenses/>.
+
+
+use strict;
+use warnings;
+use autodie;
+
+use File::Copy;
+
+
+if(!($ARGV[0] =~ m/.*\.lsl/))
+{
+  system("emacsclient", "-nc", $ARGV[0] );
+  exit(0);
+}
+
+
+my $table = "../replaceassignments.txt";
+
+open my $script, "<", $ARGV[0];
+my $line = <$script>;
+close $script;
+chomp $line;
+$line =~ s!// =!!g;
+if( ( !($line =~ m/.*\.o/) ) && ( !($line =~ m/.*\.i/) )  ) {
+    system("emacsclient", "-c", $ARGV[0], $table);
+    exit;
+}
+
+$line .= ": ";
+my $replacementfile = undef;
+open my $assign, "<", $table;
+while( <$assign> ) {
+  chomp $_;
+  if( m/$line/) {
+    $replacementfile = $';
+    last;
+  }
+}
+close $assign;
+
+if( !($replacementfile =~ m/.*\.o/) && !($replacementfile =~ m/.*\.i/) ) {
+  system("emacsclient", "-c", $ARGV[0], $table);
+}
+else {
+#  sleep 2;
+  $line =~ s/: $//;
+  if($line =~ m/.*\.i/) {
+    ## insert the file name at the top
+    open $assign, ">", $ARGV[0];
+    print $assign "// =" . $line . "\n";
+    open $script, "<", $replacementfile;
+    while( <$script> ) {
+      print $assign $_;
+    }
+    close $script;
+    close $assign;
+  }
+  else {
+    ## file name is already in first line
+    copy($replacementfile, $ARGV[0] );
+  }
+}
+</perl>
+
+
+You´ll find this script in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+as projects/bin/replace.pl.  What it basically does is simple:
+
+
+* look at the first line of the file saved by the sl client the name of which is supplied as a command line argument (via the place holder %s by your sl client)
+
+* when the line starts with "// =", treat the rest of the line from there as a key
+
+* look up the key in a table (a file) that associates the key with a value
+
+* when the key is found in the table, replace the file saved by the sl client with the file the name of which is specified by the value associated with the key
+
+* when the key is not found in the table, start your favourite editor to edit the file that was saved by the sl client and to edit the table
+
+
+Entries in the table are so-called key-value pairs.  They look like
+this:
+
+
+<lsl>
+example-script.o: /path/to/bin/example-script.o
+foobar-script.o: /path/to/bin/foobar-script.o
+</lsl>
+
+
+Note: The space between the colon and the file name is mandatory.
+
+This means when you have a script in the built-in script editor like
+
+
+<lsl>
+// =example-script.o
+
+default
+{
+	state_entry()
+	{
+		Say(0, "test");
+	}
+}
+</lsl>
+
+
+and click on the "Edit" button of the built-in script editor, the
+script will automatically be replaced with the contents of the file
+"/path/to/example-script.o".
+
+To make this work, you need to:
+
+
+* change the debug setting "ExternalEditor" so that above perl script is started instead of your editor
+
+* create the look-up table
+
+* make sure that your script starts with the line "// =example-script.o"
+
+* ensure that the perl script is able to start your favourite editor
+
+
+The perl script starts your favourite editor when it doesn´t find the
+key (i. e. "example-script.o") in the table.  You can then edit both
+the script and the table.  This means that you don´t need to fill the
+table in advance.  You can add entries as you go.  The perl script
+uses the first entry in the table that matches.
+
+The "favourite editor" in this case is emacs, and emacsclient is
+started by the perl script to make use of an existing emacs
+session. You can modify the perl script so it starts your favourite
+editor.  You may also have to modify the perl script to tell it where
+to find the table that associates the keys and values ('my $table =
+"../replaceassignments.txt";').
+
+If you have read the perl script, you probably have noticed that it
+has some special treatment when the first line of the script looks
+like "// =example-script.i" instead of "// =example-script.o".  This
+is so because the build system I´m using creates "compressed" versions
+of the scripts and versions that are not compressed.  The compressed
+versions are named *.o and the not compressed versions are named *.i.
+
+The "compressed" versions can be pretty unreadable, which can make
+debugging difficult.  To see the version which is not compressed in
+the built-in editor, there are two entries in the look-up table for
+each script, one for the *.o version and another one for the *.i
+version.  When I need to see the *.i version, I change the first line
+of the script in the built-in editor from like "// =example-script.o"
+to "// =example-script.i" and click on the "Edit" button.  That puts
+the version of the script which is not compressed into the built-in
+editor so that I can see what an error message refers to.
+
+Since the build system does not add a first line like "//
+=example-script.i" to the script, the perl script adds the line.  The
+full entry in the lookup-table for the "example-script" looks like
+this:
+
+
+<lsl>
+example-script.o: /path/to/bin/example-script.o
+example-script.i: /path/to/dbg/example-script.i
+</lsl>
+
+
+====A Preprocessor====
+
+The
+[http://en.wikipedia.org/wiki/Preprocessor Wikipedia article] about
+preprocessors gives an interesting explanation of what a preprocessor
+is and provides an overview.
+
+For the purpose of making it easier to write LSL scripts, a
+preprocessor as is used with
+[http://en.wikipedia.org/wiki/C_(programming_language) C] (and C++)
+compilers is a very useful tool.
+
+The particular preprocessor I´m using is called "cpp" and comes with
+[http://gcc.gnu.org/ GCC].
+
+=====What a preprocessor does=====
+
+A preprocessor enables you:
+
+
+* to include files into others
+
+* to define so-called "defines" and so-called "macros"
+
+* to create different scripts from the same sources through the use of conditionals
+
+
+That doesn´t sound like much, yet these are rather powerful features.
+Some of the advantages that come with these features are:
+
+
+* You can create libraries and include them into your sources as needed:  Your code becomes easily re-usable.
+
+* Your sources become much easier to modify and to maintain because instead of having to change parts of the code in many places, you can change a definition at one single place --- or code in a library or a header file --- and the change will apply everywhere.
+
+* Scripts may become less prone to bugs and errors because code is easy to re-use and easier to modify and to maintain.
+
+* You may create scripts that use less memory because instead of using variables as constants, you can use so-called defines.  This may allow you to do something in one script rather than in two and save you all the overhead and complexity of script-intercommunication.
+
+* Macros can be used instead of functions, which may save memory and can help to break down otherwise unwieldy logic into small, simple pieces which are automatically put together by the preprocessor.
+
+* Using macros can make the code much more readable, especially with LSL since LSL is often unwieldy in that it uses lengthy function names (like llSetLinkPrimitiveParamsFast(), ugh ...) and in that the language is very primitive in that it doesn´t even support arrays, let alone user-definable data structures or pointers or references.  It is a scripting language and not a programming language.
+
+* Using macros can make it much easier to create a script because you need to define a macro only once, which means you never again need to figure out how to do what the macro does and just use the macro.  The same goes for libraries.
+
+* Frequently used macros can be gathered in a file like "lslstddef.h" which can be included into all your scripts.  When you fix a bug in your "lslstddef.h" (or however you call it), the bug is fixed in all your scripts that include it with no need to look through many scripts to fix the very same bug in each of them at many places in their code.  The same goes for bugs fixed in a library.
+
+* Macros can be used for frequently written code snippets --- like to iterate over the elements of a list --- and generate several lines of code automatically from a single line in your source.  That can save you a lot of typing.
+
+* Conditionals can be used to put code which you have in your source into the resulting LSL script depending on a single setting or on several settings, like debugging messages that can be turned on or off by changing a single digit.
+
+* Using conditionals makes it simple to create libraries  and to use only those functions from libraries which are needed by a particular script.
+
+* Macros and defines in your sources only make it into a script when they are used.
+
+
+There are probably lots of advantages that don´t come to mind at the
+moment.  You can be creative and find uses and advantages I would
+never think of.
+
+=====How cpp works=====
+
+Some extensive documentation about cpp can be found
+[http://gcc.gnu.org/onlinedocs/cpp/ here].
+
+Imagine you want to create a script that figures out which agent is
+the furthest away from the object the script is in and uses keyframed
+motion to move the object towards this agent when the owner of the
+object touches it.
+
+The source of the script, written to be preprocessed with cpp and with
+line numbers added for reference, looks like this:
+
+
+<lsl>
+   1	 #include <lslstddef.h>
+   2
+   3
+   4	 #define fUNDETERMINED              -1.0
+   5	 #define fIsUndetermined(_f)        (fUNDETERMINED == _f)
+   6
+   7	 #define fMetersPerSecond           3.0
+   8	 #define fSecondsForMeters(d)       FMax((d) / fMetersPerSecond, 0.03)
+   9
+  10	 #define fRandom                    (llFrand(3.5) - llFrand(2.5))
+  11	 #define vRandomDistance            (<fRandom, fRandom, fRandom>)
+  12
+  13
+  14	 default
+  15	 {
+  16		event touch_start(int t)
+  17		{
+  18			if(llDetectedKey(0) == llGetOwner())
+  19				{
+  20					vector here = llGetPos();
+  21
+  22					list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+  23
+  24	 #define kAgentKey(x)       llList2Key(agents, x)
+  25	 #define vAgentPos(x)       RemotePos(kAgentKey(x))
+  26	 #define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
+  27
+  28					float distance = fUNDETERMINED;
+  29					int goto;
+  30					int agent = Len(agents);
+  31					while(agent)
+  32						{
+  33							--agent;
+  34
+  35							float this_agent_distance = fAgentDistance(agent);
+  36							if(distance < this_agent_distance)
+  37								{
+  38									distance = this_agent_distance;
+  39									goto = agent;
+  40								}
+  41						}
+  42
+  43					unless(fIsUndetermined(distance))
+  44						{
+  45                                                    llSetKeyframedMotion([PosOffset(here,z,
+                                                                              vAgentPos(goto)
+                                                                              + vRandomDistance),
+                                                                              fSecondsForMeters(distance)],
+                                                                             [KFM_DATA, KFM_TRANSLATION]);
+  46						}
+  47
+  48	 #undef AgentKey
+  49	 #undef AgentPos
+  50	 #undef AgentDistance
+  51
+  52				}
+  53		}
+  54	 }
+</lsl>
+
+
+You can find this source in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+in projects/example-1/src/example-1.lsl.
+
+This example is intentionally exaggerated to show a few things.
+
+The first line includes another file, named "lslstddef.h", into the
+source.  It is named with the extension .h to indicate that it is a
+so-called header file.  The file is called header file because it goes
+at the top of the source.  Including it with '#include <lslstddef.h>'
+works out the same as if the contents of the file "lslstddef.h" were
+actually contents of the source.
+
+'#include' is a so-called directive for the preprocessor to include a
+file.
+
+The file name is written in pointy brackets here because cpp has been
+told where to look for the file.  This will be explained later.  If
+"lslstddef.h" was in the same directory as "example-1.lsl", it would
+be included with '#include "lslstddef.h"'.
+
+You can find "lslstddef.h" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+in projects/include/.
+
+"lslstddef.h" contains a lot of so-called defines, similar to line 4
+in the source above.  Line 4 tells the preprocessor to replace
+'fUNDETERMINED' everywhere in the source with '-1.0'.  This is like a
+case-sensitive search-and-replace operation you could do yourself with
+your favourite editor.
+
+If you wouldn´t use a preprocessor, line 4 might read
+
+
+<lsl>
+   4	 float fUNDETERMINED = -1.0;
+</lsl>
+
+
+You would be abusing a variable of the type float as a constant.
+Since it´s a variable, you could have a typing error or other mistake
+in your source which changes the value of the variable, like
+'if(fUNDETERMINED = z) ...' instead of 'if(fUNDETERMINED == z)
+...'. Such a typing error can be difficult to find.  This problem does
+not occur when you use a preprocessor and define fUNDETERMINED as -1.0
+because the mis-typed statement would read 'if(-1.0 = z) ...', and you
+would get an error message when your script is compiled by the LSL
+compiler.
+
+In case you have modified your source so it doesn´t use fUNDETERMINED
+anymore, it will not appear anywhere in your script when fUNDETERMINED
+was a define.  When it was a variable, the variable will still be in
+your script and use script memory until you remove it, which you may
+forget to do over all the modifications.
+
+On a side note: A simple test has indicated that using a define
+instead of a float-variable ''may'' save you 8 bytes of script memory.
+''May'' means that the test was so simple that optimisations done by
+the LSL compiler can have produced misleading results.
+
+Whether you do save script memory through using defines vs. variables
+(and functions vs. macros) or not always depends on your particular
+script.  Since it is easy to change a define into a variable (or
+sometimes a function into a macro) or vice versa, this is easy to test
+with your particular script.
+
+It seems obvious that you would waste memory when you use a macro that
+the preprocessor turns into a lengthy expression which occurs in the
+script multiple times.  When it matters, test it; you may be
+surprised.  In any case, you need to be aware of what the macros you
+use turn into because it can also affect performance.
+
+What is called a preprocessor macro is defined in line 5.  The
+definition is a macro because, similar to a function, the define has a
+parameter.  Macros can have multiple parameters, and you can even use
+macros which have a variable number of parameters.  Some of the macros
+defined in "lslstddef.h" use a variable number of parameters.
+
+The macro in line 5 instructs the preprocessor to replace all
+occurances of 'fIsUndetermined' with '(fUNDETERMINED == _f)' and to
+replace the paremeter '_f' with what was specified as a parameter to
+'fIsUndetermined'.  For example, 'fIsUndetermined(5.0)' is replaced
+with '(fUNDETERMINED == 5.0)'.
+
+This wouldn´t be too useful because it would turn line 43 into
+'unless(fUNDETERMINED == distance)'.  But the preprocessor doesn´t
+stop there: 'fUNDETERMINED' was defined as '-1.0' in line 4, and the
+preprocessor continues replacing stuff.  It turns line 43 into
+'unless(-1.0 == distance)'.
+
+In "lslstddef.h" is defined that 'unless(_cond)' must be turned into
+'if(!(_cond))'.  Since "lslstddef.h" was included in line 1, the
+preprocessor "knows" this and the final result of all the replacing is
+'if(!((-1.0 == distance)))'.  And that is something the LSL compiler
+can compile.
+
+Using 'unless' is, admittedly, ideosyncratic.  It comes from perl
+where it´s part of the language, and in perl, you can write stuff like
+'print 5 unless 5;', which will not print anything.  But where is the
+fun when you can´t use a preprocessor to do ideosyncratic stuff?
+Writing 'if(-1.0 != distance)' all the time can get boring.
+
+More importantly, you might suddenly want to use a different value to
+indiciate that something is undetermined.  Your script may require it,
+or you might like it better.  Would you want to use -8874563.33356478
+instead of -1.0, the only place you´d need to change your source is
+line 4.
+
+Macros can use other macros.  The macro 'fSecondsForMeters', defined
+in line 8, uses the macro 'FMax'.  This is similar to functions that
+call other functions.  ('FMax' is defined in "lslstddef.h" as an
+expression that evaluates to the greater of the two floating point
+values supplied to 'FMax' as parameters, which is a function missing
+from LSL.)
+
+Line 10 and 11 give an overly simple example of how you can break down
+logic into small pieces.  These lines don´t break down any logic, but
+they show the concept: Define an operation or goal, then figure out
+small steps and how to combine them in such a way that the desired
+operation is being performed, or the goal reached.  The size of the
+steps can neither be greater, nor smaller than the magnitude of the
+atomic operations of the programming language allows for.  That´s what
+programming is all about.
+
+llFrand() is such an atomic operation in LSL.  You could write your
+own algorithm to generate random numbers --- and you might be
+surprised how difficult that can be.  Computers producing true
+randomness, if there is such a thing at all, can usually be considered
+to be broken.  Some algorithms to generate random numbers use external
+sources of randomness, like a human operating an input device or
+starting programs in some "random" manner.  When I ask you for a
+random number, how random would a number you might give me be?  How
+would I determine how random that number is?  By definition, there
+isn´t anything random about numbers:  Five is five.
+
+Creating a vector with some random values is not an atomic operation
+in LSL.  If there was an atom of the language to create such a vector
+--- like a function that does it for you --- you could use it.  Or you
+could write your own algorithm to create random vectors.
+
+Lines 10 and 11 represent an algorithm to create a random vector.  It
+basically takes two steps:  Make a random number and put it into a
+vector.  Since a vector consists of three numbers, you need three
+numbers to make a vector.
+
+So break that down into making a random number and into putting that
+number into the vector.  The preprocessor puts these steps
+together.  You could do it all at once and write 'vector random =
+<llFrand(3.5) - llFrand(2.5), llFrand(3.5) - llFrand(2.5),
+(llFrand(3.5) - llFrand(2.5)>'.  But that isn´t as easy to read as
+lines 10 and 11, is it?
+
+When code is easier to read, it´s easier for you to deal with it, and
+it´s less likely that you make a mistake.  You´ll be more productive
+because you don´t waste time trying to figure out code which is hard
+to read, and creating LSL scripts becomes easier.
+
+You can find a better example for this in "geometry.lsl", which is in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+ (projects/lib/):  The macro 'geom_nofsharedsegments',
+when used as 'geom_nofsharedsegments(A, B)', evaluates to
+
+
+<lsl>
+((((A.x == 0.0) && (A.y == 0.0)) && ((B.x == 0.0) && (B.y == 0.0))) +
+((A.x < 0.0) && (B.x < 0.0)) + ((A.x > 0.0) && (B.x > 0.0)) + ((A.y >
+0.0) && (B.y > 0.0)) + ((A.y < 0.0) && (B.y < 0.0)) + ((A.z > 0.0) &&
+(B.z > 0.0)) + ((A.z < 0.0) && (B.z < 0.0)))
+</lsl>
+
+
+Try to maintain this code, maybe a year after you wrote it.  The source
+simply reads:
+
+
+<cpp>
+// number of segments shared by two points
+//
+#define geom_nofsharedsegments(_p1, _p2)	       (geom_cmpsegment(center, _p1, _p2) \
+							+ geom_cmpsegment(left, _p1, _p2) \
+							+ geom_cmpsegment(right, _p1, _p2) \
+							+ geom_cmpsegment(front, _p1, _p2) \
+							+ geom_cmpsegment(back, _p1, _p2) \
+							+ geom_cmpsegment(above, _p1, _p2) \
+							+ geom_cmpsegment(below, _p1, _p2)) \
+</cpp>
+
+
+It tells you what it does when you read it.
+
+Lines 24 through 26 define some macros to make the list that was
+declared in line 22 easier to use.  They seem to appear randomly
+somewhere in the source, but they have been intentionally placed where
+they are: The scope of the list declared in line 22 doesn´t go beyond
+line 52; it´s not a global variable.  The macros are "deleted" in
+lines 48--50 because they are not needed anywhere else.  Macros or
+defines with the same names and a different or the same meaning could
+be used somewhere else in the source. The preprocessor is instructed
+to "forget" them with the '#undef' directive.
+
+Nothing would prevent you from defining those macros at the top of the
+source.  You do not need to undefine them, either.  I have done it as
+you see above because the list has a very limited scope.  The macros
+don´t need to be available outside that scope.  It makes sense to me
+to limit it all to the few lines of code it is relevant for.  That
+way, it´s nothing I´d have to think about outside that limited scope.
+
+Having the macros in lines 24--26 is overdone because it´s an example
+source.  When you have a (longer) script that uses some global lists,
+maybe even strided lists, exclusively using macros to operate with the
+lists makes a lot of sense.
+
+The code can be a lot shorter and easier to read:
+
+
+<lsl>
+vector chainpos = vChainPos(chain);
+
+vector chainpos = llList2Vector(llGetLinkPrimitiveParams(llList2Integer(lChains, chain), [PRIM_POSITION]), 0);
+</lsl>
+
+
+mean both the same.  The first line tells you straight away what it
+is.  The second one makes you ask yourself if you got it right.  In
+your source, you have maybe ten lines like that.
+
+You may need to change the stride of a list.  Imagine whith the two
+lines above, you need to change the list so that the link number of
+the prim stored in the list is no longer the first item of a stride
+but the second one.
+
+Without macros, you have to go through your whole source, find all the
+ten or how many lines, and change all of them.  Perhaps you overlook
+one of them and then have to waste an hour or so to figure out why
+your script suddenly doesn´t work right anymore --- if you even notice
+that it doesn´t work.
+
+With macros, you change only one line: the definition of the macro
+'vChainPos'.  You´re done and you don´t overlook anything.
+
+Without macros, you have to remember what item of a stride is at which
+position of the stride every time you use the list.  Which macros, you
+don´t need to remember and simply use 'vChainPos'.
+
+You can find an extensive example for this in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+in projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl.
+
+With macros, you can fully abstract from a particular list.  That
+makes the same code easily re-usable with different scripts.  Instead
+of
+
+
+<cpp>
+#define iChainLinkNo(_n)           llList2Integer(lChains, (_n))
+#define vChainPos(_chain)          (llList2Vector(GLPP(iChainLinkNo(_chain), [PRIM_POSITION]), 0))
+</cpp>
+
+
+you can use
+
+
+<cpp>
+#define _LIST                      lChains
+#define iChainLinkNo(_n)           llList2Integer(_LIST, (_n))
+#define vChainPos(_chain)          (llList2Vector(GLPP(iChainLinkNo(_chain), [PRIM_POSITION]), 0))
+</cpp>
+
+
+When you happen to write another script that deals with a similar or
+identical list (because it does similar things), but you want to use a
+list that has a different name than 'lChains', there is only one
+single line you need to change.
+
+Same is with the stride-indices.  One script may require a different
+stride because it holds more elements, like the prim name in addition
+to the link number.  For the next script, the prim name is
+irrelevant.  You can define stride-indices to make that easier:
+
+
+<cpp>
+#define kChainKey(_n)              llList2Key(lChains, (_n) + 1)
+</cpp>
+
+
+<cpp>
+#define iSTRIDEIDX_key             1
+#define kChainKey(_n)              llList2Key(lChains, (_n) + iSTRIDEIDX_key)
+</cpp>
+
+
+Add another item to the stride, and all you need to do to adjust is to
+change a single line, or maybe a few, depending on how many items you
+have per stride.
+
+Carelessly using macros is a bad idea.  Please behold line 45 of the
+above example.  It turns into
+
+
+<lsl>
+llSetKeyframedMotion
+([( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ), 0)
+     + ( < (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)) > ))
+    - (here) ),
+  ( ( (llFabs( ((distance) / 3.0) >= (0.03) ) ) * ((distance) / 3.0) )
+    + ( (llFabs( ((distance) / 3.0) < (0.03) ) ) * (0.03) ) )],
+ [KFM_DATA, KFM_TRANSLATION]);
+</lsl>
+
+
+... which is perfectly fine.  It is fine because it was considered
+what the 'FMax' macro does, and it is used with:
+
+
+<cpp>
+#define fSecondsForMeters(d)       FMax((d) / fMetersPerSecond, 0.03)
+</cpp>
+
+
+When you read up about
+[[LlSetKeyframedMotion|llSetKeyframedMotion()]], you may notice that
+the page says "llSetKeyframedMotion is implemented in terms of frames
+and not real time.".  If you have used the function, you may have
+found out that there is a limit of how short the time you specify for
+how long the motion should take can be.  The minimum time is, IIRC,
+one frame, i. e. 1/45 second.
+
+It is quite natural, especially when you are used to programming in C,
+to write:
+
+
+<cpp>
+#define fSecondsForMeters(d)       FMax((d) / fMetersPerSecond, 1.0/45.0)
+</cpp>
+
+
+You can do that in C because the C compiler will replace 1/45 with the
+result of it.  The preprocessor doesn´t do that.  I don´t know what
+the LSL compiler does.
+
+Now see what line 45 turns into when the source is run through cpp:
+
+
+<lsl>
+llSetKeyframedMotion
+([( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ), 0)
+     + ( < (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)) > ))
+    - (here) ),
+  ( ( (llFabs( ((distance) / 3.0) >= (1.0 / 45.0) ) ) * ((distance) / 3.0) )
+    + ( (llFabs( ((distance) / 3.0) < (1.0 / 45.0) ) ) * (1.0 / 45.0) ) )],
+ [KFM_DATA, KFM_TRANSLATION]);
+</lsl>
+
+
+Notice that 1/45 needs to be computed --- unless the LSL compiler
+optimizes it --- three times.
+
+Things like that can easily go unnoticed.  The variable 'distance' is
+divided by 3 three times.  It would be better to modify the
+source to avoid this:
+
+
+<lsl>
+[...]
+#define fSecondsForMeters(d)       FMax((d), 0.03)
+[...]
+				unless(fIsUndetermined(distance))
+					{
+						distance /= fMetersPerSecond;
+						llSetKeyframedMotion([PosOffset(here, vAgentPos(goto) + vRandomDistance), fSecondsForMeters(distance)], [KFM_DATA, KFM_TRANSLATION]);
+					}
+[...]
+</lsl>
+
+
+When you need the resulting LSL script more readable --- which is
+something I don´t care about much --- your souce would look like this:
+
+
+<lsl>
+#include <lslstddef.h>
+
+
+#define fUNDETERMINED              -1.0
+
+#define fIsUndetermined(_f)        (fUNDETERMINED == _f)
+
+#define fMetersPerSecond           3.0
+#define fSecondsForMeters(d)       FMax((d), 0.03)
+
+#define fRandom                    (llFrand(3.5) - llFrand(2.5))
+#define vRandomDistance            (<fRandom, fRandom, fRandom>)
+
+
+default
+{
+	event touch_start(int t)
+	{
+		if(llDetectedKey(0) == llGetOwner())
+			{
+				vector here = llGetPos();
+
+				list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+
+#define kAgentKey(x)       llList2Key(agents, x)
+#define vAgentPos(x)       RemotePos(kAgentKey(x))
+#define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
+
+				float distance = fUNDETERMINED;
+				int goto;
+				int agent = Len(agents);
+				while(agent)
+					{
+						--agent;
+
+						float this_agent_distance = fAgentDistance(agent);
+						if(distance < this_agent_distance)
+							{
+								distance = this_agent_distance;
+								goto = agent;
+							}
+					}
+
+				unless(fIsUndetermined(distance))
+					{
+						distance /= fMetersPerSecond;
+						vector offset = vRandomDistance;
+						offset += PosOffset(here, vAgentPos(goto));
+						llSetKeyframedMotion([offset,
+					                              fSecondsForMeters(distance)],
+                                                                     [KFM_DATA, KFM_TRANSLATION]);
+					}
+
+#undef AgentKey
+#undef AgentPos
+#undef AgentDistance
+
+			}
+	}
+}
+</lsl>
+
+
+The LSL script is then a bit easier to read:
+
+
+<lsl>
+default
+{
+	touch_start(integer t)
+	{
+		if(llDetectedKey(0) == llGetOwner())
+		{
+			vector here = llGetPos();
+			list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+			float distance = -1.0;
+			integer goto;
+			integer agent = llGetListLength(agents);
+
+			while(agent)
+			{
+				--agent;
+				float this_agent_distance = llVecDist(here, llList2Vector(llGetObjectDetails(llList2Key(agents, agent),
+                                                                      [OBJECT_POS] ), 0));
+
+				if(distance < this_agent_distance)
+				{
+					distance = this_agent_distance;
+					goto = agent;
+				}
+			}
+
+			if(!((-1.0 == distance)))
+			{
+				distance /= 3.0;
+				vector offset = ( < (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)) > );
+				offset += ( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ), 0)) - (here) );
+				llSetKeyframedMotion([offset,
+						      ( ( (llFabs( ((distance)) >= (0.03) ) ) * ((distance)) )
+							+ ( (llFabs( ((distance)) < (0.03) ) ) * (0.03) ) )],
+						     [KFM_DATA, KFM_TRANSLATION]);
+			}
+		}
+	}
+}
+</lsl>
+
+
+Note: If you want to try this script, the object you put it in must
+use the so-called "prim equivalency system".  Otherwise,
+llSetKeyframedMotion() doesn´t work.  You can either edit the object
+and set the physics shape to "convex hull" or "none", or add a line to
+the script that sets the physics shape, like 'SLPPF(LINK_ROOT,
+[PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_CONVEX]);'.
+
+
+'''So when using macros, you need to be aware of what they turn into.  Always check the outcome of the preprocessing of your source.'''
+
+Checking the outcome is the easiest and most reliable way to spot
+undesirable side effects of macro usage.  You can improve the
+efficiency, performance and memory usage of your script by rewriting
+your source and sometimes by using functions instead of macros, or by
+defining a function that uses a macro.  It´s sometimes so easy to
+create a script that unwanted side effects go unnoticed.
+
+One last, yet very important thing with macros, is the usage of
+brackets.  When you look at this simple macro
+
+
+<cpp>
+#define times3(x)                  x * 3
+</cpp>
+
+
+it will multiply its parameter by 3.  At least that´s what you think.
+When your source is
+
+
+<lsl>
+#define times3(x)                  x * 3
+[...]
+
+	int a = 5;
+	int b = times3(a);
+	llSay(0, (string)b);
+[...]
+</lsl>
+
+
+it will print 15.  Most of the time, your code will be more like this:
+
+
+<lsl>
+#define times3(x)                  x * 3
+[...]
+
+	int a = 10;
+	int b = 5;
+	llSay(0, times3(a - b));
+[...]
+</lsl>
+
+
+You would expect it to print 15, but it will print -5:
+
+
+10 - 5 * 3 == 10 - 15 == -5
+
+
+You need to use brackets:
+
+
+<cpp>
+#define times3(x)                  (x) * 3
+</cpp>
+
+
+(10 - 5) * 3 == 5 * 3 == 15
+
+
+You need even more brackets, because:
+
+
+<lsl>
+#define plus3times3(x)             (x) * 3 + 3
+[...]
+	int a = 10;
+	int b = 5;
+	int c = 20;
+	int d = 15;
+	llSay(0, (string)(plus3times3(a - b) * plus3times3(c - d));
+</lsl>
+
+
+(10 - 5) * 3 + 3 * (20 - 15) * 3 + 3 == 15 + 3 * 5 * 3 + 3 == 15 + 45 + 3 == 63
+
+
+Imagine you defined 'plus3times3' without any brackets at all.  You´d
+waste hours trying to figure out why your script yields incredibly
+weird results.
+
+To get it right, you must use more brackets:
+
+
+<lsl>
+#define plus3times3(x)             ((x) * 3 + 3)
+[...]
+	int a = 10;
+	int b = 5;
+	int c = 20;
+	int d = 15;
+	llSay(0, (string)(times3(a - b) * times3(c - d));
+</lsl>
+
+
+((10 - 5) * 3 + 3) * ((20 - 15) * 3 + 3) == 324
+
+
+There is quite a difference between 63 and 324.  Use brackets.  I also
+always use brackets with conditions because it makes them unambiguous:
+
+
+<lsl>
+if(A || B && C || D > 500)
+[...]
+</lsl>
+
+
+is ambiguous:  What is wanted here?  That A or B be true and that C or
+D are greater than 500?  Or that A or B be true and that C be true and
+that D is greater than 500?  Or that either A or (B and C) are true
+or that D be greater than 500?  What I meant is:
+
+
+<lsl>
+if((A || B) && (C || (D > 500)))
+[...]
+</lsl>
+
+
+That is not ambiguous.  Save yourself the hassle of ambiguity and use
+brackets.  My LSL scripts tend to have tons of brackets, a lot of them
+not strictly needed because they come from macro definitions.  They
+don´t hurt anything.
+
+On a side note:  When programming in C and you have a statement like
+
+
+<lsl>
+if((A < 6) && (B < 20))
+[...]
+</lsl>
+
+
+the part '(B < 20)' will not be evaluated when '(A < 6)' evaluates to
+false.  This is particularly relevant when you, for example, call a
+function:
+
+
+<lsl>
+if((A < 6) && (some_function(B) < 20))
+[...]
+</lsl>
+
+
+LSL is stupid in that it will call the function even when '(A < 6)'
+evaluates to false.  It´s impossible for the whole condition to
+evaluate to true when '(A < 6)' is false, and evaluating a condition
+should stop once its outcome has been evaluated.  Calling a function
+takes time, and the function even might be fed with illegal parameters
+because B could have an illegal value the function cannot handle,
+depending on what the value of A is:
+
+
+<lsl>
+integer some_function(integer B)
+{
+    llSay(0, "10 diveded by " + (string)B + " is: " + (string)(10 / B));
+    return 10 / B;
+}
+
+
+default
+{
+    touch_start(integer total_number)
+    {
+        integer B = 20;
+        integer A = 5;
+
+        if(A < 8) B = 0;
+    
+        if((A < 6) && (some_function(B) < 20))
+        {
+            llSay(0, "stupid");
+        }
+    }
+}
+</lsl>
+
+
+This example will yield a math error because some_function() is called
+even when it should not be called.  Such nonsense should be fixed.  To
+work around it so that some_function() isn´t called, you need to add
+another if() statement, which eats memory.
+
+=====How to use cpp=====
+
+Finally, there is the question of how to use cpp.  Cpp has a lot of
+command line parameters, and one particularly useful when using cpp
+for LSL is '-P'.  The manpage of cpp says:
+
+
+* -P  Inhibit generation of linemarkers in the output from the preprocessor.  This might be useful when running the preprocessor on something that is not C code, and will be sent to a program which might be confused by the linemarkers.
+
+
+The LSL compiler is one of the programs that would be confused by line
+markers.  You can see what the line markers look like when you
+preprocess one of your scripts with
+
+
+<lsl>
+cpp your_script.lsl
+</lsl>
+
+
+By default, cpp writes its output to stdout, i. e. it appears on your
+screen.  Since it isn´t very useful to have your LSL scripts appear on
+your screen like that, you may want to redirect the output into a
+file:
+
+
+<lsl>
+cpp -P your_script.lsl > your_script.i
+</lsl>
+
+
+This creates, without the line markers, a file that contains your
+preprocessed source.  This file is named "your_script.i".
+
+It´s that simple.
+
+You can now write a script and use defines and macros and preprocess
+it.  You can log in with your sl client, make a box, create a new
+script in the box, open the script, click on the "Edit" button and
+replace the default script that shows up in your favourite editor with
+the one you wrote and preprocessed.
+
+It´s not entirely convenient yet because you still need to replace the
+script manually.  You may also want to include files into your script,
+like "lslstddef.h".  You don´t want to keep another copy of
+"lslstddef.h" with all your scripts and include it with '#include
+"lslstddef.h"'.  You only need one copy of "lslstddef.h", and it´s a
+good idea to keep it in a directory, perhaps with other headers you
+use.
+
+Cpp has another parameter for this: '-I'.  '-I' tells cpp where to
+look for files you include with something like '#include <lslstddef.h>'.
+
+If you haven´t pulled (i. e. downloaded) the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article],
+please do so now.
+
+When you look into the "projects" directory from the repository,
+you´ll find a few directories in it:
+
+
+<lsl>
+projects
+|-- bin
+|-- example-1
+|-- include
+|-- lib
+|-- rfedip-reference-implementation
+`-- template-directories
+</lsl>
+
+
+The "bin" directory contains tools; "include" is for files like
+"lslstddef.h" which you may want to include into many of your
+sources. The "lib" directory is much like the "include" directory; the
+difference is that "include" is for header files which provide defines
+and macros, while the "lib" directory is for files parts of which will
+be included into your sources when you set up defines which get these
+parts included.  Those parts can be functions or defines or macros,
+and they are put together in files depending on their purpose.
+
+For example, "lib/getlinknumbers.lsl" provides functions related to
+figuring out the link numbers of prims. "getlinknumbers.lsl" is a
+library of such functions, macros and defines.  Since it´s a library,
+it´s in the "lib" directory: "lib" as in "library".
+
+The "template-directories" directory is a template which you can copy
+when you start writing a new script.  It contains directories to put
+particular files, like the "src" directory where you put the source
+you´re writing.  It also has a "lib" directory which can hold files
+you want to include into one or several of the sources in the "src"
+directory, but which are too specific to the particular project that
+you don´t want to put them into the general "projects/lib" or
+"projects/include" directory.
+
+Now when preprocessing your source with cpp, you may want to include
+"lslstddef.h".  Since you´re starting a new project, you first copy
+the template directories:
+
+
+<lsl>
+[~/src/lsl-repo/projects] cp -avx template-directories/ your-script
+‘template-directories/’ -> ‘your-script’
+‘template-directories/bin’ -> ‘your-script/bin’
+‘template-directories/dbg’ -> ‘your-script/dbg’
+‘template-directories/doc’ -> ‘your-script/doc’
+‘template-directories/lib’ -> ‘your-script/lib’
+‘template-directories/src’ -> ‘your-script/src’
+‘template-directories/tmp’ -> ‘your-script/tmp’
+‘template-directories/bak’ -> ‘your-script/bak’
+‘template-directories/Makefile’ -> ‘your-script/Makefile’
+[~/src/lsl-repo/projects]
+</lsl>
+
+
+Now you can use your favourite editor, write your script and save it
+as "projects/your-script/src/your-script.lsl":
+
+
+<lsl>
+#include <lslstddef.h>
+
+
+default
+{
+	event touch_start(int t)
+	{
+		afootell("hello cpp");
+	}
+}
+</lsl>
+
+
+As described above, you run 'cpp -P your_script.lsl > your_script.i'.
+What you get looks like this:
+
+
+<lsl>
+[~/src/lsl-repo/projects/your-script/src] cpp -P your_script.lsl > your_script.i
+your_script.lsl:1:23: fatal error: lslstddef.h: No such file or directory
+ #include <lslstddef.h>
+                       ^
+compilation terminated.
+[~/src/lsl-repo/projects/your-script/src]
+</lsl>
+
+
+This tells you that cpp didn´t find "lslstddef.h".  You need to tell
+cpp where to find it:
+
+
+<lsl>
+[~/src/lsl-repo/projects/your-script/src] cpp -I../../include -P your_script.lsl > your_script.i
+[~/src/lsl-repo/projects/your-script/src]
+</lsl>
+
+
+Using '-I', you tell cpp to look for files that are to be included in
+the directory '../../include'.  Since you do this from within the
+directory 'projects/your-script/src', cpp will look into
+'projects/include' --- where it can find "lslstddef.h".
+
+You can now look at the outcome:
+
+
+<lsl>
+[~/src/lsl-repo/projects/your-script/src] cat your_script.i
+default
+{
+ touch_start(integer t)
+ {
+  llOwnerSay("(" + (string)( (61440 - llGetUsedMemory() ) >> 10) + "kB) ~> " + "hello cpp");
+ }
+}
+[~/src/lsl-repo/projects/your-script/src]
+</lsl>
+
+
+You may think that this is inconvenient.  You do not want to type
+something like 'cpp -I../../include -P your_script.lsl >
+your_script.i' for every script.  You don´t want to do this for every
+script when a file included by the source may have changed.  You don´t
+want to do this for all the scripts that are part of your project just
+in case you have modified one of them, and you don´t want to forget to
+preprocess all the scripts that need to be preprocessed every time you
+modified something.
+
+Fortunately, you don´t need to do that.  There is a tool that can do
+it for you.  It´s called "make".
+
+====Make====
+
+Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool
+which controls the generation of executables and other non-source
+files of a program from the program's source files."
+
+As you may have noticed, in the previous section of this article I
+have referred to "scripts" (LSL scripts) and "sources", without
+mentioning what the difference is.  The source is what you write.  It
+can be an LSL script that can be compiled by an LSL compiler right
+away.  That´s probably what you have written until you read this
+article.
+
+After reading this article, you may not want to write plain LSL
+scripts anymore but make making scripts easier by using a decent
+editor, a preprocessor and Make.  What you write after reading this
+article is still source, but it may be source which cannot be compiled
+by an LSL compiler right away because it needs to go through a
+preprocessor first.  That´s what I was trying to refer to as
+"source".
+
+LSL scripts aren´t "source" in that sense.  You could say that
+'''An LSL script is the output of a preprocessor that processes a source file.''' 
+I don´t write LSL scripts.  I write source files that can be turned into LSL
+scripts.  It´s much easier to create LSL scripts that way than it is
+to write them.
+
+In the sense of Make, the LSL script falls under "other non-source
+files".  Make isn´t used here to generate an
+[http://en.wikipedia.org/wiki/Executable | executable].  LSL scripts
+are not exectutable, and apparently the LSL compiler compiles them
+into [http://en.wikipedia.org/wiki/Bytecode | byte code].
+
+Preprocessing "your-script.lsl" like in the previous section generates a
+"non-source file" from a source file.  You have controlled the
+generation of the non-source file manually, which is inconvenient.
+
+More conveniently, Make can do this job for you.  All you need for
+that is Make, and a so-called Makefile.  It´s called Makefile because
+it tells Make what Make needs to do to generate files from files, and
+under which conditions which files need to be created.  With the right
+Makefile, Make can, for example, figure out that a source file A which
+is included by another source file B has changed and that the
+non-source file generated from B needs to be generated again though B
+itself hasn´t changed.
+
+You do not need to understand Make or Makefiles to make creating LSL
+scripts easier.  You find a suitable Makefile in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article].
+The Makefile is "projects/template-directories/Makefile".
+
+If you want to use Make to preprocess your source, you simply run
+'make'.  You can do this with the "your-script.lsl" source from the
+previous section.  Enter the directory for that project:
+"/projects/your-scrit/".  There is a Makefile in that directory
+because it was copied from the template-directories.  Instead of 'cpp
+-I../../include -P your_script.lsl > your_script.i', you simple run
+'make':
+
+
+<lsl>
+[~/src/lsl-repo/projects/your-script] make
+COMPILING src/your_script.lsl
+  8 173 dbg/your_script.i.clean
+[~/src/lsl-repo/projects/your-script]
+</lsl>
+
+
+With the Makefile from the repository, Make does a bit more than only
+running cpp.  It will show you what it does when you run 'make -n',
+and the '-B' option tells Make to do everything it would, much as if
+you were running it for the first time for your new source:
+
+
+<lsl>
+[~/src/lsl-repo/projects/your-script] make -Bn
+echo "COMPILING src/your_script.lsl"
+echo -n "//" > dbg/your_script.i
+cpp -I../lib -I./lib -I../include -DVERSION='version 0.00' -P  src/your_script.lsl | md5sum >> dbg/your_script.i
+cpp -I../lib -I./lib -I../include -DVERSION='version 0.00' -P  -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` src/your_script.lsl >> dbg/your_script.i
+sed -f ../clean-lsl.sed dbg/your_script.i > dbg/your_script.i.clean
+wc -cl dbg/your_script.i.clean
+astyle --style=allman -f < dbg/your_script.i.clean > dbg/your_script.i
+cat dbg/your_script.i | sed -f ../clean-lsl.sed | ../bin/i2o.pl  `basename dbg/your_script.i` > bin/your_script.o
+etags src/your_script.lsl ../lib/geometry.lsl ../lib/getlinknumbers.lsl 
+[~/src/lsl-repo/projects/your-script] 
+</lsl>
+
+
+Make runs cpp, [http://www.gnu.org/software/sed/ sed],
+[http://en.wikipedia.org/wiki/Wc_(Unix) wc],
+[http://astyle.sourceforge.net/ astyle], etags (which comes with
+emacs), [http://en.wikipedia.org/wiki/Cat_(Unix) cat] and echo (which
+is part of the [http://www.gnu.org/software/coreutils/ coreutils]).
+
+It also runs i2o.pl, which is a perl script.  You can find it in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+in the projects/bin directory.
+
+i2o.pl comes from the [http://opengate.ma8p.com/open9.tar.gz source]
+of the [http://ma8p.com/~opengate/ Open Stargate Network]
+stargates.  It´s slighly modified.  The Makefile is from the same
+source and has also been modified.  The whole idea of preprocessing
+the source with cpp to generate LSL scripts is from there.  It´s
+not my idea, I´m merely using it and writing this article about it.
+
+When you have successfully run 'make', you will find files in the
+'projects/your-script/dbg' and 'projects/your-script/bin'
+directories. 'dbg' stands for 'debug', 'bin' for 'binary'.  The files
+in these directories are LSL scripts that have been generated from
+your source in the 'projects/your-script/src' directory --- in this
+case, from 'projects/your-script/src/your-script.lsl'.
+
+You will find "your-script.i" and "your-script.i.clean" in the 'dbg'
+directory.  "your-script.i.clean" is an intermediate file which was
+created because it is not exactly a good idea to let sed overwrite its
+input file with its output.  You can delete "your-script.i.clean" if
+you like, and/or modify the Makefile to delete it for you.
+
+By filtering the output of cpp with sed, a few unwanted things are
+removed from the LSL scripts.  The things removed with sed are
+introduced through the way I´m using macros which are defined in
+"lslstddef.h".  Some of those lead to closing-braces followed by a
+semicolon ("};"), to double-semicolons (";;") or to an otherwise emtpy
+line with only a semicolon (";").  For example:
+
+
+<cpp>
+#if DEBUG0
+#define DEBUGmsg0(...)                  DEBUGmsg(__VA_ARGS__)
+#else
+#define DEBUGmsg0(...)
+#endif
+</cpp>
+
+
+This makes debug messages (of debug level 0) disappear when 'DEBUG0'
+does not evaluate to true.  The source may look like this:
+
+
+<lsl>
+#include <lslstddef.h>
+// [...]
+	int a = Len(lChains);
+	DEBUGmsg0("there are", a / iSTRIDE_lChains, "chains");
+// [...]
+</lsl>
+
+
+The output of cpp, when 'DEBUG0' is not true, looks like this:
+
+
+<lsl>
+ integer a = llGetListLength(lChains);
+ ;
+</lsl>
+
+
+The debug message disappears because it´s defined to disappear.  But
+the semicolon at the end of the line is not part of the macro
+definition because when a line doesn´t end with a semicolon, emacs
+indents the following lines in an undesired way: That the semicolon is
+missing makes emacs figure that the line continues on the next line,
+which it doesn´t.  If the semicolon was part of the macro definition,
+I´d still have to put it in to get the indentation as desired.  It
+only would create a line with two semicolons when the debug message
+does not disappear.  So when the debug message disappears, the
+semicolon remains.  Sed removes it by deleting the whole line.
+
+Sed "knows" what to do because it is instructed by a sed-script.  You
+can find this sed-script as "projects/clean-lsl.sed".
+
+Wc is a nice tool to give you statistics about text files.  It can
+count words, bytes, lines etc..  It´s purely informational; I put it
+into the Makefile because I wanted to see what difference the debug
+mesages make for the size of the file and number of lines.  You can
+comment it out in the Makefile, or remove it from the Makefile in case
+you don´t want it.
+
+The same goes for astyle, it´s not required.  It reformats the code so
+that it´s easier to read than the output of cpp.  It´s useful when you
+want to put the LSL script generated from your source on wiki pages,
+and for debugging.
+
+i2o.pl "compresses" the LSL script.  It removes whitespace and line
+end-markers, and it shortens the names of variables.  One advantage is
+that you may get a script which uncompressed has more than 64kB to
+work because it fits into "a script": The editor built into sl clients
+(or, more likely, the server does it) cuts off anything beyond 64kB
+when you upload something into a notecard or into a script.  Another
+advantage is that your script may need less memory.  My unverified
+impression is that "compressed" scripts even run a tiny bit faster,
+though that seems unlikely since they are compiled to bytecode just
+like uncompressed ones.  Test it if you like --- since you got less to
+upload when the script is "compressed", in theory the "compressed"
+scripts don´t take as long to upload as uncompressed ones and you can
+test them faster.  The server may even experience not so many
+difficulties.
+
+
+
+~~~~
+{{LSLC|Tutorials}}
