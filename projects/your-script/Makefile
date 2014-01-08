@@ -37,8 +37,7 @@ debug: $(DBG)
 
 dbg/%.i: src/%.lsl
 	@echo "COMPILING $<"
-	@echo -n "//" > $@
-	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -D$(SYM) -P $(FLAGS) $< | md5sum >> $@
+	@echo "// =`basename $<`.i" > $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -D$(SYM) -P $(FLAGS) -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< >> $@
 
 bin/%.o: dbg/%.i

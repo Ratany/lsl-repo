@@ -16,6 +16,17 @@
 # <http://www.gnu.org/licenses/>.
 
 
+# usage: replace.pl <filename>
+#
+# replace file A with file B when the first line of file A is a key
+# found in a look-up table; file B is specified by the value of the
+# key
+#
+# Entries in the look-up table are lines.  Each line holds a key-value
+# pair, seperated by a colon and a space: 'key: value'.
+#
+
+
 use strict;
 use warnings;
 use autodie;
@@ -23,56 +34,90 @@ use autodie;
 use File::Copy;
 
 
-if(!($ARGV[0] =~ m/.*\.lsl/))
+# the editor to use
+#
+# Note: Use an editor that waits before it exits until you are
+# finished editing the file.  Your sl client stops monitoring the file
+# when the editor exits (or forks off into the background) before
+# you´re done editing, and it may not replace the contents of its
+# built-in editor with the contents of the file you´re editing.
+#
+my $editor = "emacsclient";
+#
+# "-c" makes emacsclient create a new frame.  If you start your
+# favourite editor without such a parameter, you want to remove
+# $editorparam here an in the 'start_editor' function.
+#
+my $editorparam = "-c";
+
+
+# a wrapper function to start the editor
+#
+sub start_editor
+  {
+    my (@files_to_edit) = @_;
+
+    system($editor, $editorparam, @files_to_edit);
+  }
+
+
+# unless the filename given as parameter is *.lsl, edit the file
+#
+unless($ARGV[0] =~ m/.*\.lsl/)
 {
-  system("emacsclient", "-nc", $ARGV[0] );
+  start_editor($ARGV[0]);
   exit(0);
 }
 
 
-my $table = "../replaceassignments.txt";
+# the file name of the lookup table; specify an absolute path here
+#
+my $table = "/absolute/path/to/replaceassignments.txt";
 
+
+# read the first line of the file; unless it matches a pattern like
+# "// =filename.[o|i]", edit the file and the lookup table
+#
 open my $script, "<", $ARGV[0];
 my $line = <$script>;
 close $script;
 chomp $line;
 $line =~ s!// =!!g;
-if( ( !($line =~ m/.*\.o/) ) && ( !($line =~ m/.*\.i/) )  ) {
-    system("emacsclient", "-c", $ARGV[0], $table);
-    exit;
-}
+unless(($line =~ m/.*\.o/) || ($line =~ m/.*\.i/))
+  {
+    start_editor($ARGV[0], $table);
+    exit(0);
+  }
 
+
+# look up the key in the lookup table
+#
 $line .= ": ";
 my $replacementfile = undef;
 open my $assign, "<", $table;
-while( <$assign> ) {
-  chomp $_;
-  if( m/$line/) {
-    $replacementfile = $';
-    last;
+while( <$assign> )
+  {
+    # ignore lines starting with "//" as comments
+    #
+    unless( m!^//!)
+      {
+	chomp $_;
+	if( m/$line/) {
+	  $replacementfile = $';
+	  last;
+	}
+      }
   }
-}
 close $assign;
 
-if( !($replacementfile =~ m/.*\.o/) && !($replacementfile =~ m/.*\.i/) ) {
-  system("emacsclient", "-c", $ARGV[0], $table);
-}
-else {
-#  sleep 2;
-  $line =~ s/: $//;
-  if($line =~ m/.*\.i/) {
-    ## insert the file name at the top
-    open $assign, ">", $ARGV[0];
-    print $assign "// =" . $line . "\n";
-    open $script, "<", $replacementfile;
-    while( <$script> ) {
-      print $assign $_;
-    }
-    close $script;
-    close $assign;
+# when the value of the key looks ok, replace the file, otherwise edit
+# the file and the table
+#
+if(($replacementfile =~ m/.*\.o/) || ($replacementfile =~ m/.*\.i/))
+  {
+    copy($replacementfile, $ARGV[0]);
   }
-  else {
-    ## file name is already in first line
-    copy($replacementfile, $ARGV[0] );
+else
+  {
+    start_editor($ARGV[0], $table);
   }
-}

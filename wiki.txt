@@ -1504,8 +1504,9 @@ etags src/your_script.lsl ../lib/geometry.lsl ../lib/getlinknumbers.lsl
 Make runs cpp, [http://www.gnu.org/software/sed/ sed],
 [http://en.wikipedia.org/wiki/Wc_(Unix) wc],
 [http://astyle.sourceforge.net/ astyle], etags (which comes with
-emacs), [http://en.wikipedia.org/wiki/Cat_(Unix) cat] and echo (which
-is part of the [http://www.gnu.org/software/coreutils/ coreutils]).
+emacs), [http://en.wikipedia.org/wiki/Cat_(Unix) cat],
+[http://www.gnu.org/software/coreutils/ echo] and
+[http://www.gnu.org/software/coreutils/ md5sum].
 
 It also runs i2o.pl, which is a perl script.  You can find it in the
 [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
