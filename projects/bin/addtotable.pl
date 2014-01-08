@@ -58,7 +58,7 @@ $key =~ s/\.lsl$/\.o/;
 #
 # THIS MUST BE THE SAME FILE AS IS USED WITH replace.pl
 #
-my $table = "/home/lee/Datenquellen/secondlife/scripts/replaceassignments.txt";
+my $table = "/absolute/path/to/replaceassignments.txt";
 
 
 # look up the key in the lookup table
