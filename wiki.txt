@@ -441,40 +441,29 @@ you plan to have multiple scripts with the same name, you can make
 adjustments to the Makefile (see below) and don´t need to modify the
 perl script.  It´s a good idea to decide about this before filling
 your table: When you want multiple scripts with the same name some
-time later, you will have to edit your table.  (My table has currently
-over 250 entries ...)
+time later, you will have to edit your table.
 
-You probably want two entries for each script in the look-up table.
 The build system (see below) creates "compressed" versions of the
-scripts and versions that are not compressed.  The compressed versions
-are named *.o and the not-compressed versions are named *.i.
+scripts and versions that are not compressed.  The "compressed"
+versions are named *.o and the not-compressed versions are named *.i.
 
 The "compressed" versions can be pretty unreadable, which can make
-debugging difficult.  To see the version which is not compressed in
-the built-in editor, there are two entries in the look-up table for
-each script: one for the *.o version and another one for the *.i
-version.
+debugging difficult.  The not-compressed version is formattted with
+astyle (see below) to make it easier to read.  It can be used for
+debugging.  (The "compressed" version is what you want to put as a
+script into your object.)
 
-When I need to see the *.i version, I change the first line of the
-script in the built-in editor from like "// =example-script.o" to "//
-=example-script.i" and click on the "Edit" button.  That puts the
-version of the script which is not compressed into the built-in editor
-so that I can see what an error message refers to.  Switch the "i"
-back to an "o", click the "Edit" button and the "compressed" version
-is put back.
+To see the debugging version of the script in the built-in editor,
+change the first line of the script in the built-in editor from like
+"// =example-script.o" to "// =example-script.i" and click on the
+"Edit" button.  That puts the version of the script which is not
+compressed into the built-in editor.  Switch the "i" back to an "o",
+click the "Edit" button and the "compressed" version is put back.
 
-The full entry in the lookup-table for the "example-script" looks like
-this:
-
-
-<lsl>
-example-script.o: /path/to/bin/example-script.o
-example-script.i: /path/to/dbg/example-script.i
-</lsl>
-
-
-You could modify the perl script so that it does replacement
-operations on the value of the key
+Above perl script does this for you, provided that the debugging
+version is in the "dbg" directory and the "compressed" version is in
+the "bin" directory and that both "dbg" and "bin" are in the same
+directory.
 
 ====A Preprocessor====
 

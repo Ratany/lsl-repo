@@ -72,7 +72,7 @@ unless($ARGV[0] =~ m/.*\.lsl/)
 
 # the file name of the lookup table; specify an absolute path here
 #
-my $table = "/home/lee/Datenquellen/secondlife/scripts/replaceassignments.txt";
+my $table = "/absolute/path/to/replaceassignments.txt";
 
 
 # read the first line of the file; unless it matches a pattern like
