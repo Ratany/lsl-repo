@@ -11,8 +11,8 @@ LIBDIR=../lib
 LOCDIR=./lib
 TAGS=./TAGS
 
-ITO=../bin/i2o.pl
-SEDSCRIPT=../clean-lsl.sed
+ITO=i2o.pl
+ADD=../bin/addtotable.pl
 
 
 all: $(DBG) $(OBJ) $(DOC) $(TAGS)
@@ -36,9 +36,10 @@ dbg/%.i: src/%.lsl
 	@echo "COMPILING $<"
 	@echo "// =`basename $@`" > $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< >> $@
+	@$(ADD) $< $(CURDIR)/bin/`basename $<`
 
 bin/%.o: dbg/%.i
-	@sed -f $(SEDSCRIPT) $< > $<.clean
+	@sed -f ../clean-lsl.sed $< > $<.clean
 	@wc -cl $<.clean
 	@astyle --style=allman -f < $<.clean > $<
 	@rm $<.clean
