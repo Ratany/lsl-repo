@@ -380,12 +380,17 @@ as projects/bin/replace.pl.  What it basically does is simple:
 * when the key is not found in the table, start your favourite editor to edit the file that was saved by the sl client and to edit the table
 
 
-Entries in the table are so-called key-value pairs.  They look like
-this:
+Entries in the table are so-called key-value pairs.  The table looks
+like this:
 
 
 <lsl>
 example-script.o: /path/to/bin/example-script.o
+
+//
+// this is a comment
+//
+
 foobar-script.o: /path/to/bin/foobar-script.o
 </lsl>
 
@@ -422,13 +427,13 @@ To make this work, you need to:
 
 * change the debug setting "ExternalEditor" so that above perl script is started instead of your editor
 
-* create or modify the look-up table
+* create the look-up table (the table can be empty)
 
 * make sure that your script starts with the line "// =example-script.o"
 
 * try out the perl script:
 
-You should first try out the perl script to see if it works.  When you
+'''You should first try out the perl script to see if it works.'''  When you
 have your sl client start it, it is difficult or impossible to see
 error messages you may get when running the perl script:
 
@@ -443,9 +448,15 @@ Can't open '/absolute/path/to/replaceassignments.txt' for reading: 'No such file
 
 You see what I mean: You forgot to adjust the file name of the look-up
 table (or forgot to create the table) and get an error message because
-the file doesn´t exist.  If you had your sl client start the script,
-it would not work and you´d be asking yourself why because you don´t
-see the message.
+the file doesn´t exist.  If you had your sl client start the perl
+script, apparently nothing would happen when you click the "Edit"
+button.
+
+Once you have verified that the perl script works, you´re fine.
+However, when you have a typing error in the lookup-table, the script
+in the built-in editor might silently not be replaced with the new
+version.  (You could modify the perl script so that it beeps when it
+does not replace the script.)
 
 The perl script starts your favourite editor when it doesn´t find the
 key (i. e. "example-script.o") in the table.  You can then edit both
