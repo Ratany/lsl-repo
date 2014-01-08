@@ -72,7 +72,7 @@ unless($ARGV[0] =~ m/.*\.lsl/)
 
 # the file name of the lookup table; specify an absolute path here
 #
-my $table = "/absolute/path/to/replaceassignments.txt";
+my $table = "/home/lee/Datenquellen/secondlife/scripts/replaceassignments.txt";
 
 
 # read the first line of the file; unless it matches a pattern like
@@ -82,7 +82,7 @@ open my $script, "<", $ARGV[0];
 my $line = <$script>;
 close $script;
 chomp $line;
-$line =~ s!// =!!g;
+$line =~ s!// =!!;
 unless(($line =~ m/.*\.o/) || ($line =~ m/.*\.i/))
   {
     start_editor($ARGV[0], $table);
@@ -92,6 +92,13 @@ unless(($line =~ m/.*\.o/) || ($line =~ m/.*\.i/))
 
 # look up the key in the lookup table
 #
+# the key is looked up for *.o and *.i so that only one entry per
+# script is needed in the lookup table to cover both *.i and *.o,
+# provided that the directory structure doesn´t change
+#
+my $i_line = $line;
+$i_line =~ s/\.i$/\.o/;
+$i_line .= ": ";
 $line .= ": ";
 my $replacementfile = undef;
 open my $assign, "<", $table;
@@ -102,20 +109,30 @@ while( <$assign> )
     unless( m!^//!)
       {
 	chomp $_;
-	if( m/$line/) {
-	  $replacementfile = $';
-	  last;
-	}
+	if( m/$line/ || m/$i_line/)
+	  {
+	    $replacementfile = $';
+	    last;
+	  }
       }
   }
 close $assign;
 
-# when the value of the key looks ok, replace the file, otherwise edit
-# the file and the table
-#
-if(($replacementfile =~ m/.*\.o/) || ($replacementfile =~ m/.*\.i/))
+if(defined($replacementfile))
   {
-    copy($replacementfile, $ARGV[0]);
+    if($line =~ m/.*\.i:/)
+      {
+	$replacementfile =~ s!/bin/!/dbg/!;
+	$replacementfile =~ s/\.o$/\.i/;
+      }
+
+    # when the value of the key looks ok, replace the file, otherwise edit
+    # the file and the table
+    #
+    if(($replacementfile =~ m/.*\.o/) || ($replacementfile =~ m/.*\.i/))
+      {
+	copy($replacementfile, $ARGV[0]);
+      }
   }
 else
   {

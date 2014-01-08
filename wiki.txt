@@ -216,7 +216,7 @@ for you.
 You can easily write such a program yourself.  I wrote one when I got
 tired of replacing all the scripts.  It´s not really a program, but a
 [http://www.perl.org/ perl] script.  It´s written in perl because perl
-is so well suited for the purpose.  It looks like this:
+is particularly well suited for the purpose.  It looks like this:
 
 
 <perl>
@@ -238,6 +238,17 @@ is so well suited for the purpose.  It looks like this:
 # <http://www.gnu.org/licenses/>.
 
 
+# usage: replace.pl <filename>
+#
+# replace file A with file B when the first line of file A is a key
+# found in a look-up table; file B is specified by the value of the
+# key
+#
+# Entries in the look-up table are lines.  Each line holds a key-value
+# pair, seperated by a colon and a space: 'key: value'.
+#
+
+
 use strict;
 use warnings;
 use autodie;
@@ -245,59 +256,93 @@ use autodie;
 use File::Copy;
 
 
-if(!($ARGV[0] =~ m/.*\.lsl/))
+# the editor to use
+#
+# Note: Use an editor that waits before it exits until you are
+# finished editing the file.  Your sl client stops monitoring the file
+# when the editor exits (or forks off into the background) before
+# you´re done editing, and it may not replace the contents of its
+# built-in editor with the contents of the file you´re editing.
+#
+my $editor = "emacsclient";
+#
+# "-c" makes emacsclient create a new frame.  If you start your
+# favourite editor without such a parameter, you want to remove
+# $editorparam here an in the 'start_editor' function.
+#
+my $editorparam = "-c";
+
+
+# a wrapper function to start the editor
+#
+sub start_editor
+  {
+    my (@files_to_edit) = @_;
+
+    system($editor, $editorparam, @files_to_edit);
+  }
+
+
+# unless the filename given as parameter is *.lsl, edit the file
+#
+unless($ARGV[0] =~ m/.*\.lsl/)
 {
-  system("emacsclient", "-nc", $ARGV[0] );
+  start_editor($ARGV[0]);
   exit(0);
 }
 
 
-my $table = "../replaceassignments.txt";
+# the file name of the lookup table; specify an absolute path here
+#
+my $table = "/absolute/path/to/replaceassignments.txt";
 
+
+# read the first line of the file; unless it matches a pattern like
+# "// =filename.[o|i]", edit the file and the lookup table
+#
 open my $script, "<", $ARGV[0];
 my $line = <$script>;
 close $script;
 chomp $line;
 $line =~ s!// =!!g;
-if( ( !($line =~ m/.*\.o/) ) && ( !($line =~ m/.*\.i/) )  ) {
-    system("emacsclient", "-c", $ARGV[0], $table);
-    exit;
-}
+unless(($line =~ m/.*\.o/) || ($line =~ m/.*\.i/))
+  {
+    start_editor($ARGV[0], $table);
+    exit(0);
+  }
 
+
+# look up the key in the lookup table
+#
 $line .= ": ";
 my $replacementfile = undef;
 open my $assign, "<", $table;
-while( <$assign> ) {
-  chomp $_;
-  if( m/$line/) {
-    $replacementfile = $';
-    last;
+while( <$assign> )
+  {
+    # ignore lines starting with "//" as comments
+    #
+    unless( m!^//!)
+      {
+	chomp $_;
+	if( m/$line/) {
+	  $replacementfile = $';
+	  last;
+	}
+      }
   }
-}
 close $assign;
 
-if( !($replacementfile =~ m/.*\.o/) && !($replacementfile =~ m/.*\.i/) ) {
-  system("emacsclient", "-c", $ARGV[0], $table);
-}
-else {
-#  sleep 2;
-  $line =~ s/: $//;
-  if($line =~ m/.*\.i/) {
-    ## insert the file name at the top
-    open $assign, ">", $ARGV[0];
-    print $assign "// =" . $line . "\n";
-    open $script, "<", $replacementfile;
-    while( <$script> ) {
-      print $assign $_;
-    }
-    close $script;
-    close $assign;
+# when the value of the key looks ok, replace the file, otherwise edit
+# the file and the table
+#
+if(($replacementfile =~ m/.*\.o/) || ($replacementfile =~ m/.*\.i/))
+  {
+    copy($replacementfile, $ARGV[0]);
   }
-  else {
-    ## file name is already in first line
-    copy($replacementfile, $ARGV[0] );
+else
+  {
+    start_editor($ARGV[0], $table);
   }
-}
 </perl>
 
 
@@ -305,12 +350,13 @@ You´ll find this script in the
 [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
 as projects/bin/replace.pl.  What it basically does is simple:
 
+* look at the name of the file which is supplied as a command line argument; when it´s not named like "*.lsl", start your favourite editor to edit the file
 
-* look at the first line of the file saved by the sl client the name of which is supplied as a command line argument (via the place holder %s by your sl client)
+* otherwise, look at the first line of the file
 
-* when the line starts with "// =", treat the rest of the line from there as a key
+* when the line starts with "// =", treat the rest of the line from there as a key; otherwise start your favourite editor to edit the file and another one which is a lookup-table
 
-* look up the key in a table (a file) that associates the key with a value
+* look up the key in a look-up table (a file) that associates the key with a value
 
 * when the key is found in the table, replace the file saved by the sl client with the file the name of which is specified by the value associated with the key
 
@@ -327,7 +373,8 @@ foobar-script.o: /path/to/bin/foobar-script.o
 </lsl>
 
 
-Note: The space between the colon and the file name is mandatory.
+Note: The space between the colon and the file name is mandatory
+(because the perl script is written like that).
 
 This means when you have a script in the built-in script editor like
 
@@ -352,48 +399,71 @@ script will automatically be replaced with the contents of the file
 To make this work, you need to:
 
 
+* modify the perl script to start your favourite editor (in the unlikely case that your favourite editor isn´t emacs)
+
+* modify the perl script to tell it where to find the table that associates the keys and values ('my $table = "../replaceassignments.txt";')
+
 * change the debug setting "ExternalEditor" so that above perl script is started instead of your editor
 
-* create the look-up table
+* create or modify the look-up table
 
 * make sure that your script starts with the line "// =example-script.o"
 
-* ensure that the perl script is able to start your favourite editor
+* try out the perl script:
 
+You should first try out the perl script to see if it works.  When you
+have your sl client start it, it is difficult or impossible to see
+error messages you may get when running the perl script:
+
+
+<lsl>
+[~/tmp] echo "// =example-script.o" > example-script.lsl                                                                                                                                                                                    
+[~/tmp] ~/src/lsl-repo/projects/bin/replace.pl example-script.lsl 
+Can't open '/absolute/path/to/replaceassignments.txt' for reading: 'No such file or directory' at ~/src/lsl-repo/projects/bin/replace.pl line 97
+[~/tmp] 
+</lsl>
+
+
+You see what I mean: You forgot to adjust the file name of the look-up
+table (or forgot to create the table) and get an error message because
+the file doesn´t exist.  If you had your sl client start the script,
+it would not work and you´d be asking yourself why because you don´t
+see the message.
 
 The perl script starts your favourite editor when it doesn´t find the
 key (i. e. "example-script.o") in the table.  You can then edit both
 the script and the table.  This means that you don´t need to fill the
-table in advance.  You can add entries as you go.  The perl script
-uses the first entry in the table that matches.
+table in advance.  You can start with an empty table ('touch
+/absolute/path/to/replaceassignments.txt') and add entries as you go.
 
-The "favourite editor" in this case is emacs, and emacsclient is
-started by the perl script to make use of an existing emacs
-session. You can modify the perl script so it starts your favourite
-editor.  You may also have to modify the perl script to tell it where
-to find the table that associates the keys and values ('my $table =
-"../replaceassignments.txt";').
+The perl script uses the first entry in the table that matches.  If
+you plan to have multiple scripts with the same name, you can make
+adjustments to the Makefile (see below) and don´t need to modify the
+perl script.  It´s a good idea to decide about this before filling
+your table: When you want multiple scripts with the same name some
+time later, you will have to edit your table.  (My table has currently
+over 250 entries ...)
 
-If you have read the perl script, you probably have noticed that it
-has some special treatment when the first line of the script looks
-like "// =example-script.i" instead of "// =example-script.o".  This
-is so because the build system I´m using creates "compressed" versions
-of the scripts and versions that are not compressed.  The compressed
-versions are named *.o and the not compressed versions are named *.i.
+You probably want two entries for each script in the look-up table.
+The build system (see below) creates "compressed" versions of the
+scripts and versions that are not compressed.  The compressed versions
+are named *.o and the not-compressed versions are named *.i.
 
 The "compressed" versions can be pretty unreadable, which can make
 debugging difficult.  To see the version which is not compressed in
 the built-in editor, there are two entries in the look-up table for
-each script, one for the *.o version and another one for the *.i
-version.  When I need to see the *.i version, I change the first line
-of the script in the built-in editor from like "// =example-script.o"
-to "// =example-script.i" and click on the "Edit" button.  That puts
-the version of the script which is not compressed into the built-in
-editor so that I can see what an error message refers to.
+each script: one for the *.o version and another one for the *.i
+version.
 
-Since the build system does not add a first line like "//
-=example-script.i" to the script, the perl script adds the line.  The
-full entry in the lookup-table for the "example-script" looks like
+When I need to see the *.i version, I change the first line of the
+script in the built-in editor from like "// =example-script.o" to "//
+=example-script.i" and click on the "Edit" button.  That puts the
+version of the script which is not compressed into the built-in editor
+so that I can see what an error message refers to.  Switch the "i"
+back to an "o", click the "Edit" button and the "compressed" version
+is put back.
+
+The full entry in the lookup-table for the "example-script" looks like
 this:
 
 
@@ -402,6 +472,9 @@ example-script.o: /path/to/bin/example-script.o
 example-script.i: /path/to/dbg/example-script.i
 </lsl>
 
+
+You could modify the perl script so that it does replacement
+operations on the value of the key
 
 ====A Preprocessor====
 
@@ -1498,7 +1571,7 @@ pressing Ctrl+F1.
 
 Assume you want to try out the "your-script.lsl" source from
 above. You need to make an LSL script which you can put into an object
-for this.
+for this.  Suppose you make a box and name it "testbox".
 
 Enter the directory for the project ("/projects/your-script/") and run
 'make':
@@ -1506,10 +1579,33 @@ Enter the directory for the project ("/projects/your-script/") and run
 
 <lsl>
 [~/src/lsl-repo/projects/your-script] make
-COMPILING src/your_script.lsl
-  8 173 dbg/your_script.i.clean
-[~/src/lsl-repo/projects/your-script]
+COMPILING src/your-script.lsl
+  8 153 dbg/your-script.i.clean
+[~/src/lsl-repo/projects/your-script] 
 </lsl>
+
+
+This has done a few things which it doesn´t tell you about.  It merely
+tells you that it was compling --- you could say preprocessing instead
+since your script isn´t really compiled --- and that the resulting LSL
+script has 8 lines and 153 characters.
+
+You probably can´t wait to see the results now.  Two non-source files
+were generated from the source files:
+
+
+# "projects/your-script/dbg/your-script.i" and
+
+# "projects/your-script/bin/your-script.o".
+
+
+The first one is the so-called debugging version, the second one is
+the version you put into the "textbox" as a script.  The second one is
+"compressed" and not easy to read.  You can put either into the
+"testbox" as a script.
+
+If you remember the perl script that automatically replaces the
+scripts in the built-in editor
 
 
 With the Makefile from the repository, Make does a bit more than only
