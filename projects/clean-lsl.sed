@@ -1,3 +1,1 @@
-s_};_}_g
-s_;;_;_g
-/^[[:space:]]*;$/d
+make/clean-lsl.sed
