@@ -1418,6 +1418,7 @@ Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool
 which controls the generation of executables and other non-source
 files of a program from the program's source files."
 
+
 As you may have noticed, in the previous section of this article I
 have referred to "scripts" (LSL scripts) and "sources", without
 mentioning what the difference is.  The source is what you write.  It
@@ -1426,18 +1427,17 @@ away.  That´s probably what you have written until you read this
 article.
 
 After reading this article, you may not want to write plain LSL
-scripts anymore but make making scripts easier by using a decent
-editor, a preprocessor and Make.  What you write after reading this
-article is still source, but it may be source which cannot be compiled
-by an LSL compiler right away because it needs to go through a
-preprocessor first.  That´s what I was trying to refer to as
-"source".
+scripts anymore.  You may want to use a decent editor, a preprocessor
+and Make.  What you´ll write is still source, but it may be source
+which cannot be compiled by an LSL compiler right away because it
+needs to go through a preprocessor first.  That´s what I was trying to
+refer to as "source".
 
-LSL scripts aren´t "source" in that sense.  You could say that
+You could say that
 '''An LSL script is the output of a preprocessor that processes a source file.''' 
-I don´t write LSL scripts.  I write source files that can be turned into LSL
-scripts.  It´s much easier to create LSL scripts that way than it is
-to write them.
+I don´t write LSL scripts anymore.  I write source files that can be
+turned into LSL scripts.  It´s much easier to create LSL scripts that
+way than it is to write them.
 
 In the sense of Make, the LSL script falls under "other non-source
 files".  Make isn´t used here to generate an
@@ -1445,30 +1445,62 @@ files".  Make isn´t used here to generate an
 are not exectutable, and apparently the LSL compiler compiles them
 into [http://en.wikipedia.org/wiki/Bytecode | byte code].
 
-Preprocessing "your-script.lsl" like in the previous section generates a
-"non-source file" from a source file.  You have controlled the
-generation of the non-source file manually, which is inconvenient.
+"Other non-source files" can also mean documentation.  The provided
+makefile has entries that use pdflatex to create a PDF file from a
+[http://www.latex-project.org/ LaTeX]
+source and to copy the PDF into the project directory.  I don´t
+write PDF files.  I write source files that can be turned into PDF
+files.  It´s much easier to create PDF files that way than it is to
+write them :)
+
+
+Preprocessing "your-script.lsl" like in the previous section generates
+a "non-source file" from a source file.  You have controlled the
+generation of the non-source file manually, which can be inconvenient.
 
 More conveniently, Make can do this job for you.  All you need for
 that is Make, and a so-called Makefile.  It´s called Makefile because
-it tells Make what Make needs to do to generate files from files, and
-under which conditions which files need to be created.  With the right
-Makefile, Make can, for example, figure out that a source file A which
-is included by another source file B has changed and that the
-non-source file generated from B needs to be generated again though B
-itself hasn´t changed.
+it tells Make what it needs to do to generate files from files, and
+under which conditions which files need to be created.
 
 You do not need to understand Make or Makefiles to make creating LSL
 scripts easier.  You find a suitable Makefile in the
 [https://github.com/Ratany/lsl-repo git repository that accompanies this article].
-The Makefile is "projects/template-directories/Makefile".
+The Makefile is "projects/make/Makefile".
 
-If you want to use Make to preprocess your source, you simply run
-'make'.  You can do this with the "your-script.lsl" source from the
-previous section.  Enter the directory for that project:
-"/projects/your-scrit/".  There is a Makefile in that directory
-because it was copied from the template-directories.  Instead of 'cpp
--I../../include -P your_script.lsl > your_script.i', you simple run
+This Makefile is symlinked into the template-directories.  There is
+only one Makefile for all your projects.  It works for all of
+them.  This has the advantage --- or disadvantage --- that when you
+change the Makefile, the changes apply to all your projects.
+
+Should you need to adjust the Makefile because a particular project
+has special requirements, remove the symlink to the Makefile from the
+projects´ directory.  Copy make/Makefile into the projects´ directory
+and then modify the copy.
+
+
+=====How to use Make=====
+
+Enter the directory of the project you are working on and run 'make'.
+That´s all.
+
+You can run make from within emacs: M-x compile.  Emacs will show you
+the output in a buffer.  If there are error messages, you can move the
+cursor to the error message and press enter and emacs shows you the
+line in the file that triggered the error message.  To compile again,
+you can use 'recompile':  M-x recompile.  You can make a key-binding
+for that with something like '(global-set-key [C-f1] 'recompile)' in
+your ~/.emacs and recompile your source conveniently from within your
+favourite editor --- which by now is, of course, emacs --- by simply
+pressing Ctrl+F1.
+
+=====Make "your-example.lsl"=====
+
+Assume you want to try out the "your-script.lsl" source from
+above. You need to make an LSL script which you can put into an object
+for this.
+
+Enter the directory for the project ("/projects/your-script/") and run
 'make':
 
 
