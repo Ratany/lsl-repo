@@ -129,7 +129,7 @@ if(defined($replacementfile))
     # when the value of the key looks ok, replace the file, otherwise edit
     # the file and the table
     #
-    if(($replacementfile =~ m/.*\.o/) || ($replacementfile =~ m/.*\.i/))
+    if(($replacementfile =~ m/.*\.o$/) || ($replacementfile =~ m/.*\.i$/))
       {
 	copy($replacementfile, $ARGV[0]);
       }
