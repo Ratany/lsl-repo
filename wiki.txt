@@ -161,9 +161,10 @@ script, though it´s not impossible to kinda use it for that.
 
 Open a script in your sl client and click on the edit button of the
 built-in editor.  You might get an error message telling you that the
-debug setting "ExternalEditor" is not set.  Set this debug setting so
-that your favourite editor is used, and click on the edit button
-again.
+debug setting "ExternalEditor" is not set.  Don´t panic!  Set this
+debug setting so that your favourite editor is used, and click on the
+edit button again.  This is merely to show the concept, and things
+will get more convenient.
 
 [[Image:Cpp-wiki-externaleditor.jpg|thumb|Debug Setting "ExternalEditor"]]
 
@@ -187,36 +188,48 @@ offline.  When you are ready to test the script, you could log in with
 your sl client, build a box, create a new script in the box, open the
 script, click on the "Edit" button, delete the contents of the new
 script in your favourite editor, insert the script you have written
-and save it.  Your sl client would notice that the file changed and
-put it into the built-in editor.  It would let the sl server compile
-the script and show you the error messages, if any.  If your script
-compiles and works right away, you´re done --- if not, you can use the
-built-in editor to check the error messages and your favourite editor
-to make changes as needed.
+and save it.
 
-This becomes awkward when you have a lot of scripts: To replace each
-script with the new version, you need to open it, click the "Edit"
-button, delete the script in your favourite editor, put the new
-version in and save it.  In case you get error messages and need to
-change your script, you have to go back to your source, modify it and
-replace it again.
+Your sl client would notice that the file changed and put it into the
+built-in editor.  It would let the sl server compile the script and
+show you the error messages, if any.  When your script compiles and
+works right away, you´re done --- if not, you can use the built-in
+editor to check the error messages and your favourite editor to change
+the source as needed.  Then you need to replace the script again.
 
-Fortunately, you don´t need to do this.  All that´s needed is
-replacing the file your sl client saved the script to with a new
-version of the file.  You don´t need to use your favourite editor to
-replace the file.  A program which is started by your sl client
-instead of your favourite editor can replace the file for you. It only
-needs to know which file it must replace the file saved by your sl
-client with.
+At this point, things suddenly aren´t nice anymore: Replacing the
+script with your favourite editor all the time is a stupid process
+(unless you program your editor to do it for you).  Even when you have
+only one script, having to replace the script over and over again
+while you are adding to it and debugging it sucks.  It sucks even more
+when your object has 11 scripts working toegether and a little change
+makes it necessary to replace all of them.
 
-With such a program, you only open the script in the built-in editor
-and to click on the "Edit" button.  The program replaces the script
-for you.
+You could mess around with the built-in editor and try to edit your
+script further with it, saving the replacing.  That also sucks: The
+built-in editor is unusable, and you end up with at least two versions
+of the script.  Since you want the script safely stored on your
+storage system and not lose your work when your sl client crashes or
+the like, you end up replacing the script on your storage system with
+the version you have in the built-in editor every now and then.  When
+your object has 11 scripts that work together, it eventually becomes a
+little difficult to keep an overview of what´s going on --- not to
+mention that you need a huge monitor with a really high resolution to
+fit 11 built-in editor windows in a usable way on your screen to work
+on your scripts since there is no C-x b with the built-in editor to
+switch to a different buffer ...
 
-You can easily write such a program yourself.  I wrote one when I got
-tired of replacing all the scripts.  It´s not really a program, but a
-[http://www.perl.org/ perl] script.  It´s written in perl because perl
-is particularly well suited for the purpose.  It looks like this:
+Fortunately, there is a much better and very simple solution: A
+program which is started by your sl client ''instead'' of your
+favourite editor can replace the script for you.  It´s the same
+concept from above you have tried out now.  The concept does not
+require that you must abuse your favourite editor to replace scripts.
+
+You can easily write a program that replaces files yourself.  I wrote
+one when I got tired of all the replacing.  It´s not really a program,
+but a [http://www.perl.org/ perl] script.  It´s written in perl
+because perl is particularly well suited for the purpose.  It looks
+like this:
 
 
 <perl>
@@ -365,7 +378,7 @@ else
 
 You´ll find this script in the
 [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-as projects/bin/replace.pl.  What it basically does is simple:
+as "projects/bin/replace.pl".  What it basically does is simple:
 
 * look at the name of the file which is supplied as a command line argument; when it´s not named like "*.lsl", start your favourite editor to edit the file
 
@@ -423,19 +436,21 @@ To make this work, you need to:
 
 * modify the perl script to start your favourite editor (in the unlikely case that your favourite editor isn´t emacs)
 
-* modify the perl script to tell it where to find the table that associates the keys and values ('my $table = "../replaceassignments.txt";')
+* modify the perl script to tell it where to find the table that associates the keys and values ('my $table = "/absolute/path/to/replaceassignments.txt";')
 
-* change the debug setting "ExternalEditor" so that above perl script is started instead of your editor
+* change the debug setting "ExternalEditor" so that your sl client starts above perl script instead of your favourite editor
 
 * create the look-up table (the table can be empty)
 
-* make sure that your script starts with the line "// =example-script.o"
+* make sure that your script starts with a line like "// =example-script.o"
 
 * try out the perl script:
 
-'''You should first try out the perl script to see if it works.'''  When you
-have your sl client start it, it is difficult or impossible to see
-error messages you may get when running the perl script:
+
+'''You should first try out the perl script to see if it works.'''
+
+When you have your sl client start it, it is difficult or impossible
+to see error messages you may get when running the perl script:
 
 
 <lsl>
@@ -452,11 +467,14 @@ the file doesn´t exist.  If you had your sl client start the perl
 script, apparently nothing would happen when you click the "Edit"
 button.
 
-Once you have verified that the perl script works, you´re fine.
-However, when you have a typing error in the lookup-table, the script
-in the built-in editor might silently not be replaced with the new
-version.  (You could modify the perl script so that it beeps when it
-does not replace the script.)
+Once you have verified that the perl script works, you´re
+fine. However, when you have a typing error in the lookup-table, the
+script in the built-in editor might silently not be replaced with the
+new version.  (You could modify the perl script so that it beeps when
+it does not replace the script, or experiment with something like
+'xterm -hold -e replace.pl "%s"'.  If 'xterm -hold ...' works, you
+could do something to run 'make' (see below) automatically when you
+click the "Edit" button.)
 
 The perl script starts your favourite editor when it doesn´t find the
 key (i. e. "example-script.o") in the table.  You can then edit both
@@ -488,20 +506,21 @@ change the first line of the script in the built-in editor from like
 compressed into the built-in editor.  Switch the "i" back to an "o",
 click the "Edit" button and the "compressed" version is put back.
 
-Above perl script does this for you, provided that the debugging
-version is in the "dbg" directory and the "compressed" version is in
-the "bin" directory and that both "dbg" and "bin" are in the same
-directory.
+Above perl script does the replacing for you, provided that the
+debugging version is in the "dbg" directory and the "compressed"
+version is in the "bin" directory and that both "dbg" and "bin" are in
+the same directory.
+
+When you use the build system, you do not need to add entries to the
+lookup-table.  They are automatically added as needed when you run
+'make' (see below).
 
 ====A Preprocessor====
 
-The
-[http://en.wikipedia.org/wiki/Preprocessor Wikipedia article] about
-preprocessors gives an interesting explanation of what a preprocessor
-is and provides an overview.
-
-For the purpose of making it easier to write LSL scripts, a
-preprocessor as is used with
+The [http://en.wikipedia.org/wiki/Preprocessor Wikipedia article]
+about preprocessors gives an interesting explanation of what a
+preprocessor is and provides an overview.  For the purpose of making
+it easier to create LSL scripts, a preprocessor as is used with
 [http://en.wikipedia.org/wiki/C_(programming_language) C] (and C++)
 compilers is a very useful tool.
 
@@ -528,7 +547,7 @@ Some of the advantages that come with these features are:
 
 * Your sources become much easier to modify and to maintain because instead of having to change parts of the code in many places, you can change a definition at one single place --- or code in a library or a header file --- and the change will apply everywhere.
 
-* Scripts may become less prone to bugs and errors because code is easy to re-use and easier to modify and to maintain.
+* Scripts may become less prone to bugs and errors because code is easy to re-use and easier to modify and to maintain.  That can save you a lot of time.
 
 * You may create scripts that use less memory because instead of using variables as constants, you can use so-called defines.  This may allow you to do something in one script rather than in two and save you all the overhead and complexity of script-intercommunication.
 
@@ -634,6 +653,7 @@ in projects/example-1/src/example-1.lsl.
 
 This example is intentionally exaggerated to show a few things.
 
+
 The first line includes another file, named "lslstddef.h", into the
 source.  It is named with the extension .h to indicate that it is a
 so-called header file.  The file is called header file because it goes
@@ -658,6 +678,7 @@ in the source above.  Line 4 tells the preprocessor to replace
 case-sensitive search-and-replace operation you could do yourself with
 your favourite editor.
 
+
 If you wouldn´t use a preprocessor, line 4 might read
 
 
@@ -678,9 +699,11 @@ compiler.
 
 In case you have modified your source so it doesn´t use fUNDETERMINED
 anymore, it will not appear anywhere in your script when fUNDETERMINED
-was a define.  When it was a variable, the variable will still be in
-your script and use script memory until you remove it, which you may
-forget to do over all the modifications.
+was a define --- even when the definition itself is not removed.  When
+it was a variable, the variable will still be in your script and use
+script memory until you remove its declaration, which you may forget
+to do over all the modifications.
+
 
 On a side note: A simple test has indicated that using a define
 instead of a float-variable ''may'' save you 8 bytes of script memory.
@@ -697,9 +720,10 @@ It seems obvious that you would waste memory when you use a macro that
 the preprocessor turns into a lengthy expression which occurs in the
 script multiple times.  When it matters, test it; you may be
 surprised.  In any case, you need to be aware of what the macros you
-use turn into because it can also affect performance.
+use turn into.  This will be pointed out in more detail later.
 
-What is called a preprocessor macro is defined in line 5.  The
+
+What is called a "preprocessor macro" is defined in line 5.  The
 definition is a macro because, similar to a function, the define has a
 parameter.  Macros can have multiple parameters, and you can even use
 macros which have a variable number of parameters.  Some of the macros
@@ -723,17 +747,25 @@ preprocessor "knows" this and the final result of all the replacing is
 'if(!((-1.0 == distance)))'.  And that is something the LSL compiler
 can compile.
 
-Using 'unless' is, admittedly, ideosyncratic.  It comes from perl
-where it´s part of the language, and in perl, you can write stuff like
-'print 5 unless 5;', which will not print anything.  But where is the
-fun when you can´t use a preprocessor to do ideosyncratic stuff?
+
+Using 'unless' for LSL is, admittedly, ideosyncratic.  It comes from
+perl where it´s part of the language, and in perl, you can write stuff
+like 'print 5 unless 5;', which will not print anything.  But where is
+the fun when you can´t use a preprocessor to do ideosyncratic stuff?
 Writing 'if(-1.0 != distance)' all the time can get boring.
+
+Using 'unless' is particularly fun when you have to deal with several
+statements for the condition: 'unless((A > 5) || (B < 4))' probably
+doesn´t do what you wanted.  Chances are good that you wanted
+'unless((A > 5) && (B < 4))'.
+
 
 More importantly, you might suddenly want to use a different value to
 indiciate that something is undetermined.  Your script may require it,
 or you might like it better.  Would you want to use -8874563.33356478
 instead of -1.0, the only place you´d need to change your source is
 line 4.
+
 
 Macros can use other macros.  The macro 'fSecondsForMeters', defined
 in line 8, uses the macro 'FMax'.  This is similar to functions that
@@ -742,25 +774,30 @@ expression that evaluates to the greater of the two floating point
 values supplied to 'FMax' as parameters, which is a function missing
 from LSL.)
 
+
 Line 10 and 11 give an overly simple example of how you can break down
 logic into small pieces.  These lines don´t break down any logic, but
-they show the concept: Define an operation or goal, then figure out
+they show a concept: Define an operation or goal, then figure out
 small steps and how to combine them in such a way that the desired
-operation is being performed, or the goal reached.  The size of the
-steps can neither be greater, nor smaller than the magnitude of the
-atomic operations of the programming language allows for.  That´s what
-programming is all about.
+operation is being performed, or the goal reached.  The size of a
+single step can neither be greater, nor smaller than the magnitude of
+the atomic operations the programming language allows for.  That´s
+what programming is all about.
 
-llFrand() is such an atomic operation in LSL.  You could write your
+You can use a preprocessor to make smaller steps than you otherwise
+would.  When you use it to break down logic, you are making things
+easier than you otherwise would.  You can use a preprocessor to make
+larger steps, by combining a number of small steps into a single,
+large step.  When you use it to make larger steps, you are making
+things easier than you otherwise would.  But are you?  When you use a
+preprocessor carelessly, you may experience difficulties you otherwise
+wouldn´t.  That´s the way a preprocessor works.
+
+Anyway, llFrand() is an atomic operation in LSL.  You could write your
 own algorithm to generate random numbers --- and you might be
 surprised how difficult that can be.  Computers producing true
 randomness, if there is such a thing at all, can usually be considered
-to be broken.  Some algorithms to generate random numbers use external
-sources of randomness, like a human operating an input device or
-starting programs in some "random" manner.  When I ask you for a
-random number, how random would a number you might give me be?  How
-would I determine how random that number is?  By definition, there
-isn´t anything random about numbers:  Five is five.
+to be broken.
 
 Creating a vector with some random values is not an atomic operation
 in LSL.  If there was an atom of the language to create such a vector
@@ -782,12 +819,15 @@ lines 10 and 11, is it?
 When code is easier to read, it´s easier for you to deal with it, and
 it´s less likely that you make a mistake.  You´ll be more productive
 because you don´t waste time trying to figure out code which is hard
-to read, and creating LSL scripts becomes easier.
+to read, and creating LSL scripts becomes easier:  You are still
+experiencing the same difficulties, but they are easier to overcome
+when you have better tools at hand.
 
-You can find a better example for this in "geometry.lsl", which is in the
+You can find a better example for breaking down logic in
+"geometry.lsl", which is in the
 [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
- (projects/lib/):  The macro 'geom_nofsharedsegments',
-when used as 'geom_nofsharedsegments(A, B)', evaluates to
+("projects/lib/geometry.lsl"):  The macro 'geom_nofsharedsegments', when used as
+'geom_nofsharedsegments(A, B)', turns into:
 
 
 <lsl>
@@ -815,27 +855,41 @@ simply reads:
 </cpp>
 
 
-It tells you what it does when you read it.
+It tells you what it does when you read it.  The source
+"projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl",
+which is in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article],
+uses this.  You may want to check out [[LSL_Protocol/rfedip|this article]]
+to learn more about it.
+
 
 Lines 24 through 26 define some macros to make the list that was
-declared in line 22 easier to use.  They seem to appear randomly
-somewhere in the source, but they have been intentionally placed where
-they are: The scope of the list declared in line 22 doesn´t go beyond
-line 52; it´s not a global variable.  The macros are "deleted" in
-lines 48--50 because they are not needed anywhere else.  Macros or
-defines with the same names and a different or the same meaning could
-be used somewhere else in the source. The preprocessor is instructed
-to "forget" them with the '#undef' directive.
+declared in line 22 easier to use.  (Using three macros here is
+overdone because it´s an example source.)
 
-Nothing would prevent you from defining those macros at the top of the
-source.  You do not need to undefine them, either.  I have done it as
-you see above because the list has a very limited scope.  The macros
-don´t need to be available outside that scope.  It makes sense to me
-to limit it all to the few lines of code it is relevant for.  That
-way, it´s nothing I´d have to think about outside that limited scope.
+They seem to appear randomly somewhere in the source, but they have
+been intentionally placed where they are: The scope of the list
+declared in line 22 doesn´t go beyond line 52; it´s not a global
+variable.  The macros are "deleted" in lines 48--50 because they are
+not needed anywhere else.  Macros or defines with the same names and a
+different or the same meaning could be used somewhere else in the
+source.  The preprocessor is instructed to "forget" them with
+the '#undef' directive.  It´s not required to undefine them.  It´s
+tidy.
 
-Having the macros in lines 24--26 is overdone because it´s an example
-source.  When you have a (longer) script that uses some global lists,
+You don´t need to do it this way.  Traditionally, all preprocessor
+directives --- and #define is one of them --- were required to be at
+the beginning of the line and ignored by the preprocessor when they
+were not and the C compiler would give you an error message.  This
+isn´t required anymore.  It may look better to indent them with the
+code.  By all means, don´t do that!
+'''Preprocessor directives are not part of the code.'''
+They modify code.  You could call them "metacode".  They are outside
+of the code.  You do not want to overlook them.  You don´t want messy
+code.  Or do you want to experience difficulites you otherwise
+wouldn´t?
+
+When you have a (longer) script that uses some global lists,
 maybe even strided lists, exclusively using macros to operate with the
 lists makes a lot of sense.
 
@@ -851,12 +905,11 @@ vector chainpos = llList2Vector(llGetLinkPrimitiveParams(llList2Integer(lChains,
 
 mean both the same.  The first line tells you straight away what it
 is.  The second one makes you ask yourself if you got it right.  In
-your source, you have maybe ten lines like that.
+your source, you may have many lines like that.
 
-You may need to change the stride of a list.  Imagine whith the two
-lines above, you need to change the list so that the link number of
-the prim stored in the list is no longer the first item of a stride
-but the second one.
+You may need to change the stride of a list.  Imagine you need to
+change a strided list so that the link number of the prim stored in
+the list is no longer the first item of a stride but the second one.
 
 Without macros, you have to go through your whole source, find all the
 ten or how many lines, and change all of them.  Perhaps you overlook
