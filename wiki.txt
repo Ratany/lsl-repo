@@ -577,106 +577,526 @@ never think of.
 Some extensive documentation about cpp can be found
 [http://gcc.gnu.org/onlinedocs/cpp/ here].
 
-Imagine you want to create a script that figures out which agent is
-the furthest away from the object the script is in and uses keyframed
-motion to move the object towards this agent when the owner of the
-object touches it.
+Imagine you want to create a script that figures out which agent on
+the same parcel is the furthest away from the object the script is in
+and moves the object towards this agent when the owner of the object
+touches it.
 
-The source of the script, written to be preprocessed with cpp and with
-line numbers added for reference, looks like this:
+In the following, the source for the script will be developed piece by
+piece.  You can find the complete source in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+in "projects/example-1/src/example-1.lsl".
+
+Obviously, the script will need a touch event, a way to find out which
+agent is the furthest away and a a way of moving to the agent.
+
+In this case, [[LlSetKeyframedMotion|keyframed motion]] (KFM) is a
+good way to get the object moving: It doesn´t require the object to be
+physical and thus lets it move through obstacles like walls.  KFM
+requires the object to use the so-called "prim equivalency system",
+which means that it must either be mesh, or the physics type of one of
+its prims must be either "convex hull" or "none".  This can either be
+set in the editing window when editing the object, or by the script.
+The physics type of the root prim cannot be "none", and since it´s
+hard to say whether "none" or "convex hull" is better for a particular
+object, the script will simply use "convex hull".  Since the physics
+type of the object needs to be set only once, the script should use a
+state_entry event to set it.  It can be set with
+[[LlSetLinkPrimitiveParamsFast#llSetLinkPrimitiveParamsFast|llSetLinkPrimitiveParamsFast()]].
+
+Finding out which agent is the furthest away from the object requires
+to find out what agents there are.  A sensor is unsuited because the
+agent could be out of sensor range, and the sensor would report no
+more than the closest sixteen agents.  Using
+[[LlGetAgentList|llGetAgentList()]] works much better for this.  It is
+also necessary to find out what the distances between the agents and
+the object are, for which [[LlGetObjectDetails|llGetObjectDetails()]]
+can be used.
+
+The object should move to a position at "some distance" from the
+agent.  It seems nicer to use a random distance rather than a fixed
+one.  This can easily be done by creating a "random vector", i. e. a
+vector the components of which are randomized.  What
+[[LlFrand||llFrand()]] returns is not really a random number, but it´s
+sufficient for this purpose.
+
+As with all sources, I want to use some of the defines that are
+gathered in my "lslstddef.h".  One of them is the macro "RemotePos()".
+It is a shortcut for using llGetObjectDetails() to find out the
+position of and object or prim or agent.  Another one is "SLPPF()", a
+shortcut for llSetLinkPrimitiveParamsFast() because
+llSetLinkPrimitiveParamsFast() is awfully long.
+
+This makes for a source (example-1_A) that looks like this:
 
 
 <lsl>
-   1	 #include <lslstddef.h>
-   2
-   3
-   4	 #define fUNDETERMINED              -1.0
-   5	 #define fIsUndetermined(_f)        (fUNDETERMINED == _f)
-   6
-   7	 #define fMetersPerSecond           3.0
-   8	 #define fSecondsForMeters(d)       FMax((d) / fMetersPerSecond, 0.03)
-   9
-  10	 #define fRandom                    (llFrand(3.5) - llFrand(2.5))
-  11	 #define vRandomDistance            (<fRandom, fRandom, fRandom>)
-  12
-  13
-  14	 default
-  15	 {
-  16		event touch_start(int t)
-  17		{
-  18			if(llDetectedKey(0) == llGetOwner())
-  19				{
-  20					vector here = llGetPos();
-  21
-  22					list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
-  23
-  24	 #define kAgentKey(x)       llList2Key(agents, x)
-  25	 #define vAgentPos(x)       RemotePos(kAgentKey(x))
-  26	 #define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
-  27
-  28					float distance = fUNDETERMINED;
-  29					int goto;
-  30					int agent = Len(agents);
-  31					while(agent)
-  32						{
-  33							--agent;
-  34
-  35							float this_agent_distance = fAgentDistance(agent);
-  36							if(distance < this_agent_distance)
-  37								{
-  38									distance = this_agent_distance;
-  39									goto = agent;
-  40								}
-  41						}
-  42
-  43					unless(fIsUndetermined(distance))
-  44						{
-  45                                                    llSetKeyframedMotion([PosOffset(here,z,
-                                                                              vAgentPos(goto)
-                                                                              + vRandomDistance),
-                                                                              fSecondsForMeters(distance)],
-                                                                             [KFM_DATA, KFM_TRANSLATION]);
-  46						}
-  47
-  48	 #undef AgentKey
-  49	 #undef AgentPos
-  50	 #undef AgentDistance
-  51
-  52				}
-  53		}
-  54	 }
+#include <lslstddef.h>
+
+
+default
+{
+	event touch_start(int t)
+	{
+		// find furthest agent and move to them on touch by owner
+	}
+
+	event state_entry()
+	{
+		// set the physics type
+	}
+}
 </lsl>
 
 
-You can find this source in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-in projects/example-1/src/example-1.lsl.
+The '#include' in the first line is a so-called preprocessor
+directive.  It tells the preprocessor to do something.  There are
+other directives, like "#define", "#undef", "#if", "#endif" and some
+others.
 
-This example is intentionally exaggerated to show a few things.
+"#include" tells cpp to find a file "lslstddef.h" within some directories it
+searches through by default and to make it so as if the contents of
+this file were part of the source.  Suppose you have the source saved
+as "example-1.lsl": The preprocessor includes "lslstddef.h" into
+"example-1.lsl".  It´s output will not contain the first line because
+the first line is a preprocessor directive.
+
+The source ("example-1.lsl") is never modified by the preprocessor.
+Including "lslstddef.h" makes everything in "lslstddef.h" known to the
+preprocessor.  The preprocessor produces an output which is a copy of
+the source with modifications applied to it as the directives, like
+the ones in "lslstddef.h", demand.
+
+"lslstddef.h" has a lot of directives for the preprocessor.  Most of
+them define something with "#define".  When something is defined with
+"#define", it is a so-called define.  Macros can also be defined with
+"#define".  Macros are called macros because they are defines that
+take parameters.
 
 
-The first line includes another file, named "lslstddef.h", into the
-source.  It is named with the extension .h to indicate that it is a
-so-called header file.  The file is called header file because it goes
-at the top of the source.  Including it with '#include <lslstddef.h>'
-works out the same as if the contents of the file "lslstddef.h" were
-actually contents of the source.
+You may have noticed that in example-1_A, it doesn´t read
+"touch_start()" but "event touch_start()".  That´s because I write my
+sources like that: Putting "event" before events makes them easier to
+find and the source looks nicer and is easier to read for me.  In your
+sources, you can do it the same way or use something else than "event"
+or just write "touch_start()" instead.  You can see what it looks like
+on my screen in the example picture --- I currently use green on black
+in emacs.  It sticks out, and "event" makes a good search string that
+saves me searching for particular events.
 
-'#include' is a so-called directive for the preprocessor to include a
-file.
+[[Image:Cpp-wiki-example-1_A.jpg|thumb|Easier to read]]
 
-The file name is written in pointy brackets here because cpp has been
-told where to look for the file.  This will be explained later.  If
-"lslstddef.h" was in the same directory as "example-1.lsl", it would
-be included with '#include "lslstddef.h"'.
+The LSL compiler wouldn´t compile the source, not only because it
+doesn´t know what to do with "#include" directives, but also because
+it doesn´t compile statements like "event touch_start()".  Therefore,
+"lslstddef.h" defines that "event" is nothing:
 
-You can find "lslstddef.h" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-in projects/include/.
 
-"lslstddef.h" contains a lot of so-called defines, similar to line 4
-in the source above.  Line 4 tells the preprocessor to replace
-'fUNDETERMINED' everywhere in the source with '-1.0'.  This is like a
-case-sensitive search-and-replace operation you could do yourself with
-your favourite editor.
+<cpp>
+#define event
+</cpp>
+
+
+By including "lslstddef.h", cpp knows this and replaces all occurances
+of "event" with nothing, making "event" disappear from the result.
+This doesn´t mean that "event" is not defined.  It´s a define.  You
+can use the directive "#ifdef" with such defines:
+
+
+<cpp>
+#ifdef event
+#define test 1
+#endif
+</cpp>
+
+
+This would create a define named "test" only if "event" is defined.
+Much like cpp replaces "event" with nothing, it would now replace
+"test" with "1" because "test" is defined to be "1".
+
+
+The next thing the example script needs is to set the physics
+type. The define "SLPPF" is a shortcut for
+"llSetLinkPrimitiveParamsFast", so use that.  The script also needs to
+check if it was the owner of the object who touched it and do nothing
+when it was someone else.  It needs to know the position of the object
+the script is in and what agents are around so it can figure out which
+agent is the furthest away from the object. Add all this to the
+source, which is now example-1_B:
+
+
+<lsl>
+#include <lslstddef.h>
+
+
+default
+{
+	event touch_start(int t)
+	{
+		unless(llDetectedKey(0) == llGetOwner())
+			{
+				return;
+			}
+
+		vector here = llGetPos();
+		list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+	}
+
+	event state_entry()
+	{
+		SLPPF(LINK_THIS, [PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_CONVEX]);
+	}
+}
+</lsl>
+
+
+With
+
+
+<cpp>
+#define event
+#define SLPPF                           llSetLinkPrimitiveParamsFast
+</cpp>
+
+
+in "lslstddef.h", the preprocessor replaces "event" with nothing and
+"SLPPF" with "llSetLinkPrimitiveParamsFast".
+
+
+Lists in LSL can be a pita to work with.  You end up using functions
+to pick out list elements like [[LlList2Key|llList2Key()]].  They
+combine with functions that return lists and lead to unwieldy
+expressions like
+
+
+<lsl>
+llList2Vector(llGetObjectDetails(llList2Key(agents, 0), [OBJECT_POS]), 0);
+</lsl>
+
+
+which combine with other functions like [[LlVecDist|llVecDist()]] into
+even longer expressions like
+
+
+<lsl>
+llVecDist(llList2Vector(llGetObjectDetails(llList2Key(agents, 0), [OBJECT_POS] ), 0),
+          llList2Vector(llGetObjectDetails(llList2Key(agents, 1), [OBJECT_POS] ), 0));
+</lsl>
+
+
+if you were to compute the distance between two agents.
+
+
+Lists are sometimes strided, and then you also need to remember which
+item of a stride is to be interpreted as what.  Your code becomes hard
+to write, hard to read and hard to modify.  You can use defines and
+macros to avoid this.
+
+The list used in example-1_B is not strided, simple and a local
+variable.  Using a define and macros to make it useable is overdoing
+it, but I want to show you how it can be done.
+
+You can put preprocessor directives anywhere into your source.  They
+don´t need to be kept in seperate files.  Traditionally, they had to
+be at the beginning of a line.  This isn´t required anymore --- but do
+not indent them!  They are not part of your code.  They modify your
+code.  You could see them as "metacode".
+
+With example-1_B, four things can be defined to make the list of
+agents easier to use:
+
+
+# a define for the stride of the list: "#define iSTRIDE_agents 1"
+
+# a macro that gives the UUID of an agent on the list: "#define kAgentKey(x) llList2Key(agents, x)"
+
+# a macro that gives the position of an agent on the list: "#define vAgentPos(x) RemotePos(kAgentKey(x))"
+
+# a macro that gives the distance of an agent from the object: "#define fAgentDistance(x) llVecDist(here, vAgentPos(x))"
+
+
+Those will be used for a loop that iterates over the list.  This leads
+to example-1_C:
+
+
+<lsl>
+#include <lslstddef.h>
+
+
+default
+{
+	event touch_start(int t)
+	{
+		unless(llDetectedKey(0) == llGetOwner())
+			{
+				return;
+			}
+
+		vector here = llGetPos();
+		list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+
+#define iSTRIDE_agents     1
+#define kAgentKey(x)       llList2Key(agents, x)
+#define vAgentPos(x)       RemotePos(kAgentKey(x))
+#define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
+
+		int agent = Len(LIST_agents);
+		while(agent)
+			{
+				agent -= iSTRIDE_agents;
+			}
+	}
+
+	event state_entry()
+	{
+		SLPPF(LINK_THIS, [PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_CONVEX]);
+	}
+}
+</lsl>
+
+
+Since the list is a local variable, the defines are placed after its
+declaration.  You could place them somewhere else, maybe at the top of
+the source.  Placing them inside the scope of the list makes clear
+that they are related to this particular list.
+
+The define "iSTRIDE_agents" is the stride of the list, 1 in this
+case. Using "--agent;" in the loop instead of "agent -=
+iSTRADE_agents;" would be better, but it´s done for the purpose of
+demonstration.  When you have a strided list, it is a good idea to
+always use a define for it: It doesn´t hurt anything and makes it easy
+to modify your source because there is only one place you need to
+change.  With strided lists, use defines for the indices of
+stride-items so you don´t need to go through the macro definitions to
+make sure the indices are ok when you change the composition of the
+list.  You can look at
+"projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl"
+in the [https://github.com/Ratany/lsl-repo git repository that
+accompanies this article] for a better example.
+
+"kAgentKey" is a macro.  It´s a define that takes parameters.  You
+might think the parameter is an integer which is an index to the list
+in which the UUIDs of the agents are stored.  It is not:  The
+parameter is ''used'' an index.  The preprocessor doesn´t know
+anything about lists or integers.
+
+There are no types involved with macro parameters as are with
+variables: When you declare a function in LSL that takes parameters,
+you need to declare what type the parameters are of.  Macro parameters
+don´t have a type.  The preprocessor replaces stuff literally.  You
+could use a vector or some random string as a parameter with
+"kAgentKey".  Cpp would do the replacement just fine.  It replaces
+text like a search-and-replace operation you perform with your
+favourite editor does.
+
+Unfortunately, you cannot define defines or macros with defines:
+"#define NEWLIST(name, stride) #define list name; #define
+iSTRIDE_##name stride" will cause cpp to stop proprocessing and to
+print an error message.  Maybe I´ll write a perl script to
+pre-preprocess my sources ... that might be easier than learning
+[http://www.gnu.org/software/m4/ | m4].
+
+"vAgentPos" and "fAgentDistance" are also macros and work the same way
+as "kAgentKey".  The code to figure out which agent is the one
+furthest away from the object is simple, and I´ll skip over it.  It
+gets interesting when the movement is implemented, so here is
+example-1_D, the complete source:
+
+
+<lsl>
+#include <lslstddef.h>
+
+
+#define fUNDETERMINED              -1.0
+#define fIsUndetermined(_f)        (fUNDETERMINED == _f)
+
+#define fMetersPerSecond           3.0
+#define fSecondsForMeters(d)       FMax((d), 0.03)
+
+#define fRANGE(_f)                 (_f)
+#define vMINRANGE(_f)              (<_f, _f, _f>)
+#define fRandom(_fr)               (llFrand(fRANGE(_fr)) - llFrand(fRANGE(_fr)))
+#define vRandomDistance(_fr, _fm)  (<fRandom(_fr), fRandom(_fr), fRandom(_fr)> + vMINRANGE(_fm))
+
+#define fDistRange                 3.5
+#define fMinDist                   0.5
+
+
+default
+{
+	event touch_start(int t)
+	{
+		unless(llDetectedKey(0) == llGetOwner())
+			{
+				return;
+			}
+
+		vector here = llGetPos();
+		list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+
+#define iSTRIDE_agents     1
+#define kAgentKey(x)       llList2Key(agents, x)
+#define vAgentPos(x)       RemotePos(kAgentKey(x))
+#define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
+
+		float distance = fUNDETERMINED;
+		int goto;
+		int agent = Len(agents);
+		while(agent)
+			{
+				agent -= iSTRIDE_agents;
+
+				float this_agent_distance = fAgentDistance(agent);
+				if(distance < this_agent_distance)
+					{
+						distance = this_agent_distance;
+						goto = agent;
+					}
+			}
+
+		unless(fIsUndetermined(distance))
+			{
+				distance /= fMetersPerSecond;
+				vector offset = vRandomDistance(fDistRange, fMinDist);
+				offset += PosOffset(here, vAgentPos(goto));
+				llSetKeyframedMotion([offset,
+						      fSecondsForMeters(distance)],
+						     [KFM_DATA, KFM_TRANSLATION]);
+			}
+
+#undef AgentKey
+#undef AgentPos
+#undef AgentDistance
+
+	}
+
+	event state_entry()
+	{
+		SLPPF(LINK_THIS, [PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_CONVEX]);
+	}
+}
+</lsl>
+
+
+There isn´t much new to it.  "unless" is defined in "lslstddef.h" and
+speaks for itself.  "fUNDETERMINED" and "fIsUndetermined" speak for
+themselves, too:  There are no negative distances between positions,
+and what "llVecDist()" returns is never negative.  There may be no
+agents on the parcel, in which case the list of agents would be
+empty.  It´s length would be 0 and the code in the while loop would
+not be executed.  The variable "distance" would still have the value
+it was initialized with when it was declared.  What the furthest agent
+is would be undetermined, and that´s exactly what the code tells you.
+
+The movement of the object should look nice.  It looks nice when the
+object always moves at the same speed.  "llSetKeyframedMotion()"
+doesn´t use speed. You have to specify the duration of the
+movement. Since the distance between the object and agents it moves to
+varies, the duration of the movement is adjusted according to the
+distance. The minimum duration "llSetKeyframedMotion()" works with is
+1/45 second.  "fSecondsForMeters" makes sure that the duration is at
+least 1/45 second through the "FMax" macro which is defined in
+"lslstddef.h": "FMax" returns the greater value of the two parameters
+it is supplied with.
+
+"vRandomDistance" is used to help with that the object doesn´t hit the
+agent it moves to and ends up at some random distance from them, with
+a minimum offset.  "PosOffset" from "lslstddef.h" works with two
+vectors and gives the offset between them as a vector.  It´s one of my
+favourite macros because I don´t need to ask myself anymore what
+"offset" is supposed to mean: "here - there" or "there - here".  The
+offset is simply "PosOffset(here, there)" when it´s an offset from
+here to there and "PosOffset(there, here)" when it´s offset from there
+to here.  "llSetKeyframedMotion()" uses offsets ...
+
+The important thing here is this:  Why divide the distance and
+introduce another vector for the offset when you could simply do it in
+one line like this:
+
+
+<lsl>
+llSetKeyframedMotion([PosOffset(here, vAgentPos(goto) + vMINRANGE(0.5)),
+		      FMax(distance / fMetersPerSecond, 1.0/45.0)],
+		     [KFM_DATA, KFM_TRANSLATION]);
+</lsl>
+
+
+That´s one thing all these macros are for, aren´t they?  Yes they are
+--- and you need to be aware of what they turn into.  Cpp is designed
+to preprocess code for a C or C++ compiler, and those are probalby a
+lot smarter than an LSL compiler.  The C compiler optimizes "1.0/45.0"
+by replacing it with the result of the division.  C has a ternary
+operator which makes life a lot easier not only for writing macros
+like "FMax": "#define MAX(a,b) (((a) > (b)) ? (a) : (b))" works for
+both integers and floats --- compared to
+"#define FMax(x, y) (((llFabs((x) >= (y))) * (x)) + ((llFabs((x) <
+(y))) * (y)))" and another one for integers.
+
+The line from above turns into:
+
+
+<lsl>
+llSetKeyframedMotion([( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ),
+                                       0) + (<0.5, 0.5, 0.5>)) - (here) ),
+                      ( ( (llFabs( (distance / 3.0) >= (1.0 / 45.0) ) ) * (distance / 3.0) ) + ( (llFabs( (
+                                  distance / 3.0) < (1.0 / 45.0) ) ) * (1.0 / 45.0) ) )],
+                     [KFM_DATA, KFM_TRANSLATION]);
+</lsl>
+
+
+Letting aside that the code would be totally different when written in
+C, a C compiler would optimze that.  I don´t know what the LSL
+compiler does.
+
+'''Always be aware of what your macros turn into.'''  The code from
+example-1_D turns into:
+
+
+<lsl>
+distance /= 3.0;
+vector offset = ( < (llFrand((3.5)) - llFrand((3.5))), (llFrand((3.5)) - llFrand((3.5))),
+                  (llFrand((3.5)) - llFrand((3.5))) > + (<0.5, 0.5, 0.5>));
+offset += ( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ),
+                           0)) - (here) );
+llSetKeyframedMotion([offset, ( ( (llFabs( ((distance)) >= (0.03) ) ) * ((distance)) ) + ( (
+                                    llFabs( ((distance)) < (0.03) ) ) * (0.03) ) )], [KFM_DATA, KFM_TRANSLATION]);
+</lsl>
+
+
+It´s still awful to read.  What did you expect?  The source looks nice
+and clear because macros and defines are used, wich is one of the
+reasons to use them.  More importantly, this code doesn´t employ
+numerous obsolete divisions because I checked the outcome and modifed
+my source.
+
+'''Always check the script for what your macros turn into.'''  It´s
+easy to check, just load the debugging version into your favourite
+editor.  You can even use the built-in editor:  change the "o" for an
+"i" and click on the "Edit" button as described earlier.
+
+One thing is new in example-1_D:  The defines that were used to make
+the list with the UUIDs of the agents usable are undefined with
+"#undef".  It´s not necessary to do this, it´s tidy.  As mentioned
+before, the list has local scope.  That´s the reason I undefined the
+defines that relate to it.  It ends their "scope" as well.  You can
+create new defines with the same names outside this scope if you
+like. They are undefined and out of the way.  Perhaps at some time,
+you include something into your source that happens to use defines
+with the same name.  You would get an error message and have to go
+back to the perhaps old source and figure out where you can undefine
+them.  It doesn´t hurt to undefine them right away and saves you time
+later.
+
+======Saving script memory with cpp======
+
+You may have seen or written scripts that use variables as constants.
+Look at this example:
+
+
+
+
+
+
 
 
 If you wouldn´t use a preprocessor, line 4 might read
@@ -785,7 +1205,7 @@ vector random = <llFrand(3.5) - llFrand(2.5), llFrand(3.5) - llFrand(2.5), (llFr
 
 
 which is a bit lengthy and already a simplification.  More correctly
-for the example, it would be
+for abvove example, it would have to be
 
 
 <lsl>
@@ -793,11 +1213,11 @@ vector random = <llFrand(3.5) - llFrand(3.5), llFrand(3.5) - llFrand(3.5), (llFr
 </lsl>
 
 
-because this makes sure that the distance cannot be a ZERO_VECTOR.
-
-
-  You may have a source that needs a random
-vector at several places.
+because this makes sure that the distance cannot be a
+ZERO_VECTOR.  It´s a bug in the example to allow the distance to become
+zero, even when it´s unlikely that it actually does.  You may have a
+source that uses a random vector at several places.  Without a
+preprocessor, you´d have to find them all to fix the bug.  
 
 
   According to this

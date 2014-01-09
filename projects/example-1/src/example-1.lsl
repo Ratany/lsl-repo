@@ -22,43 +22,52 @@ default
 {
 	event touch_start(int t)
 	{
-		if(llDetectedKey(0) == llGetOwner())
+		unless(llDetectedKey(0) == llGetOwner())
 			{
-				vector here = llGetPos();
+				return;
+			}
 
-				list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
+		vector here = llGetPos();
+		list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
 
+#define iSTRIDE_agents     1
 #define kAgentKey(x)       llList2Key(agents, x)
 #define vAgentPos(x)       RemotePos(kAgentKey(x))
 #define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
 
-				float distance = fUNDETERMINED;
-				int goto;
-				int agent = Len(agents);
-				while(agent)
-					{
-						--agent;
+		float distance = fUNDETERMINED;
+		int goto;
+		int agent = Len(agents);
+		while(agent)
+			{
+				agent -= iSTRIDE_agents;
 
-						float this_agent_distance = fAgentDistance(agent);
-						if(distance < this_agent_distance)
-							{
-								distance = this_agent_distance;
-								goto = agent;
-							}
-					}
-
-				unless(fIsUndetermined(distance))
+				float this_agent_distance = fAgentDistance(agent);
+				if(distance < this_agent_distance)
 					{
-						distance /= fMetersPerSecond;
-						vector offset = vRandomDistance(fDistRange, fMinDist);
-						offset += PosOffset(here, vAgentPos(goto));
-						llSetKeyframedMotion([offset, fSecondsForMeters(distance)], [KFM_DATA, KFM_TRANSLATION]);
+						distance = this_agent_distance;
+						goto = agent;
 					}
+			}
+
+		unless(fIsUndetermined(distance))
+			{
+				distance /= fMetersPerSecond;
+				vector offset = vRandomDistance(fDistRange, fMinDist);
+				offset += PosOffset(here, vAgentPos(goto));
+				llSetKeyframedMotion([offset,
+						      fSecondsForMeters(distance)],
+						     [KFM_DATA, KFM_TRANSLATION]);
+			}
 
 #undef AgentKey
 #undef AgentPos
 #undef AgentDistance
 
-			}
+	}
+
+	event state_entry()
+	{
+		SLPPF(LINK_THIS, [PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_CONVEX]);
 	}
 }
