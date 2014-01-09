@@ -1087,653 +1087,96 @@ back to the perhaps old source and figure out where you can undefine
 them.  It doesn´t hurt to undefine them right away and saves you time
 later.
 
-======Saving script memory with cpp======
+======Script memory and performance with cpp======
 
 You may have seen or written scripts that use variables as constants.
 Look at this example:
-
-
-
-
-
-
-
-
-If you wouldn´t use a preprocessor, line 4 might read
-
-
-<lsl>
-   4	 float fUNDETERMINED = -1.0;
-</lsl>
-
-
-You would be abusing a variable of the type float as a constant.
-Since it´s a variable, you could have a typing error or other mistake
-in your source which changes the value of the variable, like
-'if(fUNDETERMINED = z) ...' instead of 'if(fUNDETERMINED == z)
-...'. Such a typing error can be difficult to find.  This problem does
-not occur when you use a preprocessor and define fUNDETERMINED as -1.0
-because the mis-typed statement would read 'if(-1.0 = z) ...', and you
-would get an error message when your script is compiled by the LSL
-compiler.
-
-In case you have modified your source so it doesn´t use fUNDETERMINED
-anymore, it will not appear anywhere in your script when fUNDETERMINED
-was a define --- even when the definition itself is not removed.  When
-it was a variable, the variable will still be in your script and use
-script memory until you remove its declaration, which you may forget
-to do over all the modifications.
-
-
-On a side note: A simple test has indicated that using a define
-instead of a float-variable ''may'' save you 8 bytes of script memory.
-''May'' means that the test was so simple that optimisations done by
-the LSL compiler can have produced misleading results.
-
-Whether you do save script memory through using defines vs. variables
-(and functions vs. macros) or not always depends on your particular
-script.  Since it is easy to change a define into a variable (or
-sometimes a function into a macro) or vice versa, this is easy to test
-with your particular script.
-
-It seems obvious that you would waste memory when you use a macro that
-the preprocessor turns into a lengthy expression which occurs in the
-script multiple times.  When it matters, test it; you may be
-surprised.  In any case, you need to be aware of what the macros you
-use turn into.  This will be pointed out in more detail later.
-
-
-What is called a "preprocessor macro" is defined in line 5.  The
-definition is a macro because, similar to a function, the define has a
-parameter.  Macros can have multiple parameters, and you can even use
-macros which have a variable number of parameters.  Some of the macros
-defined in "lslstddef.h" use a variable number of parameters.
-
-The macro in line 5 instructs the preprocessor to replace all
-occurances of 'fIsUndetermined' with '(fUNDETERMINED == _f)' and to
-replace the paremeter '_f' with what was specified as a parameter to
-'fIsUndetermined'.  For example, 'fIsUndetermined(5.0)' is replaced
-with '(fUNDETERMINED == 5.0)'.
-
-This wouldn´t be too useful because it would turn line 43 into
-'unless(fUNDETERMINED == distance)'.  But the preprocessor doesn´t
-stop there: 'fUNDETERMINED' was defined as '-1.0' in line 4, and the
-preprocessor continues replacing stuff.  It turns line 43 into
-'unless(-1.0 == distance)'.
-
-In "lslstddef.h" is defined that 'unless(_cond)' must be turned into
-'if(!(_cond))'.  Since "lslstddef.h" was included in line 1, the
-preprocessor "knows" this and the final result of all the replacing is
-'if(!((-1.0 == distance)))'.  And that is something the LSL compiler
-can compile.
-
-
-Using 'unless' for LSL is ideosyncratic.  It comes from perl where
-it´s part of the language, and in perl, you can write stuff like
-'print 5 unless 5;', which will not print anything.  But where is the
-fun when you can´t use a preprocessor to do ideosyncratic stuff?
-Using 'unless' is particularly fun when you have to deal with several
-statements for the condition: 'unless((A > 5) || (B < 4))' probably
-doesn´t do what you wanted.  Chances are good that you wanted
-'unless((A > 5) && (B < 4))'.
-
-
-More importantly, you might suddenly want to use a different value to
-indiciate that something is undetermined.  Your script may require it,
-or you might like it better.  Would you want to use -8874563.33356478
-instead of -1.0, the only place you´d need to change your source is
-line 4.
-
-
-Macros can use other macros.  The macro 'fSecondsForMeters', defined
-in line 8, uses the macro 'FMax'.  This is similar to functions that
-call other functions.  ('FMax' is defined in "lslstddef.h" as an
-expression that evaluates to the greater of the two floating point
-values supplied to 'FMax' as parameters, which is a function missing
-from LSL.)
-
-
-Line 10 and 11 give a simple example of how you can break down an
-operation into small pieces.  One piece makes a random number in a
-desired range, the other one makes a vector from such numbers.  You
-could write something like
-
-
-<lsl>
-vector random = <llFrand(3.5) - llFrand(2.5), llFrand(3.5) - llFrand(2.5), (llFrand(3.5) - llFrand(2.5)>;
-</lsl>
-
-
-which is a bit lengthy and already a simplification.  More correctly
-for abvove example, it would have to be
-
-
-<lsl>
-vector random = <llFrand(3.5) - llFrand(3.5), llFrand(3.5) - llFrand(3.5), (llFrand(3.5) - llFrand(3.5)> + <0.5, 0.5, 0.5>;
-</lsl>
-
-
-because this makes sure that the distance cannot be a
-ZERO_VECTOR.  It´s a bug in the example to allow the distance to become
-zero, even when it´s unlikely that it actually does.  You may have a
-source that uses a random vector at several places.  Without a
-preprocessor, you´d have to find them all to fix the bug.  
-
-
-  According to this
-[[LSL_Script_Memory|article]], a vector costs 31 bytes of script
-memory when it´s declared "inside default state".  I´m not declaring
-variables inside of the default state:
-
-
-<lsl>
-default
-{
-	vector test = ZERO_VECTOR;
-
-	// do something ...
-}
-</lsl>
-
-
-A script like the above does not compile, so you cannot declare a
-vector inside the default state.
-
-
-
-  But that isn´t as easy to read as
-lines 10 and 11, is it?
-
-When code is easier to read, it´s easier for you to deal with it, and
-it´s less likely that you make a mistake.  You´ll be more productive
-because you don´t waste time trying to figure out code which is hard
-to read, and creating LSL scripts becomes easier:  You are still
-experiencing the same difficulties, but they are easier to overcome
-when you have better tools at hand.
-
-You can find a better example for breaking down logic in
-"geometry.lsl", which is in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-("projects/lib/geometry.lsl"):  The macro 'geom_nofsharedsegments', when used as
-'geom_nofsharedsegments(A, B)', turns into:
-
-
-<lsl>
-((((A.x == 0.0) && (A.y == 0.0)) && ((B.x == 0.0) && (B.y == 0.0))) +
-((A.x < 0.0) && (B.x < 0.0)) + ((A.x > 0.0) && (B.x > 0.0)) + ((A.y >
-0.0) && (B.y > 0.0)) + ((A.y < 0.0) && (B.y < 0.0)) + ((A.z > 0.0) &&
-(B.z > 0.0)) + ((A.z < 0.0) && (B.z < 0.0)))
-</lsl>
-
-
-Try to maintain this code, maybe a year after you wrote it.  The source
-simply reads:
-
-
-<cpp>
-// number of segments shared by two points
-//
-#define geom_nofsharedsegments(_p1, _p2)	       (geom_cmpsegment(center, _p1, _p2) \
-							+ geom_cmpsegment(left, _p1, _p2) \
-							+ geom_cmpsegment(right, _p1, _p2) \
-							+ geom_cmpsegment(front, _p1, _p2) \
-							+ geom_cmpsegment(back, _p1, _p2) \
-							+ geom_cmpsegment(above, _p1, _p2) \
-							+ geom_cmpsegment(below, _p1, _p2)) \
-</cpp>
-
-
-It tells you what it does when you read it.  The source
-"projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl",
-which is in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article],
-uses this.  You may want to check out [[LSL_Protocol/rfedip|this article]]
-to learn more about it.
-
-
-Lines 24 through 26 define some macros to make the list that was
-declared in line 22 easier to use.  (Using three macros here is
-overdone because it´s an example source.)
-
-They seem to appear randomly somewhere in the source, but they have
-been intentionally placed where they are: The scope of the list
-declared in line 22 doesn´t go beyond line 52; it´s not a global
-variable.  The macros are "deleted" in lines 48--50 because they are
-not needed anywhere else.  Macros or defines with the same names and a
-different or the same meaning could be used somewhere else in the
-source.  The preprocessor is instructed to "forget" them with
-the '#undef' directive.  It´s not required to undefine them.  It´s
-tidy.
-
-You don´t need to do it this way.  Traditionally, all preprocessor
-directives --- and #define is one of them --- were required to be at
-the beginning of the line and ignored by the preprocessor when they
-were not and the C compiler would give you an error message.  This
-isn´t required anymore.  It may look better to indent them with the
-code.  By all means, don´t do that!
-'''Preprocessor directives are not part of the code.'''
-They modify code.  You could call them "metacode".  They are outside
-of the code.  You do not want to overlook them.  You don´t want messy
-code.  Or do you want to experience difficulites you otherwise
-wouldn´t?
-
-When you have a (longer) script that uses some global lists,
-maybe even strided lists, exclusively using macros to operate with the
-lists makes a lot of sense.
-
-The code can be a lot shorter and easier to read:
-
-
-<lsl>
-vector chainpos = vChainPos(chain);
-
-vector chainpos = llList2Vector(llGetLinkPrimitiveParams(llList2Integer(lChains, chain), [PRIM_POSITION]), 0);
-</lsl>
-
-
-mean both the same.  The first line tells you straight away what it
-is.  The second one makes you ask yourself if you got it right.  In
-your source, you may have many lines like that.
-
-You may need to change the stride of a list.  Imagine you need to
-change a strided list so that the link number of the prim stored in
-the list is no longer the first item of a stride but the second one.
-
-Without macros, you have to go through your whole source, find all the
-ten or how many lines, and change all of them.  Perhaps you overlook
-one of them and then have to waste an hour or so to figure out why
-your script suddenly doesn´t work right anymore --- if you even notice
-that it doesn´t work.
-
-With macros, you change only one line: the definition of the macro
-'vChainPos'.  You´re done and you don´t overlook anything.
-
-Without macros, you have to remember what item of a stride is at which
-position of the stride every time you use the list.  Which macros, you
-don´t need to remember and simply use 'vChainPos'.
-
-You can find an extensive example for this in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-in projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl.
-
-With macros, you can fully abstract from a particular list.  That
-makes the same code easily re-usable with different scripts.  Instead
-of
-
-
-<cpp>
-#define iChainLinkNo(_n)           llList2Integer(lChains, (_n))
-#define vChainPos(_chain)          (llList2Vector(GLPP(iChainLinkNo(_chain), [PRIM_POSITION]), 0))
-</cpp>
-
-
-you can use
-
-
-<cpp>
-#define _LIST                      lChains
-#define iChainLinkNo(_n)           llList2Integer(_LIST, (_n))
-#define vChainPos(_chain)          (llList2Vector(GLPP(iChainLinkNo(_chain), [PRIM_POSITION]), 0))
-</cpp>
-
-
-When you happen to write another script that deals with a similar or
-identical list (because it does similar things), but you want to use a
-list that has a different name than 'lChains', there is only one
-single line you need to change.
-
-Same is with the stride-indices.  One script may require a different
-stride because it holds more elements, like the prim name in addition
-to the link number.  For the next script, the prim name is
-irrelevant.  You can define stride-indices to make that easier:
-
-
-<cpp>
-#define kChainKey(_n)              llList2Key(lChains, (_n) + 1)
-</cpp>
-
-
-<cpp>
-#define iSTRIDEIDX_key             1
-#define kChainKey(_n)              llList2Key(lChains, (_n) + iSTRIDEIDX_key)
-</cpp>
-
-
-Add another item to the stride, and all you need to do to adjust is to
-change a single line, or maybe a few, depending on how many items you
-have per stride.
-
-Carelessly using macros is a bad idea.  Please behold line 45 of the
-above example.  It turns into
-
-
-<lsl>
-llSetKeyframedMotion
-([( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ), 0)
-     + ( < (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)) > ))
-    - (here) ),
-  ( ( (llFabs( ((distance) / 3.0) >= (0.03) ) ) * ((distance) / 3.0) )
-    + ( (llFabs( ((distance) / 3.0) < (0.03) ) ) * (0.03) ) )],
- [KFM_DATA, KFM_TRANSLATION]);
-</lsl>
-
-
-... which is perfectly fine.  It is fine because it was considered
-what the 'FMax' macro does, and it is used with:
-
-
-<cpp>
-#define fSecondsForMeters(d)       FMax((d) / fMetersPerSecond, 0.03)
-</cpp>
-
-
-When you read up about
-[[LlSetKeyframedMotion|llSetKeyframedMotion()]], you may notice that
-the page says "llSetKeyframedMotion is implemented in terms of frames
-and not real time.".  If you have used the function, you may have
-found out that there is a limit of how short the time you specify for
-how long the motion should take can be.  The minimum time is, IIRC,
-one frame, i. e. 1/45 second.
-
-It is quite natural, especially when you are used to programming in C,
-to write:
-
-
-<cpp>
-#define fSecondsForMeters(d)       FMax((d) / fMetersPerSecond, 1.0/45.0)
-</cpp>
-
-
-You can do that in C because the C compiler will replace 1/45 with the
-result of it.  The preprocessor doesn´t do that.  I don´t know what
-the LSL compiler does.
-
-Now see what line 45 turns into when the source is run through cpp:
-
-
-<lsl>
-llSetKeyframedMotion
-([( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ), 0)
-     + ( < (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)) > ))
-    - (here) ),
-  ( ( (llFabs( ((distance) / 3.0) >= (1.0 / 45.0) ) ) * ((distance) / 3.0) )
-    + ( (llFabs( ((distance) / 3.0) < (1.0 / 45.0) ) ) * (1.0 / 45.0) ) )],
- [KFM_DATA, KFM_TRANSLATION]);
-</lsl>
-
-
-Notice that 1/45 needs to be computed --- unless the LSL compiler
-optimizes it --- three times.
-
-Things like that can easily go unnoticed.  The variable 'distance' is
-divided by 3 three times.  It would be better to modify the
-source to avoid this:
-
-
-<lsl>
-[...]
-#define fSecondsForMeters(d)       FMax((d), 0.03)
-[...]
-				unless(fIsUndetermined(distance))
-					{
-						distance /= fMetersPerSecond;
-						llSetKeyframedMotion([PosOffset(here, vAgentPos(goto) + vRandomDistance), fSecondsForMeters(distance)], [KFM_DATA, KFM_TRANSLATION]);
-					}
-[...]
-</lsl>
-
-
-When you need the resulting LSL script more readable --- which is
-something I don´t care about much --- your souce would look like this:
 
 
 <lsl>
 #include <lslstddef.h>
 
 
-#define fUNDETERMINED              -1.0
+#define WITH_DEFINE_FLOAT 0
+#define WITH_DEFINE_INT   0
 
-#define fIsUndetermined(_f)        (fUNDETERMINED == _f)
 
-#define fMetersPerSecond           3.0
-#define fSecondsForMeters(d)       FMax((d), 0.03)
+#if WITH_DEFINE_FLOAT
+#define ftest 1.0
+#else
+float ftest = 1.0;
+#endif
 
-#define fRandom                    (llFrand(3.5) - llFrand(2.5))
-#define vRandomDistance            (<fRandom, fRandom, fRandom>)
+#if WITH_DEFINE_INT
+#define itest 1
+#else
+int itest = 1;
+#endif
+
 
 
 default
 {
 	event touch_start(int t)
 	{
-		if(llDetectedKey(0) == llGetOwner())
-			{
-				vector here = llGetPos();
-
-				list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
-
-#define kAgentKey(x)       llList2Key(agents, x)
-#define vAgentPos(x)       RemotePos(kAgentKey(x))
-#define fAgentDistance(x)  llVecDist(here, vAgentPos(x))
-
-				float distance = fUNDETERMINED;
-				int goto;
-				int agent = Len(agents);
-				while(agent)
-					{
-						--agent;
-
-						float this_agent_distance = fAgentDistance(agent);
-						if(distance < this_agent_distance)
-							{
-								distance = this_agent_distance;
-								goto = agent;
-							}
-					}
-
-				unless(fIsUndetermined(distance))
-					{
-						distance /= fMetersPerSecond;
-						vector offset = vRandomDistance;
-						offset += PosOffset(here, vAgentPos(goto));
-						llSetKeyframedMotion([offset,
-					                              fSecondsForMeters(distance)],
-                                                                     [KFM_DATA, KFM_TRANSLATION]);
-					}
-
-#undef AgentKey
-#undef AgentPos
-#undef AgentDistance
-
-			}
+		apf("---");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("the float is", ftest, "and the int is", itest, " with ", llGetFreeMemory(), " bytes free");
+		apf("---");
 	}
 }
 </lsl>
 
 
-The LSL script is then a bit easier to read:
+You can find this example in the
+[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
+as "projects/memtest/src/memtest.lsl".
 
+It shows that the script needs 8 bytes more memory when you use either
+a float or an integer variable --- or both! --- instead of defines.
+That means when you declare a variable, declaring another one doesn´t
+make a difference, provided that the variables are of the types float
+and integer.
 
-<lsl>
-default
-{
-	touch_start(integer t)
-	{
-		if(llDetectedKey(0) == llGetOwner())
-		{
-			vector here = llGetPos();
-			list agents = llGetAgentList(AGENT_LIST_PARCEL, []);
-			float distance = -1.0;
-			integer goto;
-			integer agent = llGetListLength(agents);
+I give up artifical testing at this point.  Either the test or the
+results must be flawed.  One thing I wanted to know is whether it
+makes a difference if you have several lines with a number (like 1 or
+1.0) vs. the same several lines with a variable instead of the
+number.   This test doesn´t show that, perhaps due to optimizations
+the LSL compiler performs.
 
-			while(agent)
-			{
-				--agent;
-				float this_agent_distance = llVecDist(here, llList2Vector(llGetObjectDetails(llList2Key(agents, agent),
-                                                                      [OBJECT_POS] ), 0));
+I use defines for constants --- not because it apparently may save 8
+bytes, but because it makes sense.  That you can switch between
+defines and variables for constants makes testing with "real" scripts
+easy.
 
-				if(distance < this_agent_distance)
-				{
-					distance = this_agent_distance;
-					goto = agent;
-				}
-			}
+'''Test with your actual script what difference it makes.'''
 
-			if(!((-1.0 == distance)))
-			{
-				distance /= 3.0;
-				vector offset = ( < (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)), (llFrand(3.5) - llFrand(2.5)) > );
-				offset += ( (llList2Vector(llGetObjectDetails(llList2Key(agents, goto), [OBJECT_POS] ), 0)) - (here) );
-				llSetKeyframedMotion([offset,
-						      ( ( (llFabs( ((distance)) >= (0.03) ) ) * ((distance)) )
-							+ ( (llFabs( ((distance)) < (0.03) ) ) * (0.03) ) )],
-						     [KFM_DATA, KFM_TRANSLATION]);
-			}
-		}
-	}
-}
-</lsl>
+It seems obvious that you would waste memory when you use a macro that
+the preprocessor turns into a lengthy expression which occurs in the
+script multiple times.  When it matters, test it; you may be
+surprised.
 
+You can also try to test for performance.  Provided you find a
+suitable place to set up your test objects and let the tests run for
+at least a week, you may get valid results.  Such tests could be
+interesting because you may want to define a function instead of a
+macro --- or a function that uses a macro --- to save script memory
+when the macro turns into a lengthy expression.  In theory, the macro
+would be faster because using a function requires the script
+interpreter to jump around in the code and to deal with putting
+parameters on the stack and with removing them while the macro does
+not.  But in theory, declared variables use script memory.
 
-Note: If you want to try this script, the object you put it in must
-use the so-called "prim equivalency system".  Otherwise,
-llSetKeyframedMotion() doesn´t work.  You can either edit the object
-and set the physics shape to "convex hull" or "none", or add a line to
-the script that sets the physics shape, like 'SLPPF(LINK_ROOT,
-[PRIM_PHYSICS_SHAPE_TYPE, PRIM_PHYSICS_SHAPE_CONVEX]);'.
-
-
-'''So when using macros, you need to be aware of what they turn into.  Always check the outcome of the preprocessing of your source.'''
-
-Checking the outcome is the easiest and most reliable way to spot
-undesirable side effects of macro usage.  You can improve the
-efficiency, performance and memory usage of your script by rewriting
-your source and sometimes by using functions instead of macros, or by
-defining a function that uses a macro.  It´s sometimes so easy to
-create a script that unwanted side effects go unnoticed.
-
-One last, yet very important thing with macros, is the usage of
-brackets.  When you look at this simple macro
-
-
-<cpp>
-#define times3(x)                  x * 3
-</cpp>
-
-
-it will multiply its parameter by 3.  At least that´s what you think.
-When your source is
-
-
-<lsl>
-#define times3(x)                  x * 3
-[...]
-
-	int a = 5;
-	int b = times3(a);
-	llSay(0, (string)b);
-[...]
-</lsl>
-
-
-it will print 15.  Most of the time, your code will be more like this:
-
-
-<lsl>
-#define times3(x)                  x * 3
-[...]
-
-	int a = 10;
-	int b = 5;
-	llSay(0, times3(a - b));
-[...]
-</lsl>
-
-
-You would expect it to print 15, but it will print -5:
-
-
-10 - 5 * 3 == 10 - 15 == -5
-
-
-You need to use brackets:
-
-
-<cpp>
-#define times3(x)                  (x) * 3
-</cpp>
-
-
-(10 - 5) * 3 == 5 * 3 == 15
-
-
-You need even more brackets, because:
-
-
-<lsl>
-#define plus3times3(x)             (x) * 3 + 3
-[...]
-	int a = 10;
-	int b = 5;
-	int c = 20;
-	int d = 15;
-	llSay(0, (string)(plus3times3(a - b) * plus3times3(c - d));
-</lsl>
-
-
-(10 - 5) * 3 + 3 * (20 - 15) * 3 + 3 == 15 + 3 * 5 * 3 + 3 == 15 + 45 + 3 == 63
-
-
-Imagine you defined 'plus3times3' without any brackets at all.  You´d
-waste hours trying to figure out why your script yields incredibly
-weird results.
-
-To get it right, you must use more brackets:
-
-
-<lsl>
-#define plus3times3(x)             ((x) * 3 + 3)
-[...]
-	int a = 10;
-	int b = 5;
-	int c = 20;
-	int d = 15;
-	llSay(0, (string)(times3(a - b) * times3(c - d));
-</lsl>
-
-
-((10 - 5) * 3 + 3) * ((20 - 15) * 3 + 3) == 324
-
-
-There is quite a difference between 63 and 324.  Use brackets.  I also
-always use brackets with conditions because it makes them unambiguous:
-
-
-<lsl>
-if(A || B && C || D > 500)
-[...]
-</lsl>
-
-
-is ambiguous:  What is wanted here?  That A or B be true and that C or
-D are greater than 500?  Or that A or B be true and that C be true and
-that D is greater than 500?  Or that either A or (B and C) are true
-or that D be greater than 500?  What I meant is:
-
-
-<lsl>
-if((A || B) && (C || (D > 500)))
-[...]
-</lsl>
-
-
-That is not ambiguous.  Save yourself the hassle of ambiguity and use
-brackets.  My LSL scripts tend to have tons of brackets, a lot of them
-not strictly needed because they come from macro definitions.  They
-don´t hurt anything.
-
-On a side note:  When programming in C and you have a statement like
+When programming in C and you have a statement like
 
 
 <lsl>
@@ -1744,7 +1187,7 @@ if((A < 6) && (B < 20))
 
 the part '(B < 20)' will not be evaluated when '(A < 6)' evaluates to
 false.  This is particularly relevant when you, for example, call a
-function:
+function or use a macro:
 
 
 <lsl>
@@ -1753,13 +1196,14 @@ if((A < 6) && (some_function(B) < 20))
 </lsl>
 
 
-LSL is stupid in that it will call the function even when '(A < 6)'
-evaluates to false.  It´s impossible for the whole condition to
-evaluate to true when '(A < 6)' is false, and evaluating a condition
-should stop once its outcome has been evaluated.  Calling a function
-takes time, and the function even might be fed with illegal parameters
-because B could have an illegal value the function cannot handle,
-depending on what the value of A is:
+LSL is stupid in that it will call the function or evaluate the
+expression the macro turned into even when '(A < 6)' evaluates to
+false.  It´s impossible for the whole condition to evaluate to true
+when '(A < 6)' is false, and evaluating a condition should stop once
+its outcome has been evaluated.  Calling a function takes time, and
+the function even might be fed with illegal parameters because B could
+have an illegal value the function cannot handle, depending on what
+the value of A is:
 
 
 <lsl>
@@ -1789,9 +1233,145 @@ default
 
 
 This example will yield a math error because some_function() is called
-even when it should not be called.  Such nonsense should be fixed.  To
-work around it so that some_function() isn´t called, you need to add
-another if() statement, which eats memory.
+even when it should not be called.  Such nonsense should be
+fixed.  Calling the function is an undesireable side effect.  To work
+around it so that some_function() isn´t called, you need to add
+another "if" statement, which eats memory.
+
+Depending on what the function or the macro does, your "if" statements
+can affect performance.  This is independent of using a preprocessor,
+but since you may be tempted to use macros in your sources when you
+use a preprocessor, you may be tempted to use them in "if" statements
+and create more undisirable side effects than you otherwise would.
+
+'''Avoid "if" statements which evaluate expressions that should not be evaluated.'''
+
+======Use Parentheses======
+
+When you look at this simple macro
+
+
+<cpp>
+#define times3(x)                  x * 3
+</cpp>
+
+
+it will multiply its parameter by 3.  At least that´s what you think.
+When your source is
+
+
+<lsl>
+#define times3(x)                  x * 3
+[...]
+
+	int a = 5;
+	int b = times3(a);
+	llSay(0, (string)b);
+[...]
+</lsl>
+
+
+it will print 15.  Most of the time, your source will be more like this:
+
+
+<lsl>
+#define times3(x)                  x * 3
+[...]
+
+	int a = 10;
+	int b = 5;
+	llSay(0, times3(a - b));
+[...]
+</lsl>
+
+
+You would expect it to print 15, but it will print -5:
+
+
+10 - 5 * 3 == 10 - 15 == -5
+
+
+You need to use parentheses:
+
+
+<cpp>
+#define times3(x)                  (x) * 3
+</cpp>
+
+
+(10 - 5) * 3 == 5 * 3 == 15
+
+
+You need even more parentheses, because:
+
+
+<lsl>
+#define plus3times3(x)             (x) * 3 + 3
+[...]
+	int a = 10;
+	int b = 5;
+	int c = 20;
+	int d = 15;
+	llSay(0, (string)(plus3times3(a - b) * plus3times3(c - d));
+</lsl>
+
+
+(10 - 5) * 3 + 3 * (20 - 15) * 3 + 3 == 15 + 3 * 5 * 3 + 3 == 15 + 45 + 3 == 63
+
+
+Imagine you defined 'plus3times3' without any parentheses at all.  You´d
+waste hours trying to figure out why your script yields incredibly
+weird results.
+
+To get it right:
+
+
+<lsl>
+#define plus3times3(x)             ((x) * 3 + 3)
+[...]
+	int a = 10;
+	int b = 5;
+	int c = 20;
+	int d = 15;
+	llSay(0, (string)(times3(a - b) * times3(c - d));
+</lsl>
+
+
+((10 - 5) * 3 + 3) * ((20 - 15) * 3 + 3) == 324
+
+
+There is quite a difference between 63 and 324.  Use parentheses.  I also
+always use parentheses with conditions because it makes them unambiguous:
+
+
+<lsl>
+if(A || B && C || D > 500)
+[...]
+</lsl>
+
+
+is ambiguous.  What I meant is:
+
+
+<lsl>
+if((A || B) && (C || (D > 500)))
+[...]
+</lsl>
+
+
+That is not ambiguous.  Since "&&" usually takes precedence over "||",
+it´s different from the version without parentheses.  (It probably
+doesn´t matter in this case, but I´m not even trying to figure it
+out. It does matter in C because it has an effect on which of the
+expressions are evaluated and wich are not.  Simply write what you
+mean, with parentheses, and don´t let LSL get you to develop a bad
+style.)  When you have the above "if" statements in a macro, use
+parentheses around "A", "B", "C" and "D", for reasons shown above.
+
+Save yourself the hassle.  My LSL scripts tend to have lots of
+parentheses, a lot of them not strictly needed because they come from
+macro definitions.  They don´t hurt anything.  Not having them can
+hurt badly.
 
 =====How to use cpp=====
 
