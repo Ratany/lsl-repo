@@ -748,12 +748,10 @@ preprocessor "knows" this and the final result of all the replacing is
 can compile.
 
 
-Using 'unless' for LSL is, admittedly, ideosyncratic.  It comes from
-perl where it´s part of the language, and in perl, you can write stuff
-like 'print 5 unless 5;', which will not print anything.  But where is
-the fun when you can´t use a preprocessor to do ideosyncratic stuff?
-Writing 'if(-1.0 != distance)' all the time can get boring.
-
+Using 'unless' for LSL is ideosyncratic.  It comes from perl where
+it´s part of the language, and in perl, you can write stuff like
+'print 5 unless 5;', which will not print anything.  But where is the
+fun when you can´t use a preprocessor to do ideosyncratic stuff?
 Using 'unless' is particularly fun when you have to deal with several
 statements for the condition: 'unless((A > 5) || (B < 4))' probably
 doesn´t do what you wanted.  Chances are good that you wanted
@@ -775,45 +773,55 @@ values supplied to 'FMax' as parameters, which is a function missing
 from LSL.)
 
 
-Line 10 and 11 give an overly simple example of how you can break down
-logic into small pieces.  These lines don´t break down any logic, but
-they show a concept: Define an operation or goal, then figure out
-small steps and how to combine them in such a way that the desired
-operation is being performed, or the goal reached.  The size of a
-single step can neither be greater, nor smaller than the magnitude of
-the atomic operations the programming language allows for.  That´s
-what programming is all about.
+Line 10 and 11 give a simple example of how you can break down an
+operation into small pieces.  One piece makes a random number in a
+desired range, the other one makes a vector from such numbers.  You
+could write something like
 
-You can use a preprocessor to make smaller steps than you otherwise
-would.  When you use it to break down logic, you are making things
-easier than you otherwise would.  You can use a preprocessor to make
-larger steps, by combining a number of small steps into a single,
-large step.  When you use it to make larger steps, you are making
-things easier than you otherwise would.  But are you?  When you use a
-preprocessor carelessly, you may experience difficulties you otherwise
-wouldn´t.  That´s the way a preprocessor works.
 
-Anyway, llFrand() is an atomic operation in LSL.  You could write your
-own algorithm to generate random numbers --- and you might be
-surprised how difficult that can be.  Computers producing true
-randomness, if there is such a thing at all, can usually be considered
-to be broken.
+<lsl>
+vector random = <llFrand(3.5) - llFrand(2.5), llFrand(3.5) - llFrand(2.5), (llFrand(3.5) - llFrand(2.5)>;
+</lsl>
 
-Creating a vector with some random values is not an atomic operation
-in LSL.  If there was an atom of the language to create such a vector
---- like a function that does it for you --- you could use it.  Or you
-could write your own algorithm to create random vectors.
 
-Lines 10 and 11 represent an algorithm to create a random vector.  It
-basically takes two steps:  Make a random number and put it into a
-vector.  Since a vector consists of three numbers, you need three
-numbers to make a vector.
+which is a bit lengthy and already a simplification.  More correctly
+for the example, it would be
 
-So break that down into making a random number and into putting that
-number into the vector.  The preprocessor puts these steps
-together.  You could do it all at once and write 'vector random =
-<llFrand(3.5) - llFrand(2.5), llFrand(3.5) - llFrand(2.5),
-(llFrand(3.5) - llFrand(2.5)>'.  But that isn´t as easy to read as
+
+<lsl>
+vector random = <llFrand(3.5) - llFrand(3.5), llFrand(3.5) - llFrand(3.5), (llFrand(3.5) - llFrand(3.5)> + <0.5, 0.5, 0.5>;
+</lsl>
+
+
+because this makes sure that the distance cannot be a ZERO_VECTOR.
+
+
+  You may have a source that needs a random
+vector at several places.
+
+
+  According to this
+[[LSL_Script_Memory|article]], a vector costs 31 bytes of script
+memory when it´s declared "inside default state".  I´m not declaring
+variables inside of the default state:
+
+
+<lsl>
+default
+{
+	vector test = ZERO_VECTOR;
+
+	// do something ...
+}
+</lsl>
+
+
+A script like the above does not compile, so you cannot declare a
+vector inside the default state.
+
+
+
+  But that isn´t as easy to read as
 lines 10 and 11, is it?
 
 When code is easier to read, it´s easier for you to deal with it, and

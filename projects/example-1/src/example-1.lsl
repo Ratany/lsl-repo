@@ -4,14 +4,18 @@
 
 
 #define fUNDETERMINED              -1.0
-
 #define fIsUndetermined(_f)        (fUNDETERMINED == _f)
 
 #define fMetersPerSecond           3.0
 #define fSecondsForMeters(d)       FMax((d), 0.03)
 
-#define fRandom                    (llFrand(3.5) - llFrand(2.5))
-#define vRandomDistance            (<fRandom, fRandom, fRandom>)
+#define fRANGE(_f)                 (_f)
+#define vMINRANGE(_f)              (<_f, _f, _f>)
+#define fRandom(_fr)               (llFrand(fRANGE(_fr)) - llFrand(fRANGE(_fr)))
+#define vRandomDistance(_fr, _fm)  (<fRandom(_fr), fRandom(_fr), fRandom(_fr)> + vMINRANGE(_fm))
+
+#define fDistRange                 3.5
+#define fMinDist                   0.5
 
 
 default
@@ -46,7 +50,7 @@ default
 				unless(fIsUndetermined(distance))
 					{
 						distance /= fMetersPerSecond;
-						vector offset = vRandomDistance;
+						vector offset = vRandomDistance(fDistRange, fMinDist);
 						offset += PosOffset(here, vAgentPos(goto));
 						llSetKeyframedMotion([offset, fSecondsForMeters(distance)], [KFM_DATA, KFM_TRANSLATION]);
 					}
