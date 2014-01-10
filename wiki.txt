@@ -3,7 +3,7 @@
 '''This article is currently being worked on.'''
 
 
-==How to make writing LSL scripts easier==
+==How to make creating LSL scripts easier==
 
 
 '''This article is currently being worked on.'''
@@ -12,18 +12,49 @@
 ===About===
 
 This article is about tools you can use to make creating LSL scripts
-easier.  It tries to explain how to combine and use them for this very
-purpose.
+easier.  It tries to explain how to combine and how to use them for
+this very purpose.
+
+One of these tools is a preprocessor called cpp.  It comes with
+[http://gcc.gnu.org/ GCC].  Among the tools mentioned in this article,
+cpp is the tool which can make the biggest difference to how you write
+your sources and to how they look.
+
 
 The idea of using cpp comes from the
 [http://opengate.ma8p.com/open9.tar.gz source] of the
-[http://ma8p.com/~opengate/ Open Stargate Network] stargates.  It´s
-not my idea, I´m merely using it.
+[http://ma8p.com/~opengate/ Open Stargate Network] stargates.
 
 I want to thank the developers of these stargates.  Not only their
 stargates are awesome.  The idea of using cpp for LSL scripts is also
 awesome.  It has made it so much easier to create LSL scripts that I
 have made many I otherwise would never have made.
+
+
+This article is accompanied by a
+[https://github.com/Ratany/lsl-repo git repository].
+It is recommended that you pull (download) the repository.  The
+repository contains some example sources used with this article, a few
+perl scripts and a Makefile.  They are organised in a directory
+structure which they are designed to work with.  You will have your
+own build system for LSL scripts.
+
+The repository does not contain basic standard tools like
+[http://www.perl.org/ perl], cpp,
+[http://www.gnu.org/software/make/ Make] or an editor.
+This article does not attempt to tell you how to install these.  You
+know better how to install software on your computer than I do, and
+how you install software also depends on which operating system you
+are using.
+
+I´m using Linux, which is freely available in many different
+distributions.  I´m using [http://fedoraproject.org/ Fedora], so to
+install [http://www.gnu.org/software/emacs/ emacs], I run 'yum install
+emacs'.  If you don´t use Fedora, telling you this probably doesn´t
+help you.  Or you switch to Fedora; it works remarkably well.
+
+Documentation is plentiful.  You may find different software that does
+the same or similar things and may work better for you or not.
 
 ===Editing this Article===
 
@@ -37,20 +68,49 @@ update the article and don´t see them.
 
 '''Please use the "discussion" page of this article to post contributions or to suggest changes so they can be added to the article.'''
 
-===Tools===
+===Repository===
 
-This section tries to give an overview of some tools you can use.  It
-does not tell you how to install them.
+It´s probably more fun to be able to try out things yourself while
+reading this article.  If you want to do so, pull the
+[https://github.com/Ratany/lsl-repo repository].  You can run 'git
+clone https://github.com/Ratany/lsl-repo.git' or
+[https://github.com/Ratany/lsl-repo/archive/master.zip | download] it as an
+archive.
 
-It´s your computer you´re reading this article with, and you know
-better how to install software on your computer than I do.  How you
-install software also depends on what operating system you are using:
+Once cloned or downloaded and unpacked, you have a directory called
+"lsl-repo".  Inside this directory, you have another one called
+"projects".
 
-I´m using Linux, which is freely available in many different
-distributions.  I´m using [http://fedoraproject.org/ Fedora], so to
-install [http://www.gnu.org/software/emacs/ Emacs], I run 'yum install
-emacs'.  If you don´t use Fedora, telling you this probably doesn´t
-help you.  Or you switch to Fedora; it works remarkably well.
+You can put the "projects" directory anywhere you like, and you can
+give it a different name if you want to.
+
+Inside the "projects" directory, you have more directories like this:
+
+
+.
+|-- bin
+|-- clean-lsl.sed -> make/clean-lsl.sed
+|-- example-1
+|-- include
+|-- lib
+|-- make
+|-- memtest
+|-- rfedip-reference-implementation
+|-- template-directories
+`-- your-script
+
+
+When you rename or move "bin", "include", "lib", "make" or
+"clean-lsl.sed", your build system will not work anymore (unless you
+edit some files and make adjustments).  Don´t rename or move them.
+
+The "template-directories" is what you copy when you want to write
+your own source.  Suppose you make a copy of the
+"template-directories" and name the copy "my-test".  You would then
+put your own source into "my-test/src".
+
+You need to edit
+
 
 ====Editor====
 

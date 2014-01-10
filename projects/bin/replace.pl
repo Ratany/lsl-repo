@@ -32,6 +32,7 @@ use warnings;
 use autodie;
 
 use File::Copy;
+use File::Basename;
 
 
 # the editor to use
@@ -72,7 +73,7 @@ unless($ARGV[0] =~ m/.*\.lsl/)
 
 # the file name of the lookup table; specify an absolute path here
 #
-my $table = "/absolute/path/to/replaceassignments.txt";
+my $table = dirname(__FILE__) . "/../make/replaceassignments.txt";
 
 
 # read the first line of the file; unless it matches a pattern like

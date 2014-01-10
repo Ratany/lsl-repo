@@ -32,6 +32,7 @@ use warnings;
 use autodie;
 
 use POSIX qw(strftime);
+use File::Basename;
 
 
 # expect two parameters which will be key and value for the entry into
@@ -54,11 +55,11 @@ unless(defined($key) && defined($value) && ($key =~ m!^src/.*\.lsl$!) && ($value
 $key =~ s!src/!!;
 $key =~ s/\.lsl$/\.o/;
 
-# the file name of the lookup table; specify an absolute path here
+# the file name of the lookup table
 #
 # THIS MUST BE THE SAME FILE AS IS USED WITH replace.pl
 #
-my $table = "/absolute/path/to/replaceassignments.txt";
+my $table = dirname(__FILE__) . "/../make/replaceassignments.txt";
 
 
 # look up the key in the lookup table
