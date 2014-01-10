@@ -104,20 +104,66 @@ When you rename or move "bin", "include", "lib", "make" or
 "clean-lsl.sed", your build system will not work anymore (unless you
 edit some files and make adjustments).  Don´t rename or move them.
 
-The "template-directories" is what you copy when you want to write
-your own source.  Suppose you make a copy of the
-"template-directories" and name the copy "my-test".  You would then
-put your own source into "my-test/src".
-
 Suppose you want to try out "example-1".  Enter the directory
 "example-1" and run 'make':
 
+
+<lsl>
 [~/src/lsl-repo/projects/example-1] make
 COMPILING src/example-1.lsl
   39 1202 dbg/example-1.i.clean
 [~/src/lsl-repo/projects/example-1] 
+</lsl>
 
 
+You will find the LSL script as
+"projects/example-1/bin/example-1.o". A debugging version is
+"projects/example-1/dbg/example-1.i".  When you modify the source
+("projects/example-1/src/example-1.lsl") just run make again after
+saving it, and new versions of the script will be created that replace
+the old ones.
+
+Now you can log into sl with your sl client.  Make a box, create a
+"New Script" in the box and open the "New Script".  It shows up in the
+built-in editor; delete the script in the built-in editor and
+copy-and-paste the contents of "projects/example-1/bin/example-1.o"
+into the built-in editor.  Then click on the "Save" button of the
+built-in editor.  (There is a way to do this kind of
+script-replacement automatically. It will be explained later.)
+
+The "template-directories" is what you copy when you want to write
+your own source.  Suppose you make a copy of the
+"template-directories" and name the copy "my-test".  You would then
+put your own source into "my-test/src", like
+"my-test/src/my-test.lsl".
+
+Of course, you can have several source files in "my-test/src".  For
+all of them, scripts will be created.  The "my-test" directory is the
+project directory for your project "my-test".  When you are working on
+an object that requires several scripts, you´ll probably want to keep
+them all together in the project directory you made for this object.
+
+
+If you get an error message when you run 'make', you are probably
+missing some of the tools the build system uses.  Install the missing
+tools and try again.
+
+===Tools you need for the build system===
+
+* astyle (optional)
+* basename: [http://www.gnu.org/software/coreutils/ coreutils]
+* cat: [http://www.gnu.org/software/coreutils/ coreutils]
+* cpp: [http://gcc.gnu.org/ GCC]
+* echo: [http://www.gnu.org/software/coreutils/ coreutils]
+* etags: [http://www.gnu.org/software/emacs/ Emacs]
+* make: [http://www.gnu.org/software/make/ Make]
+* makedepend
+* mv
+* pdflatex (optional)
+* rm
+* sed
+* touch
+* wc (optional)
 
 ====Editor====
 
