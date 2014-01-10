@@ -35,7 +35,7 @@ bin/%.o: dbg/%.i
 	@wc -cl $<.clean
 	@astyle --style=allman -f < $<.clean > $<
 	@rm $<.clean
-	@cat $< | sed -f ../clean-lsl.sed | $(ITO) `basename $<` > $@
+	@sed -f ../clean-lsl.sed $< | $(ITO) `basename $<` > $@
 
 %.pdf: %.ltx
 	@pdflatex -output-directory ./doc $<

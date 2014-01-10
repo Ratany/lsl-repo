@@ -104,13 +104,19 @@ When you rename or move "bin", "include", "lib", "make" or
 "clean-lsl.sed", your build system will not work anymore (unless you
 edit some files and make adjustments).  Don´t rename or move them.
 
+'''Do not use names for directories or files that contain special characters or whitespace.'''
+Special characters ''may'' work, whitespace probably doesn´t.  Maybe
+it works fine; I haven´t tested.
+
 Suppose you want to try out "example-1".  Enter the directory
 "example-1" and run 'make':
 
 
 <lsl>
 [~/src/lsl-repo/projects/example-1] make
-COMPILING src/example-1.lsl
+generating dependencies: dep/example-1.di
+generating dependencies: dep/example-1.d
+preprocessing src/example-1.lsl
   39 1202 dbg/example-1.i.clean
 [~/src/lsl-repo/projects/example-1] 
 </lsl>
@@ -122,6 +128,12 @@ You will find the LSL script as
 ("projects/example-1/src/example-1.lsl") just run make again after
 saving it, and new versions of the script will be created that replace
 the old ones.
+
+Files are generated in the "dep" directory.  They are needed by the
+build system to figure out when a script needs to be rebuilt.  You can
+ignore those.  A file is generated in the "make" directory.  The file
+is needed to automatically replace scripts with the script editor
+built into your sl client, which will be described later.
 
 Now you can log into sl with your sl client.  Make a box, create a
 "New Script" in the box and open the "New Script".  It shows up in the
@@ -150,20 +162,25 @@ tools and try again.
 
 ===Tools you need for the build system===
 
-* astyle (optional)
+* astyle (optional when Makefile is modified)
+
 * basename: [http://www.gnu.org/software/coreutils/ coreutils]
-* cat: [http://www.gnu.org/software/coreutils/ coreutils]
+
 * cpp: [http://gcc.gnu.org/ GCC]
-* echo: [http://www.gnu.org/software/coreutils/ coreutils]
-* etags: [http://www.gnu.org/software/emacs/ Emacs]
+
+* echo (optional when Makefile is modified): [http://www.gnu.org/software/coreutils/ coreutils]
+
+* etags (optional when Makefile is modified): [http://www.gnu.org/software/emacs/ Emacs]
+
 * make: [http://www.gnu.org/software/make/ Make]
-* makedepend
-* mv
-* pdflatex (optional)
-* rm
-* sed
-* touch
-* wc (optional)
+
+* pdflatex (optional): [http://tug.org/texlive/ TeX Live]
+
+* rm (optional when Makefile is modified): [http://www.gnu.org/software/coreutils/ coreutils]
+
+* sed: [http://sed.sourceforge.net/ sed]
+
+* wc (optional when Makefile is modified)
 
 ====Editor====
 
