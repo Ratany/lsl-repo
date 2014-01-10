@@ -11,105 +11,61 @@
 
 ===About===
 
-This article is about tools you can use to make creating LSL scripts
-easier.  It tries to explain how to combine and how to use them for
-this very purpose.
+This article is about tools you can use to make creating LSL scripts easier.  It tries to explain how to combine and how to use them for this very purpose.
 
-One of these tools is a preprocessor called cpp.  It comes with
-[http://gcc.gnu.org/ GCC].  Among the tools mentioned in this article,
-cpp is the tool which can make the biggest difference to how you write
-your sources and to how they look.
+One of these tools is a preprocessor called cpp.  It comes with [http://gcc.gnu.org/ GCC].  Among the tools mentioned in this article, cpp is the tool which can make the biggest difference to how you write your sources and to how they look.
 
 
-The idea of using cpp comes from the
-[http://opengate.ma8p.com/open9.tar.gz source] of the
-[http://ma8p.com/~opengate/ Open Stargate Network] stargates.
+The idea of using cpp comes from the [http://opengate.ma8p.com/open9.tar.gz source] of the [http://ma8p.com/~opengate/ Open Stargate Network] stargates.
 
-I want to thank the developers of these stargates.  Not only their
-stargates are awesome.  The idea of using cpp for LSL scripts is also
-awesome.  It has made it so much easier to create LSL scripts that I
-have made many I otherwise would never have made.
+I want to thank the developers of these stargates.  Not only their stargates are awesome.  The idea of using cpp for LSL scripts is also awesome.  It has made it so much easier to create LSL scripts that I have made many I otherwise would never have made.
 
 
-This article is accompanied by a
-[https://github.com/Ratany/lsl-repo git repository].
-It is recommended that you pull (download) the repository.  The
-repository contains some example sources used with this article, a few
-perl scripts and a Makefile.  They are organised in a directory
-structure which they are designed to work with.  You will have your
-own build system for LSL scripts.
+This article is accompanied by a [https://github.com/Ratany/lsl-repo git repository]. It is recommended that you pull (download) the repository.  The repository contains some example sources used with this article, a few perl scripts and a Makefile.  They are organised in a directory structure which they are designed to work with.  You will have your own build system for LSL scripts when you have pulled this repository.
 
-The repository does not contain basic standard tools like
-[http://www.perl.org/ perl], cpp,
-[http://www.gnu.org/software/make/ Make] or an editor.
-This article does not attempt to tell you how to install these.  You
-know better how to install software on your computer than I do, and
-how you install software also depends on which operating system you
-are using.
+The repository does not contain basic standard tools like perl, cpp, make or an editor.  This article does not attempt to tell you how to install these.  You know better how to install software on your computer than I do, and how you install software also depends on which operating system you are using.
 
-I´m using Linux, which is freely available in many different
-distributions.  I´m using [http://fedoraproject.org/ Fedora], so to
-install [http://www.gnu.org/software/emacs/ emacs], I run 'yum install
-emacs'.  If you don´t use Fedora, telling you this probably doesn´t
-help you.  Or you switch to Fedora; it works remarkably well.
+I´m using Linux, which is freely available in many different distributions.  I´m using [http://fedoraproject.org/ Fedora], so to install [http://www.gnu.org/software/emacs/ emacs], I run 'yum install emacs'.  If you don´t use Fedora, telling you this probably doesn´t help you.  Or you switch to Fedora; it works remarkably well.
 
-Documentation is plentiful.  You may find different software that does
-the same or similar things and may work better for you or not.
+Documentation is plentiful.  You may find different software that does the same or similar things and may work better for you or not.
 
 ===Editing this Article===
 
-This article is written in my favourite editor.  When I update the
-article on the wiki, I edit the whole article, delete everything and
-paste the new version in.  That´s simply the easiest and most
-efficient way for me.
+This article is written in my favourite editor.  When I update the article on the wiki, I edit the whole article, delete everything and paste the new version in.  That´s simply the easiest and most efficient way for me.
 
-Unfortunately, this means that your modifications may be lost when I
-update the article and don´t see them.
+Unfortunately, this means that your modifications may be lost when I update the article and don´t see them.
 
 '''Please use the "discussion" page of this article to post contributions or to suggest changes so they can be added to the article.'''
 
 ===Repository===
 
-It´s probably more fun to be able to try out things yourself while
-reading this article.  If you want to do so, pull the
-[https://github.com/Ratany/lsl-repo repository].  You can run 'git
-clone https://github.com/Ratany/lsl-repo.git' or
-[https://github.com/Ratany/lsl-repo/archive/master.zip | download] it as an
-archive.
+It´s probably more fun to be able to try out things yourself while reading this article.  If you want to do so, pull the [https://github.com/Ratany/lsl-repo repository].  You can run 'git clone https://github.com/Ratany/lsl-repo.git' or [https://github.com/Ratany/lsl-repo/archive/master.zip | download] it as an archive.
 
-Once cloned or downloaded and unpacked, you have a directory called
-"lsl-repo".  Inside this directory, you have another one called
-"projects".
+Once cloned or downloaded and unpacked, you have a directory called "lsl-repo".  Inside this directory, you have another one called "projects".
 
-You can put the "projects" directory anywhere you like, and you can
-give it a different name if you want to.
+You can put the "projects" directory anywhere you like, and you can give it a different name if you want to.
 
 Inside the "projects" directory, you have more directories like this:
 
 
 .
-|-- bin
-|-- clean-lsl.sed -> make/clean-lsl.sed
-|-- example-1
-|-- include
-|-- lib
-|-- make
-|-- memtest
-|-- rfedip-reference-implementation
-|-- template-directories
+!-- bin
+!-- clean-lsl.sed -> make/clean-lsl.sed
+!-- example-1
+!-- include
+!-- lib
+!-- make
+!-- memtest
+!-- rfedip-reference-implementation
+!-- template-directories
 `-- your-script
 
 
-When you rename or move "bin", "include", "lib", "make" or
-"clean-lsl.sed", your build system will not work anymore (unless you
-edit some files and make adjustments).  Don´t rename or move them.
+When you rename or move "bin", "include", "lib", "make" or "clean-lsl.sed", your build system will not work anymore (unless you edit some files and make adjustments).  Don´t rename or move them.
 
-'''Do not use names for directories or files that contain special characters or whitespace.'''
-Special characters ''may'' work, whitespace probably doesn´t.  Maybe
-it works fine; I haven´t tested.
+'''Do not use names for directories or files that contain special characters or whitespace.''' Special characters ''may'' work, whitespace probably doesn´t.  Maybe it works fine; I haven´t tested.
 
-Suppose you want to try out "example-1".  Enter the directory
-"example-1" and run 'make':
+Suppose you want to try out "example-1".  Enter the directory "example-1" and run 'make':
 
 
 <lsl>
@@ -122,43 +78,18 @@ preprocessing src/example-1.lsl
 </lsl>
 
 
-You will find the LSL script as
-"projects/example-1/bin/example-1.o". A debugging version is
-"projects/example-1/dbg/example-1.i".  When you modify the source
-("projects/example-1/src/example-1.lsl") just run make again after
-saving it, and new versions of the script will be created that replace
-the old ones.
+You will find the LSL script as "projects/example-1/bin/example-1.o". A debugging version is "projects/example-1/dbg/example-1.i".  When you modify the source ("projects/example-1/src/example-1.lsl") just run make again after saving it, and new versions of the script will be created that replace the old ones.
 
-Files are generated in the "dep" directory.  They are needed by the
-build system to figure out when a script needs to be rebuilt.  You can
-ignore those.  A file is generated in the "make" directory.  The file
-is needed to automatically replace scripts with the script editor
-built into your sl client, which will be described later.
+Files are generated in the "dep" directory.  They are needed by the build system to figure out when a script needs to be rebuilt.  You can ignore those.  A file is generated in the "make" directory.  The file is needed to automatically replace scripts with the script editor built into your sl client, which will be described later.
 
-Now you can log into sl with your sl client.  Make a box, create a
-"New Script" in the box and open the "New Script".  It shows up in the
-built-in editor; delete the script in the built-in editor and
-copy-and-paste the contents of "projects/example-1/bin/example-1.o"
-into the built-in editor.  Then click on the "Save" button of the
-built-in editor.  (There is a way to do this kind of
-script-replacement automatically. It will be explained later.)
+Now you can log into sl with your sl client.  Make a box, create a "New Script" in the box and open the "New Script".  It shows up in the built-in editor.  Delete the script in the built-in editor and copy-and-paste the contents of "projects/example-1/bin/example-1.o" into the built-in editor.  Then click on the "Save" button of the built-in editor.  (There is a way to do this kind of script-replacement automatically. It will be explained later.)
 
-The "template-directories" is what you copy when you want to write
-your own source.  Suppose you make a copy of the
-"template-directories" and name the copy "my-test".  You would then
-put your own source into "my-test/src", like
-"my-test/src/my-test.lsl".
+The "template-directories" is what you copy when you want to write your own source.  Suppose you make a copy of the "template-directories" and name the copy "my-test".  You would then put your own source into "my-test/src", like "my-test/src/my-test.lsl".
 
-Of course, you can have several source files in "my-test/src".  For
-all of them, scripts will be created.  The "my-test" directory is the
-project directory for your project "my-test".  When you are working on
-an object that requires several scripts, you´ll probably want to keep
-them all together in the project directory you made for this object.
+Of course, you can have several source files in "my-test/src".  For all of them, scripts will be created.  The "my-test" directory is the project directory for your project "my-test".  When you are working on an object that requires several scripts, you´ll probably want to keep them all together in the project directory you made for this object.
 
 
-If you get an error message when you run 'make', you are probably
-missing some of the tools the build system uses.  Install the missing
-tools and try again.
+If you get an error message when you run 'make', you are probably missing some of the tools the build system uses.  Install the missing tools and try again.
 
 ===Tools you need for the build system===
 
@@ -174,6 +105,8 @@ Required tools:
 * editor: your favourite editor, [http://www.gnu.org/software/emacs/ Emacs] is recommended
 
 * make: [http://www.gnu.org/software/make/ Make]
+
+* perl: [http://www.perl.org/ | Perl]
 
 * sed: [http://sed.sourceforge.net/ sed]
 
@@ -191,31 +124,14 @@ Optional tools:
 
 * wc: [http://www.gnu.org/software/coreutils/ coreutils]
 
-You can edit the "make/Makefile" and comment out or delete the lines
-that use the optional tools.  Makefiles are fun to edit.
 
-====Editor====
+You can replace "make/Makefile" with "make/Makefile-no-optional" and try without the optional tools.  You can make "echo" optional, but automatically replacing scripts won´t work unless you can find a replacement for "@echo "// =`basename $@`" > $@" in the Makefile. Since perl is required, you could replace "echo" (and "basename" and "sed") with perl scripts.  You can probaly make further modifications so you won´t need perl, but what does one without it?
 
-To create scripts, you do need an editor.  All sl clients I´ve seen
-have one built in, and it´s the worst editor I´ve ever seen.
-Fortunately, you don´t need to use it.
+===Editor===
 
-You can use any editor you like.  You probably want an editor that at
-least gets the indentations right and has useful functions like
-'indent-region', 'sort-lines', 'goto-matching-fence',
-'whitespace-cleanup' etc., lets you define macros and write your own
-functions, highlights matching brackets, supports code-folding and
-tags, does customizable syntax highlighting, lets you edit several
-files at once, restores them when you restart the editor and has
-something like 'auto-revert-mode' so you can read the debugging
-messages of your scipts which they write into your chat.txt --- plus
-lots of other things like regexp search/replace that don´t come to
-mind at the moment.
+To create scripts, you do need an editor to write your sources.  All sl clients I´ve seen have one built in, and it´s the worst editor I´ve ever seen.  Fortunately, you don´t need to use it.
 
-The built-in script editor is useful for replacing the scripts you
-have been working on in your favourite editor and to look at the error
-messages that may appear when your script doesn´t compile.  Don´t use
-it for anything else.
+The built-in script editor is useful for replacing the scripts you have been working on in your favourite editor and to look at the error messages that may appear when your script doesn´t compile.  Don´t use it for anything else.
 
 Not using the buit-in script editor has several advantages like:
 
@@ -228,150 +144,82 @@ Not using the buit-in script editor has several advantages like:
 
 * You don´t need to be logged in to work on your sources.
 
-* You can preprocess and postprocess and do whatever else you like with your sources before uploading a script.
+* You can preprocess and postprocess and do whatever else you like with your sources before uploading a script:  You can use a build system.
 
-* You can share your sources and work together with others because you can use tools like [http://git-scm.com/ git] and websites like [https://github.com/ github].  (Even when you don´t share your sources, git is a very useful tool.)
+* You can share your sources and work together with others because you can use tools like [http://git-scm.com/ git] and websites like [https://github.com/ github].  Even when you don´t share your sources, git is a very useful tool.
 
-* How fast you can move the cursor in the editor does not depend on the FPS-rate of your sl client.
+* Your window manager handles the windows of your editor so that you are not limited to the window of your sl client which doesn´t do a great job when it comes to managing windows.  You are not limited to a single monitor, and how fast you can move the cursor in the editor does not depend on the FPS-rate of your sl client.
 
 * You can use fonts easier to read for you, simply change the background and foreground colours and switch to the buffer in which you read your emails or write a wiki article like this one ...
 
 * Though it doesn´t crash, a decent editor has an autosave function and allows you to restore files in the unlikely case that this is needed.
 
-* And yes, you can use a decent editor :)
+* And yes, you can use a decent editor, even your favourite one :)
 
-=====Emacs=====
 
-[http://www.gnu.org/software/emacs/ Emacs] is my favourite editor.  It
-does not only get the indentations right and does all the other things
-mentioned above.  It offers much more and has been around since a
-while.  If you had learned to use it twenty-five years ago, that would
-have saved you the time wasted with other editors which nowadays may
-not even exist anymore.
+You can use any editor you like.  An editor is one of your most important tools.  Use the best one you can find.
 
-======Syntax Highlighting======
+====Emacs====
 
-Emacs comes with syntax highlighting for many programming languages.
-It doesn´t come with syntax highlighting for LSL, but LSL syntax
-highlighting modes for emacs are available.
+[http://www.gnu.org/software/emacs/ Emacs] is my favourite editor.  Give it a try, and don´t expect to learn everything about it within a day.  It´s enough when you can move the cursor around, type something and load and save files.  Over time, you will learn more just by looking up how to do something and trying it and finding ''your'' way of doing what you need.  Lots of documentation is available.
+
+By default, the cursor keys move the cursor.  Ctrl+xf loads a file into a new buffer and Ctrl+xs saves it.  Ctrl+x b lets you switch to another buffer.  These are usually written as C-xf, C-xs and C-x-b.
+
+Emacs is worthwhile to learn.  It´s the only editor you need to learn about because you don´t need any others.  It has been around since a long time.  If you had learned it twenty five years ago, that would have saved you the time wasted with other editors which nowadays may not even exist anymore.
+
+It doesn´t hurt to try it out.
+
+=====Syntax Highlighting=====
+
+Emacs comes with syntax highlighting for many programming languages. It doesn´t come with syntax highlighting for LSL, but LSL syntax highlighting modes for emacs are available.
 
 You can use [[Emacs_LSL_Mode]].
 
-A mofied version of lsl-mode is in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-as "emacs/lsl-mode.el".  This version has been modified for use with a
-file I named "lslstddef.h" ("projects/include/lslstddef.h" in the
-repository).  Following sections will refer to and use this file.
+A mofied version of lsl-mode is in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "emacs/lsl-mode.el".  This version has been modified for use with a file I named "lslstddef.h" ("projects/include/lslstddef.h" in the repository).  Following sections will refer to and use this file.
 
-======Tags======
+=====Tags=====
 
-Emacs supports so-called tags.  Using tags allows you to find the
-declaration of functions, defines, macros and variables you use in
-your sources without searching.  It doesn´t matter in which file they
-are.  This will be described in following sections.
+Emacs supports so-called tags.  Using tags allows you to find the declaration of functions, defines, macros and variables you use in your sources without searching.  It doesn´t matter in which file they are.
 
-======Git======
+The build system creates a so-called tags-file for you.  Emacs can read it automatically. Esc+. (M-.) lets you enter a tag you want to go to and takes you there.
 
-Emacs can support [http://git-scm.com/ git] (and other CVS systems).
-You may need to install additional packages for it.  I haven´t tried
-out any of them yet.
+=====Git=====
 
-=====Other Editors=====
+Emacs can support [http://git-scm.com/ git] (and other CVS systems). You may need to install additional packages for it.  I haven´t tried out any of them yet.
 
-In case you find that you don´t get along with emacs, you may want to
-check out this [[LSL_Alternate_Editors|page about editors]].  Try
-[http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
+====Other Editors====
 
-You don´t need to try any other editors.
-[http://en.wikipedia.org/wiki/User:Dozen/E_(text_editor_family)#EPM_.28OS.2F2.29 EPM]
-was nice, but it crashed all the time.
+In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
 
-In any case, use an editor you are happy with because it does what you
-want.  An editor is one of the most essential tools.  You want your
-tools to work the way you want them to.  You don´t want tools that get
-into your way.
+You don´t need to try any other editors. [http://en.wikipedia.org/wiki/User:Dozen/E_(text_editor_family)#EPM_.28OS.2F2.29 EPM] was nice, but it crashed all the time.
 
-====Automatically replacing Scripts====
+In any case, use an editor you are happy with because it does what you want.  An editor is one of the most essential tools.  You want your tools to work the way you want them to.  You don´t want tools that get into your way.
 
-The editor built into sl clients comes with buttons like to save and
-to reset the script which is being edited.  There is also a button
-labled "Edit".  As the label of this button suggests, the button is
-for editing the script.  The built-in editor is not for editing the
-script, though it´s not impossible to kinda use it for that.
+===Automatically replacing Scripts===
+
+The editor built into sl clients comes with buttons like to save and to reset the script which is being edited.  There is also a button labled "Edit".  As the label of this button suggests, the button is for editing the script.  The built-in editor is not for editing the script, though it´s not impossible to kinda use it for that.
 
 [[Image:Cpp-wiki-builtineditor.jpg|thumb|Built-in Editor with "Edit" button]]
 
-Open a script in your sl client and click on the edit button of the
-built-in editor.  You might get an error message telling you that the
-debug setting "ExternalEditor" is not set.  Don´t panic!  Set this
-debug setting so that your favourite editor is used, and click on the
-edit button again.  This is merely to show the concept, and things
-will get more convenient.
+Open a script in your sl client and click on the edit button of the built-in editor.  You might get an error message telling you that the debug setting "ExternalEditor" is not set.  Don´t panic!  Set this debug setting so that your favourite editor is used, and click on the edit button again.  This is merely to show the concept, and things will get more convenient.
 
 [[Image:Cpp-wiki-externaleditor.jpg|thumb|Debug Setting "ExternalEditor"]]
 
-Your favourite editor should now start and let you edit the script.
-This works because your sl client saves the script which you see in
-the built-in editor to a file on your storage system.  Then your sl
-client starts whatever you specified in the debug setting as "external
-editor".  To tell your favourite editor which file the script has been
-saved to, the place holder %s is used with the debug setting
-"ExternalEditor".  The place holder is replaced with the name of the
-file your sl client has saved.
+Your favourite editor should now start and let you edit the script. This works because your sl client saves the script which you see in the built-in editor to a file on your storage system.  Then your sl client starts whatever you specified in the debug setting as "external editor".  To tell your favourite editor which file the script has been saved to, the place holder %s is used with the debug setting "ExternalEditor".  The place holder is replaced with the name of the file your sl client has saved.
 
-Once the script has been saved to a file, your sl client monitors this
-file for changes.  When the file changes --- which it does when you
-edit and then save it with your favourite editor --- your sl client
-replaces the script in the built-in editor with the contents of the
-file.
+Once the script has been saved to a file, your sl client monitors this file for changes.  When the file changes --- which it does when you edit and then save it with your favourite editor --- your sl client replaces the script in the built-in editor with the contents of the file.
 
-This is nice because you could write a new script while you are
-offline.  When you are ready to test the script, you could log in with
-your sl client, build a box, create a new script in the box, open the
-script, click on the "Edit" button, delete the contents of the new
-script in your favourite editor, insert the script you have written
-and save it.
+This is nice because you could write a new script while you are offline.  When you are ready to test the script, you could log in with your sl client, build a box, create a new script in the box, open the script, click on the "Edit" button, delete the contents of the new script in your favourite editor, insert the script you have written and save it.
 
-Your sl client would notice that the file changed and put it into the
-built-in editor.  It would let the sl server compile the script and
-show you the error messages, if any.  When your script compiles and
-works right away, you´re done --- if not, you can use the built-in
-editor to check the error messages and your favourite editor to change
-the source as needed.  Then you need to replace the script again.
+Your sl client would notice that the file changed and put it into the built-in editor.  It would let the sl server compile the script and show you the error messages, if any.  When your script compiles and works right away, you´re done --- if not, you can use the built-in editor to check the error messages and your favourite editor to change the source as needed.  Then you need to replace the script again.
 
-At this point, things suddenly aren´t nice anymore: Replacing the
-script with your favourite editor all the time is a stupid process
-(unless you program your editor to do it for you).  Even when you have
-only one script, having to replace the script over and over again
-while you are adding to it and debugging it sucks.  It sucks even more
-when your object has 11 scripts working toegether and a little change
-makes it necessary to replace all of them.
+At this point, things suddenly aren´t nice anymore: Replacing the script with your favourite editor all the time is a stupid process (unless you program your editor to do it for you).  Even when you have only one script, having to replace the script over and over again while you are adding to it and debugging it sucks.  It sucks even more when your object has 11 scripts working toegether and a little change makes it necessary to replace all of them.
 
-You could mess around with the built-in editor and try to edit your
-script further with it, saving the replacing.  That also sucks: The
-built-in editor is unusable, and you end up with at least two versions
-of the script.  Since you want the script safely stored on your
-storage system and not lose your work when your sl client crashes or
-the like, you end up replacing the script on your storage system with
-the version you have in the built-in editor every now and then.  When
-your object has 11 scripts that work together, it eventually becomes a
-little difficult to keep an overview of what´s going on --- not to
-mention that you need a huge monitor with a really high resolution to
-fit 11 built-in editor windows in a usable way on your screen to work
-on your scripts since there is no C-x b with the built-in editor to
-switch to a different buffer ...
+You could mess around with the built-in editor and try to edit your script further with it, saving the replacing.  That also sucks: The built-in editor is unusable, and you end up with at least two versions of the script.  Since you want the script safely stored on your storage system and not lose your work when your sl client crashes or the like, you end up replacing the script on your storage system with the version you have in the built-in editor every now and then.  When your object has 11 scripts that work together, it eventually becomes a little difficult to keep an overview of what´s going on --- not to mention that you need a huge monitor with a really high resolution to fit 11 built-in editor windows in a usable way on your screen to work on your scripts since there is no C-x b with the built-in editor to switch to a different buffer ...
 
-Fortunately, there is a much better and very simple solution: A
-program which is started by your sl client ''instead'' of your
-favourite editor can replace the script for you.  It´s the same
-concept from above you have tried out now.  The concept does not
-require that you must abuse your favourite editor to replace scripts.
+Fortunately, there is a much better and very simple solution: A program which is started by your sl client ''instead'' of your favourite editor can replace the script for you.  It´s the same concept from above you have tried out now.  The concept does not require that you must abuse your favourite editor to replace scripts.
 
-You can easily write a program that replaces files yourself.  I wrote
-one when I got tired of all the replacing.  It´s not really a program,
-but a [http://www.perl.org/ perl] script.  It´s written in perl
-because perl is particularly well suited for the purpose.  It looks
-like this:
+You can easily write a program that replaces files yourself.  I wrote one when I got tired of all the replacing.  It´s not really a program, but a [http://www.perl.org/ perl] script.  It´s written in perl because perl is particularly well suited for the purpose.  It looks like this:
 
 
 <perl>
@@ -518,9 +366,7 @@ else
 </perl>
 
 
-You´ll find this script in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-as "projects/bin/replace.pl".  What it basically does is simple:
+You´ll find this script in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "projects/bin/replace.pl".  What it basically does is simple:
 
 * look at the name of the file which is supplied as a command line argument; when it´s not named like "*.lsl", start your favourite editor to edit the file
 
@@ -535,8 +381,7 @@ as "projects/bin/replace.pl".  What it basically does is simple:
 * when the key is not found in the table, start your favourite editor to edit the file that was saved by the sl client and to edit the table
 
 
-Entries in the table are so-called key-value pairs.  The table looks
-like this:
+Entries in the table are so-called key-value pairs.  The table looks like this:
 
 
 <lsl>
@@ -550,8 +395,7 @@ foobar-script.o: /path/to/bin/foobar-script.o
 </lsl>
 
 
-Note: The space between the colon and the file name is mandatory
-(because the perl script is written like that).
+Note: The space between the colon and the file name is mandatory (because the perl script is written like that).
 
 This means when you have a script in the built-in script editor like
 
@@ -569,9 +413,7 @@ default
 </lsl>
 
 
-and click on the "Edit" button of the built-in script editor, the
-script will automatically be replaced with the contents of the file
-"/path/to/example-script.o".
+and click on the "Edit" button of the built-in script editor, the script will automatically be replaced with the contents of the file "/path/to/example-script.o".
 
 To make this work, you need to:
 
@@ -591,8 +433,7 @@ To make this work, you need to:
 
 '''You should first try out the perl script to see if it works.'''
 
-When you have your sl client start it, it is difficult or impossible
-to see error messages you may get when running the perl script:
+When you have your sl client start it, it is difficult or impossible to see error messages you may get when running the perl script:
 
 
 <lsl>
@@ -603,68 +444,27 @@ Can't open '/absolute/path/to/replaceassignments.txt' for reading: 'No such file
 </lsl>
 
 
-You see what I mean: You forgot to adjust the file name of the look-up
-table (or forgot to create the table) and get an error message because
-the file doesn´t exist.  If you had your sl client start the perl
-script, apparently nothing would happen when you click the "Edit"
-button.
+You see what I mean: You forgot to adjust the file name of the look-up table (or forgot to create the table) and get an error message because the file doesn´t exist.  If you had your sl client start the perl script, apparently nothing would happen when you click the "Edit" button.
 
-Once you have verified that the perl script works, you´re
-fine. However, when you have a typing error in the lookup-table, the
-script in the built-in editor might silently not be replaced with the
-new version.  (You could modify the perl script so that it beeps when
-it does not replace the script, or experiment with something like
-'xterm -hold -e replace.pl "%s"'.  If 'xterm -hold ...' works, you
-could do something to run 'make' (see below) automatically when you
-click the "Edit" button.)
+Once you have verified that the perl script works, you´re fine. However, when you have a typing error in the lookup-table, the script in the built-in editor might silently not be replaced with the new version.  (You could modify the perl script so that it beeps when it does not replace the script, or experiment with something like 'xterm -hold -e replace.pl "%s"'.  If 'xterm -hold ...' works, you could do something to run 'make' (see below) automatically when you click the "Edit" button.)
 
-The perl script starts your favourite editor when it doesn´t find the
-key (i. e. "example-script.o") in the table.  You can then edit both
-the script and the table.  This means that you don´t need to fill the
-table in advance.  You can start with an empty table ('touch
-/absolute/path/to/replaceassignments.txt') and add entries as you go.
+The perl script starts your favourite editor when it doesn´t find the key (i. e. "example-script.o") in the table.  You can then edit both the script and the table.  This means that you don´t need to fill the table in advance.  You can start with an empty table ('touch /absolute/path/to/replaceassignments.txt') and add entries as you go.
 
-The perl script uses the first entry in the table that matches.  If
-you plan to have multiple scripts with the same name, you can make
-adjustments to the Makefile (see below) and don´t need to modify the
-perl script.  It´s a good idea to decide about this before filling
-your table: When you want multiple scripts with the same name some
-time later, you will have to edit your table.
+The perl script uses the first entry in the table that matches.  If you plan to have multiple scripts with the same name, you can make adjustments to the Makefile (see below) and don´t need to modify the perl script.  It´s a good idea to decide about this before filling your table: When you want multiple scripts with the same name some time later, you will have to edit your table.
 
-The build system (see below) creates "compressed" versions of the
-scripts and versions that are not compressed.  The "compressed"
-versions are named *.o and the not-compressed versions are named *.i.
+The build system (see below) creates "compressed" versions of the scripts and versions that are not compressed.  The "compressed" versions are named *.o and the not-compressed versions are named *.i.
 
-The "compressed" versions can be pretty unreadable, which can make
-debugging difficult.  The not-compressed version is formattted with
-astyle (see below) to make it easier to read.  It can be used for
-debugging.  (The "compressed" version is what you want to put as a
-script into your object.)
+The "compressed" versions can be pretty unreadable, which can make debugging difficult.  The not-compressed version is formattted with astyle (see below) to make it easier to read.  It can be used for debugging.  (The "compressed" version is what you want to put as a script into your object.)
 
-To see the debugging version of the script in the built-in editor,
-change the first line of the script in the built-in editor from like
-"// =example-script.o" to "// =example-script.i" and click on the
-"Edit" button.  That puts the version of the script which is not
-compressed into the built-in editor.  Switch the "i" back to an "o",
-click the "Edit" button and the "compressed" version is put back.
+To see the debugging version of the script in the built-in editor, change the first line of the script in the built-in editor from like "// =example-script.o" to "// =example-script.i" and click on the "Edit" button.  That puts the version of the script which is not compressed into the built-in editor.  Switch the "i" back to an "o", click the "Edit" button and the "compressed" version is put back.
 
-Above perl script does the replacing for you, provided that the
-debugging version is in the "dbg" directory and the "compressed"
-version is in the "bin" directory and that both "dbg" and "bin" are in
-the same directory.
+Above perl script does the replacing for you, provided that the debugging version is in the "dbg" directory and the "compressed" version is in the "bin" directory and that both "dbg" and "bin" are in the same directory.
 
-When you use the build system, you do not need to add entries to the
-lookup-table.  They are automatically added as needed when you run
-'make' (see below).
+When you use the build system, you do not need to add entries to the lookup-table.  They are automatically added as needed when you run 'make' (see below).
 
 ====A Preprocessor====
 
-The [http://en.wikipedia.org/wiki/Preprocessor Wikipedia article]
-about preprocessors gives an interesting explanation of what a
-preprocessor is and provides an overview.  For the purpose of making
-it easier to create LSL scripts, a preprocessor as is used with
-[http://en.wikipedia.org/wiki/C_(programming_language) C] (and C++)
-compilers is a very useful tool.
+The [http://en.wikipedia.org/wiki/Preprocessor Wikipedia article] about preprocessors gives an interesting explanation of what a preprocessor is and provides an overview.  For the purpose of making it easier to create LSL scripts, a preprocessor as is used with [http://en.wikipedia.org/wiki/C_(programming_language) C] (and C++) compilers is a very useful tool.
 
 The particular preprocessor I´m using is called "cpp" and comes with
 [http://gcc.gnu.org/ GCC].
@@ -681,8 +481,7 @@ A preprocessor enables you:
 * to create different scripts from the same sources through the use of conditionals
 
 
-That doesn´t sound like much, yet these are rather powerful features.
-Some of the advantages that come with these features are:
+That doesn´t sound like much, yet these are rather powerful features. Some of the advantages that come with these features are:
 
 
 * You can create libraries and include them into your sources as needed:  Your code becomes easily re-usable.
@@ -710,64 +509,25 @@ Some of the advantages that come with these features are:
 * Macros and defines in your sources only make it into a script when they are used.
 
 
-There are probably lots of advantages that don´t come to mind at the
-moment.  You can be creative and find uses and advantages I would
-never think of.
+There are probably lots of advantages that don´t come to mind at the moment.  You can be creative and find uses and advantages I would never think of.
 
 =====How cpp works=====
 
-Some extensive documentation about cpp can be found
-[http://gcc.gnu.org/onlinedocs/cpp/ here].
+Some extensive documentation about cpp can be found [http://gcc.gnu.org/onlinedocs/cpp/ here].
 
-Imagine you want to create a script that figures out which agent on
-the same parcel is the furthest away from the object the script is in
-and moves the object towards this agent when the owner of the object
-touches it.
+Imagine you want to create a script that figures out which agent on the same parcel is the furthest away from the object the script is in and moves the object towards this agent when the owner of the object touches it.
 
-In the following, the source for the script will be developed piece by
-piece.  You can find the complete source in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-in "projects/example-1/src/example-1.lsl".
+In the following, the source for the script will be developed piece by piece.  You can find the complete source in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in "projects/example-1/src/example-1.lsl".
 
-Obviously, the script will need a touch event, a way to find out which
-agent is the furthest away and a a way of moving to the agent.
+Obviously, the script will need a touch event, a way to find out which agent is the furthest away and a a way of moving to the agent.
 
-In this case, [[LlSetKeyframedMotion|keyframed motion]] (KFM) is a
-good way to get the object moving: It doesn´t require the object to be
-physical and thus lets it move through obstacles like walls.  KFM
-requires the object to use the so-called "prim equivalency system",
-which means that it must either be mesh, or the physics type of one of
-its prims must be either "convex hull" or "none".  This can either be
-set in the editing window when editing the object, or by the script.
-The physics type of the root prim cannot be "none", and since it´s
-hard to say whether "none" or "convex hull" is better for a particular
-object, the script will simply use "convex hull".  Since the physics
-type of the object needs to be set only once, the script should use a
-state_entry event to set it.  It can be set with
-[[LlSetLinkPrimitiveParamsFast#llSetLinkPrimitiveParamsFast|llSetLinkPrimitiveParamsFast()]].
+In this case, [[LlSetKeyframedMotion|keyframed motion]] (KFM) is a good way to get the object moving: It doesn´t require the object to be physical and thus lets it move through obstacles like walls.  KFM requires the object to use the so-called "prim equivalency system", which means that it must either be mesh, or the physics type of one of its prims must be either "convex hull" or "none".  This can either be set in the editing window when editing the object, or by the script. The physics type of the root prim cannot be "none", and since it´s hard to say whether "none" or "convex hull" is better for a particular object, the script will simply use "convex hull".  Since the physics type of the object needs to be set only once, the script should use a state_entry event to set it.  It can be set with [[LlSetLinkPrimitiveParamsFast#llSetLinkPrimitiveParamsFast|llSetLinkPrimitiveParamsFast()]].
 
-Finding out which agent is the furthest away from the object requires
-to find out what agents there are.  A sensor is unsuited because the
-agent could be out of sensor range, and the sensor would report no
-more than the closest sixteen agents.  Using
-[[LlGetAgentList|llGetAgentList()]] works much better for this.  It is
-also necessary to find out what the distances between the agents and
-the object are, for which [[LlGetObjectDetails|llGetObjectDetails()]]
-can be used.
+Finding out which agent is the furthest away from the object requires to find out what agents there are.  A sensor is unsuited because the agent could be out of sensor range, and the sensor would report no more than the closest sixteen agents.  Using [[LlGetAgentList|llGetAgentList()]] works much better for this.  It is also necessary to find out what the distances between the agents and the object are, for which [[LlGetObjectDetails|llGetObjectDetails()]] can be used.
 
-The object should move to a position at "some distance" from the
-agent.  It seems nicer to use a random distance rather than a fixed
-one.  This can easily be done by creating a "random vector", i. e. a
-vector the components of which are randomized.  What
-[[LlFrand||llFrand()]] returns is not really a random number, but it´s
-sufficient for this purpose.
+The object should move to a position at "some distance" from the agent.  It seems nicer to use a random distance rather than a fixed one.  This can easily be done by creating a "random vector", i. e. a vector the components of which are randomized.  What [[LlFrand||llFrand()]] returns is not really a random number, but it´s sufficient for this purpose.
 
-As with all sources, I want to use some of the defines that are
-gathered in my "lslstddef.h".  One of them is the macro "RemotePos()".
-It is a shortcut for using llGetObjectDetails() to find out the
-position of and object or prim or agent.  Another one is "SLPPF()", a
-shortcut for llSetLinkPrimitiveParamsFast() because
-llSetLinkPrimitiveParamsFast() is awfully long.
+As with all sources, I want to use some of the defines that are gathered in my "lslstddef.h".  One of them is the macro "RemotePos()". It is a shortcut for using llGetObjectDetails() to find out the position of and object or prim or agent.  Another one is "SLPPF()", a shortcut for llSetLinkPrimitiveParamsFast() because llSetLinkPrimitiveParamsFast() is awfully long.
 
 This makes for a source (example-1_A) that looks like this:
 
@@ -791,47 +551,20 @@ default
 </lsl>
 
 
-The '#include' in the first line is a so-called preprocessor
-directive.  It tells the preprocessor to do something.  There are
-other directives, like "#define", "#undef", "#if", "#endif" and some
-others.
+The '#include' in the first line is a so-called preprocessor directive.  It tells the preprocessor to do something.  There are other directives, like "#define", "#undef", "#if", "#endif" and some others.
 
-"#include" tells cpp to find a file "lslstddef.h" within some directories it
-searches through by default and to make it so as if the contents of
-this file were part of the source.  Suppose you have the source saved
-as "example-1.lsl": The preprocessor includes "lslstddef.h" into
-"example-1.lsl".  It´s output will not contain the first line because
-the first line is a preprocessor directive.
+"#include" tells cpp to find a file "lslstddef.h" within some directories it searches through by default and to make it so as if the contents of this file were part of the source.  Suppose you have the source saved as "example-1.lsl": The preprocessor includes "lslstddef.h" into "example-1.lsl".  It´s output will not contain the first line because the first line is a preprocessor directive.
 
-The source ("example-1.lsl") is never modified by the preprocessor.
-Including "lslstddef.h" makes everything in "lslstddef.h" known to the
-preprocessor.  The preprocessor produces an output which is a copy of
-the source with modifications applied to it as the directives, like
-the ones in "lslstddef.h", demand.
+The source ("example-1.lsl") is never modified by the preprocessor. Including "lslstddef.h" makes everything in "lslstddef.h" known to the preprocessor.  The preprocessor produces an output which is a copy of the source with modifications applied to it as the directives, like the ones in "lslstddef.h", demand.
 
-"lslstddef.h" has a lot of directives for the preprocessor.  Most of
-them define something with "#define".  When something is defined with
-"#define", it is a so-called define.  Macros can also be defined with
-"#define".  Macros are called macros because they are defines that
-take parameters.
+"lslstddef.h" has a lot of directives for the preprocessor.  Most of them define something with "#define".  When something is defined with "#define", it is a so-called define.  Macros can also be defined with "#define".  Macros are called macros because they are defines that take parameters.
 
 
-You may have noticed that in example-1_A, it doesn´t read
-"touch_start()" but "event touch_start()".  That´s because I write my
-sources like that: Putting "event" before events makes them easier to
-find and the source looks nicer and is easier to read for me.  In your
-sources, you can do it the same way or use something else than "event"
-or just write "touch_start()" instead.  You can see what it looks like
-on my screen in the example picture --- I currently use green on black
-in emacs.  It sticks out, and "event" makes a good search string that
-saves me searching for particular events.
+You may have noticed that in example-1_A, it doesn´t read "touch_start()" but "event touch_start()".  That´s because I write my sources like that: Putting "event" before events makes them easier to find and the source looks nicer and is easier to read for me.  In your sources, you can do it the same way or use something else than "event" or just write "touch_start()" instead.  You can see what it looks like on my screen in the example picture --- I currently use green on black in emacs.  It sticks out, and "event" makes a good search string that saves me searching for particular events.
 
 [[Image:Cpp-wiki-example-1_A.jpg|thumb|Easier to read]]
 
-The LSL compiler wouldn´t compile the source, not only because it
-doesn´t know what to do with "#include" directives, but also because
-it doesn´t compile statements like "event touch_start()".  Therefore,
-"lslstddef.h" defines that "event" is nothing:
+The LSL compiler wouldn´t compile the source, not only because it doesn´t know what to do with "#include" directives, but also because it doesn´t compile statements like "event touch_start()".  Therefore, "lslstddef.h" defines that "event" is nothing:
 
 
 <cpp>
@@ -839,10 +572,7 @@ it doesn´t compile statements like "event touch_start()".  Therefore,
 </cpp>
 
 
-By including "lslstddef.h", cpp knows this and replaces all occurances
-of "event" with nothing, making "event" disappear from the result.
-This doesn´t mean that "event" is not defined.  It´s a define.  You
-can use the directive "#ifdef" with such defines:
+By including "lslstddef.h", cpp knows this and replaces all occurances of "event" with nothing, making "event" disappear from the result. This doesn´t mean that "event" is not defined.  It´s a define.  You can use the directive "#ifdef" with such defines:
 
 
 <cpp>
@@ -852,19 +582,10 @@ can use the directive "#ifdef" with such defines:
 </cpp>
 
 
-This would create a define named "test" only if "event" is defined.
-Much like cpp replaces "event" with nothing, it would now replace
-"test" with "1" because "test" is defined to be "1".
+This would create a define named "test" only if "event" is defined. Much like cpp replaces "event" with nothing, it would now replace "test" with "1" because "test" is defined to be "1".
 
 
-The next thing the example script needs is to set the physics
-type. The define "SLPPF" is a shortcut for
-"llSetLinkPrimitiveParamsFast", so use that.  The script also needs to
-check if it was the owner of the object who touched it and do nothing
-when it was someone else.  It needs to know the position of the object
-the script is in and what agents are around so it can figure out which
-agent is the furthest away from the object. Add all this to the
-source, which is now example-1_B:
+The next thing the example script needs is to set the physics type. The define "SLPPF" is a shortcut for "llSetLinkPrimitiveParamsFast", so use that.  The script also needs to check if it was the owner of the object who touched it and do nothing when it was someone else.  It needs to know the position of the object the script is in and what agents are around so it can figure out which agent is the furthest away from the object. Add all this to the source, which is now example-1_B:
 
 
 <lsl>
@@ -901,14 +622,10 @@ With
 </cpp>
 
 
-in "lslstddef.h", the preprocessor replaces "event" with nothing and
-"SLPPF" with "llSetLinkPrimitiveParamsFast".
+in "lslstddef.h", the preprocessor replaces "event" with nothing and "SLPPF" with "llSetLinkPrimitiveParamsFast".
 
 
-Lists in LSL can be a pita to work with.  You end up using functions
-to pick out list elements like [[LlList2Key|llList2Key()]].  They
-combine with functions that return lists and lead to unwieldy
-expressions like
+Lists in LSL can be a pita to work with.  You end up using functions to pick out list elements like [[LlList2Key|llList2Key()]].  They combine with functions that return lists and lead to unwieldy expressions like
 
 
 <lsl>
@@ -929,23 +646,13 @@ llVecDist(llList2Vector(llGetObjectDetails(llList2Key(agents, 0), [OBJECT_POS] )
 if you were to compute the distance between two agents.
 
 
-Lists are sometimes strided, and then you also need to remember which
-item of a stride is to be interpreted as what.  Your code becomes hard
-to write, hard to read and hard to modify.  You can use defines and
-macros to avoid this.
+Lists are sometimes strided, and then you also need to remember which item of a stride is to be interpreted as what.  Your code becomes hard to write, hard to read and hard to modify.  You can use defines and macros to avoid this.
 
-The list used in example-1_B is not strided, simple and a local
-variable.  Using a define and macros to make it useable is overdoing
-it, but I want to show you how it can be done.
+The list used in example-1_B is not strided, simple and a local variable.  Using a define and macros to make it useable is overdoing it, but I want to show you how it can be done.
 
-You can put preprocessor directives anywhere into your source.  They
-don´t need to be kept in seperate files.  Traditionally, they had to
-be at the beginning of a line.  This isn´t required anymore --- but do
-not indent them!  They are not part of your code.  They modify your
-code.  You could see them as "metacode".
+You can put preprocessor directives anywhere into your source.  They don´t need to be kept in seperate files.  Traditionally, they had to be at the beginning of a line.  This isn´t required anymore --- but do not indent them!  They are not part of your code.  They modify your code.  You could see them as "metacode".
 
-With example-1_B, four things can be defined to make the list of
-agents easier to use:
+With example-1_B, four things can be defined to make the list of agents easier to use:
 
 
 # a define for the stride of the list: "#define iSTRIDE_agents 1"
@@ -957,8 +664,7 @@ agents easier to use:
 # a macro that gives the distance of an agent from the object: "#define fAgentDistance(x) llVecDist(here, vAgentPos(x))"
 
 
-Those will be used for a loop that iterates over the list.  This leads
-to example-1_C:
+Those will be used for a loop that iterates over the list.  This leads to example-1_C:
 
 
 <lsl>
@@ -997,52 +703,17 @@ default
 </lsl>
 
 
-Since the list is a local variable, the defines are placed after its
-declaration.  You could place them somewhere else, maybe at the top of
-the source.  Placing them inside the scope of the list makes clear
-that they are related to this particular list.
+Since the list is a local variable, the defines are placed after its declaration.  You could place them somewhere else, maybe at the top of the source.  Placing them inside the scope of the list makes clear that they are related to this particular list.
 
-The define "iSTRIDE_agents" is the stride of the list, 1 in this
-case. Using "--agent;" in the loop instead of "agent -=
-iSTRADE_agents;" would be better, but it´s done for the purpose of
-demonstration.  When you have a strided list, it is a good idea to
-always use a define for it: It doesn´t hurt anything and makes it easy
-to modify your source because there is only one place you need to
-change.  With strided lists, use defines for the indices of
-stride-items so you don´t need to go through the macro definitions to
-make sure the indices are ok when you change the composition of the
-list.  You can look at
-"projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl"
-in the [https://github.com/Ratany/lsl-repo git repository that
-accompanies this article] for a better example.
+The define "iSTRIDE_agents" is the stride of the list, 1 in this case. Using "--agent;" in the loop instead of "agent -= iSTRADE_agents;" would be better, but it´s done for the purpose of demonstration.  When you have a strided list, it is a good idea to always use a define for it: It doesn´t hurt anything and makes it easy to modify your source because there is only one place you need to change.  With strided lists, use defines for the indices of stride-items so you don´t need to go through the macro definitions to make sure the indices are ok when you change the composition of the list.  You can look at "projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] for a better example.
 
-"kAgentKey" is a macro.  It´s a define that takes parameters.  You
-might think the parameter is an integer which is an index to the list
-in which the UUIDs of the agents are stored.  It is not:  The
-parameter is ''used'' an index.  The preprocessor doesn´t know
-anything about lists or integers.
+"kAgentKey" is a macro.  It´s a define that takes parameters.  You might think the parameter is an integer which is an index to the list in which the UUIDs of the agents are stored.  It is not: The parameter is ''used'' an index.  The preprocessor doesn´t know anything about lists or integers.
 
-There are no types involved with macro parameters as are with
-variables: When you declare a function in LSL that takes parameters,
-you need to declare what type the parameters are of.  Macro parameters
-don´t have a type.  The preprocessor replaces stuff literally.  You
-could use a vector or some random string as a parameter with
-"kAgentKey".  Cpp would do the replacement just fine.  It replaces
-text like a search-and-replace operation you perform with your
-favourite editor does.
+There are no types involved with macro parameters as are with variables: When you declare a function in LSL that takes parameters, you need to declare what type the parameters are of.  Macro parameters don´t have a type.  The preprocessor replaces stuff literally.  You could use a vector or some random string as a parameter with "kAgentKey".  Cpp would do the replacement just fine.  It replaces text like a search-and-replace operation you perform with your favourite editor does.
 
-Unfortunately, you cannot define defines or macros with defines:
-"#define NEWLIST(name, stride) #define list name; #define
-iSTRIDE_##name stride" will cause cpp to stop proprocessing and to
-print an error message.  Maybe I´ll write a perl script to
-pre-preprocess my sources ... that might be easier than learning
-[http://www.gnu.org/software/m4/ | m4].
+Unfortunately, you cannot define defines or macros with defines: "#define NEWLIST(name, stride) #define list name; #define iSTRIDE_##name stride" will cause cpp to stop proprocessing and to print an error message.  Maybe I´ll write a perl script to pre-preprocess my sources ... that might be easier than learning [http://www.gnu.org/software/m4/ | m4].
 
-"vAgentPos" and "fAgentDistance" are also macros and work the same way
-as "kAgentKey".  The code to figure out which agent is the one
-furthest away from the object is simple, and I´ll skip over it.  It
-gets interesting when the movement is implemented, so here is
-example-1_D, the complete source:
+"vAgentPos" and "fAgentDistance" are also macros and work the same way as "kAgentKey".  The code to figure out which agent is the one furthest away from the object is simple, and I´ll skip over it.  It gets interesting when the movement is implemented, so here is example-1_D, the complete source:
 
 
 <lsl>
@@ -1120,40 +791,13 @@ default
 </lsl>
 
 
-There isn´t much new to it.  "unless" is defined in "lslstddef.h" and
-speaks for itself.  "fUNDETERMINED" and "fIsUndetermined" speak for
-themselves, too:  There are no negative distances between positions,
-and what "llVecDist()" returns is never negative.  There may be no
-agents on the parcel, in which case the list of agents would be
-empty.  It´s length would be 0 and the code in the while loop would
-not be executed.  The variable "distance" would still have the value
-it was initialized with when it was declared.  What the furthest agent
-is would be undetermined, and that´s exactly what the code tells you.
+There isn´t much new to it.  "unless" is defined in "lslstddef.h" and speaks for itself.  "fUNDETERMINED" and "fIsUndetermined" speak for themselves, too: There are no negative distances between positions, and what "llVecDist()" returns is never negative.  There may be no agents on the parcel, in which case the list of agents would be empty.  It´s length would be 0 and the code in the while loop would not be executed.  The variable "distance" would still have the value it was initialized with when it was declared.  What the furthest agent is would be undetermined, and that´s exactly what the code tells you.
 
-The movement of the object should look nice.  It looks nice when the
-object always moves at the same speed.  "llSetKeyframedMotion()"
-doesn´t use speed. You have to specify the duration of the
-movement. Since the distance between the object and agents it moves to
-varies, the duration of the movement is adjusted according to the
-distance. The minimum duration "llSetKeyframedMotion()" works with is
-1/45 second.  "fSecondsForMeters" makes sure that the duration is at
-least 1/45 second through the "FMax" macro which is defined in
-"lslstddef.h": "FMax" returns the greater value of the two parameters
-it is supplied with.
+The movement of the object should look nice.  It looks nice when the object always moves at the same speed.  "llSetKeyframedMotion()" doesn´t use speed. You have to specify the duration of the movement. Since the distance between the object and agents it moves to varies, the duration of the movement is adjusted according to the distance. The minimum duration "llSetKeyframedMotion()" works with is 1/45 second.  "fSecondsForMeters" makes sure that the duration is at least 1/45 second through the "FMax" macro which is defined in "lslstddef.h": "FMax" returns the greater value of the two parameters it is supplied with.
 
-"vRandomDistance" is used to help with that the object doesn´t hit the
-agent it moves to and ends up at some random distance from them, with
-a minimum offset.  "PosOffset" from "lslstddef.h" works with two
-vectors and gives the offset between them as a vector.  It´s one of my
-favourite macros because I don´t need to ask myself anymore what
-"offset" is supposed to mean: "here - there" or "there - here".  The
-offset is simply "PosOffset(here, there)" when it´s an offset from
-here to there and "PosOffset(there, here)" when it´s offset from there
-to here.  "llSetKeyframedMotion()" uses offsets ...
+"vRandomDistance" is used to help with that the object doesn´t hit the agent it moves to and ends up at some random distance from them, with a minimum offset.  "PosOffset" from "lslstddef.h" works with two vectors and gives the offset between them as a vector.  It´s one of my favourite macros because I don´t need to ask myself anymore what "offset" is supposed to mean: "here - there" or "there - here".  The offset is simply "PosOffset(here, there)" when it´s an offset from here to there and "PosOffset(there, here)" when it´s offset from there to here.  "llSetKeyframedMotion()" uses offsets ...
 
-The important thing here is this:  Why divide the distance and
-introduce another vector for the offset when you could simply do it in
-one line like this:
+The important thing here is this: Why divide the distance and introduce another vector for the offset when you could simply do it in one line like this:
 
 
 <lsl>
@@ -1163,14 +807,7 @@ llSetKeyframedMotion([PosOffset(here, vAgentPos(goto) + vMINRANGE(0.5)),
 </lsl>
 
 
-That´s one thing all these macros are for, aren´t they?  Yes they are
---- and you need to be aware of what they turn into.  Cpp is designed
-to preprocess code for a C or C++ compiler, and those are probalby a
-lot smarter than an LSL compiler.  The C compiler optimizes "1.0/45.0"
-by replacing it with the result of the division.  C has a ternary
-operator which makes life a lot easier not only for writing macros
-like "FMax": "#define MAX(a,b) (((a) > (b)) ? (a) : (b))" works for
-both integers and floats --- compared to
+That´s one thing all these macros are for, aren´t they?  Yes they are --- and you need to be aware of what they turn into.  Cpp is designed to preprocess code for a C or C++ compiler, and those are probalby a lot smarter than an LSL compiler.  The C compiler optimizes "1.0/45.0" by replacing it with the result of the division.  C has a ternary operator which makes life a lot easier not only for writing macros like "FMax": "#define MAX(a,b) (((a) > (b)) ? (a) : (b))" works for both integers and floats --- compared to
 "#define FMax(x, y) (((llFabs((x) >= (y))) * (x)) + ((llFabs((x) <
 (y))) * (y)))" and another one for integers.
 
@@ -1186,12 +823,9 @@ llSetKeyframedMotion([( (llList2Vector(llGetObjectDetails(llList2Key(agents, got
 </lsl>
 
 
-Letting aside that the code would be totally different when written in
-C, a C compiler would optimze that.  I don´t know what the LSL
-compiler does.
+Letting aside that the code would be totally different when written in C, a C compiler would optimze that.  I don´t know what the LSL compiler does.
 
-'''Always be aware of what your macros turn into.'''  The code from
-example-1_D turns into:
+'''Always be aware of what your macros turn into.'''  The code from example-1_D turns into:
 
 
 <lsl>
@@ -1205,34 +839,15 @@ llSetKeyframedMotion([offset, ( ( (llFabs( ((distance)) >= (0.03) ) ) * ((distan
 </lsl>
 
 
-It´s still awful to read.  What did you expect?  The source looks nice
-and clear because macros and defines are used, wich is one of the
-reasons to use them.  More importantly, this code doesn´t employ
-numerous obsolete divisions because I checked the outcome and modifed
-my source.
+It´s still awful to read.  What did you expect?  The source looks nice and clear because macros and defines are used, wich is one of the reasons to use them.  More importantly, this code doesn´t employ numerous obsolete divisions because I checked the outcome and modifed my source.
 
-'''Always check the script for what your macros turn into.'''  It´s
-easy to check, just load the debugging version into your favourite
-editor.  You can even use the built-in editor:  change the "o" for an
-"i" and click on the "Edit" button as described earlier.
+'''Always check the script for what your macros turn into.'''  It´s easy to check, just load the debugging version into your favourite editor.  You can even use the built-in editor: change the "o" for an "i" and click on the "Edit" button as described earlier.
 
-One thing is new in example-1_D:  The defines that were used to make
-the list with the UUIDs of the agents usable are undefined with
-"#undef".  It´s not necessary to do this, it´s tidy.  As mentioned
-before, the list has local scope.  That´s the reason I undefined the
-defines that relate to it.  It ends their "scope" as well.  You can
-create new defines with the same names outside this scope if you
-like. They are undefined and out of the way.  Perhaps at some time,
-you include something into your source that happens to use defines
-with the same name.  You would get an error message and have to go
-back to the perhaps old source and figure out where you can undefine
-them.  It doesn´t hurt to undefine them right away and saves you time
-later.
+One thing is new in example-1_D: The defines that were used to make the list with the UUIDs of the agents usable are undefined with "#undef".  It´s not necessary to do this, it´s tidy.  As mentioned before, the list has local scope.  That´s the reason I undefined the defines that relate to it.  It ends their "scope" as well.  You can create new defines with the same names outside this scope if you like. They are undefined and out of the way.  Perhaps at some time, you include something into your source that happens to use defines with the same name.  You would get an error message and have to go back to the perhaps old source and figure out where you can undefine them.  It doesn´t hurt to undefine them right away and saves you time later.
 
 ======Script memory and performance with cpp======
 
-You may have seen or written scripts that use variables as constants.
-Look at this example:
+You may have seen or written scripts that use variables as constants. Look at this example:
 
 
 <lsl>
@@ -1278,45 +893,19 @@ default
 </lsl>
 
 
-You can find this example in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-as "projects/memtest/src/memtest.lsl".
+You can find this example in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "projects/memtest/src/memtest.lsl".
 
-It shows that the script needs 8 bytes more memory when you use either
-a float or an integer variable --- or both! --- instead of defines.
-That means when you declare a variable, declaring another one doesn´t
-make a difference, provided that the variables are of the types float
-and integer.
+It shows that the script needs 8 bytes more memory when you use either a float or an integer variable --- or both! --- instead of defines. That means when you declare a variable, declaring another one doesn´t make a difference, provided that the variables are of the types float and integer.
 
-I give up artifical testing at this point.  Either the test or the
-results must be flawed.  One thing I wanted to know is whether it
-makes a difference if you have several lines with a number (like 1 or
-1.0) vs. the same several lines with a variable instead of the
-number.   This test doesn´t show that, perhaps due to optimizations
-the LSL compiler performs.
+I give up artifical testing at this point.  Either the test or the results must be flawed.  One thing I wanted to know is whether it makes a difference if you have several lines with a number (like 1 or 1.0) vs. the same several lines with a variable instead of the number.  This test doesn´t show that, perhaps due to optimizations the LSL compiler performs.
 
-I use defines for constants --- not because it apparently may save 8
-bytes, but because it makes sense.  That you can switch between
-defines and variables for constants makes testing with "real" scripts
-easy.
+I use defines for constants --- not because it apparently may save 8 bytes, but because it makes sense.  That you can switch between defines and variables for constants makes testing with "real" scripts easy.
 
 '''Test with your actual script what difference it makes.'''
 
-It seems obvious that you would waste memory when you use a macro that
-the preprocessor turns into a lengthy expression which occurs in the
-script multiple times.  When it matters, test it; you may be
-surprised.
+It seems obvious that you would waste memory when you use a macro that the preprocessor turns into a lengthy expression which occurs in the script multiple times.  When it matters, test it; you may be surprised.
 
-You can also try to test for performance.  Provided you find a
-suitable place to set up your test objects and let the tests run for
-at least a week, you may get valid results.  Such tests could be
-interesting because you may want to define a function instead of a
-macro --- or a function that uses a macro --- to save script memory
-when the macro turns into a lengthy expression.  In theory, the macro
-would be faster because using a function requires the script
-interpreter to jump around in the code and to deal with putting
-parameters on the stack and with removing them while the macro does
-not.  But in theory, declared variables use script memory.
+You can also try to test for performance.  Provided you find a suitable place to set up your test objects and let the tests run for at least a week, you may get valid results.  Such tests could be interesting because you may want to define a function instead of a macro --- or a function that uses a macro --- to save script memory when the macro turns into a lengthy expression.  In theory, the macro would be faster because using a function requires the script interpreter to jump around in the code and to deal with putting parameters on the stack and with removing them while the macro does not.  But in theory, declared variables use script memory.
 
 When programming in C and you have a statement like
 
@@ -1338,14 +927,7 @@ if((A < 6) && (some_function(B) < 20))
 </lsl>
 
 
-LSL is stupid in that it will call the function or evaluate the
-expression the macro turned into even when '(A < 6)' evaluates to
-false.  It´s impossible for the whole condition to evaluate to true
-when '(A < 6)' is false, and evaluating a condition should stop once
-its outcome has been evaluated.  Calling a function takes time, and
-the function even might be fed with illegal parameters because B could
-have an illegal value the function cannot handle, depending on what
-the value of A is:
+LSL is stupid in that it will call the function or evaluate the expression the macro turned into even when '(A < 6)' evaluates to false.  It´s impossible for the whole condition to evaluate to true when '(A < 6)' is false, and evaluating a condition should stop once its outcome has been evaluated.  Calling a function takes time, and the function even might be fed with illegal parameters because B could have an illegal value the function cannot handle, depending on what the value of A is:
 
 
 <lsl>
@@ -1374,17 +956,9 @@ default
 </lsl>
 
 
-This example will yield a math error because some_function() is called
-even when it should not be called.  Such nonsense should be
-fixed.  Calling the function is an undesireable side effect.  To work
-around it so that some_function() isn´t called, you need to add
-another "if" statement, which eats memory.
+This example will yield a math error because some_function() is called even when it should not be called.  Such nonsense should be fixed.  Calling the function is an undesireable side effect.  To work around it so that some_function() isn´t called, you need to add another "if" statement, which eats memory.
 
-Depending on what the function or the macro does, your "if" statements
-can affect performance.  This is independent of using a preprocessor,
-but since you may be tempted to use macros in your sources when you
-use a preprocessor, you may be tempted to use them in "if" statements
-and create more undisirable side effects than you otherwise would.
+Depending on what the function or the macro does, your "if" statements can affect performance.  This is independent of using a preprocessor, but since you may be tempted to use macros in your sources when you use a preprocessor, you may be tempted to use them in "if" statements and create more undisirable side effects than you otherwise would.
 
 '''Avoid "if" statements which evaluate expressions that should not be evaluated.'''
 
@@ -1461,9 +1035,7 @@ You need even more parentheses, because:
 (10 - 5) * 3 + 3 * (20 - 15) * 3 + 3 == 15 + 3 * 5 * 3 + 3 == 15 + 45 + 3 == 63
 
 
-Imagine you defined 'plus3times3' without any parentheses at all.  You´d
-waste hours trying to figure out why your script yields incredibly
-weird results.
+Imagine you defined 'plus3times3' without any parentheses at all.  You´d waste hours trying to figure out why your script yields incredibly weird results.
 
 To get it right:
 
@@ -1482,8 +1054,7 @@ To get it right:
 ((10 - 5) * 3 + 3) * ((20 - 15) * 3 + 3) == 324
 
 
-There is quite a difference between 63 and 324.  Use parentheses.  I also
-always use parentheses with conditions because it makes them unambiguous:
+There is quite a difference between 63 and 324.  Use parentheses.  I also always use parentheses with conditions because it makes them unambiguous:
 
 
 <lsl>
@@ -1501,33 +1072,19 @@ if((A || B) && (C || (D > 500)))
 </lsl>
 
 
-That is not ambiguous.  Since "&&" usually takes precedence over "||",
-it´s different from the version without parentheses.  (It probably
-doesn´t matter in this case, but I´m not even trying to figure it
-out. It does matter in C because it has an effect on which of the
-expressions are evaluated and wich are not.  Simply write what you
-mean, with parentheses, and don´t let LSL get you to develop a bad
-style.)  When you have the above "if" statements in a macro, use
-parentheses around "A", "B", "C" and "D", for reasons shown above.
+That is not ambiguous.  Since "&&" usually takes precedence over "||", it´s different from the version without parentheses.  (It probably doesn´t matter in this case, but I´m not even trying to figure it out. It does matter in C because it has an effect on which of the expressions are evaluated and wich are not.  Simply write what you mean, with parentheses, and don´t let LSL get you to develop a bad style.)  When you have the above "if" statements in a macro, use parentheses around "A", "B", "C" and "D", for reasons shown above.
 
-Save yourself the hassle.  My LSL scripts tend to have lots of
-parentheses, a lot of them not strictly needed because they come from
-macro definitions.  They don´t hurt anything.  Not having them can
-hurt badly.
+Save yourself the hassle.  My LSL scripts tend to have lots of parentheses, a lot of them not strictly needed because they come from macro definitions.  They don´t hurt anything.  Not having them can hurt badly.
 
 =====How to use cpp=====
 
-Finally, there is the question of how to use cpp.  Cpp has a lot of
-command line parameters, and one particularly useful when using cpp
-for LSL is '-P'.  The manpage of cpp says:
+Finally, there is the question of how to use cpp.  Cpp has a lot of command line parameters, and one particularly useful when using cpp for LSL is '-P'.  The manpage of cpp says:
 
 
 * -P  Inhibit generation of linemarkers in the output from the preprocessor.  This might be useful when running the preprocessor on something that is not C code, and will be sent to a program which might be confused by the linemarkers.
 
 
-The LSL compiler is one of the programs that would be confused by line
-markers.  You can see what the line markers look like when you
-preprocess one of your scripts with
+The LSL compiler is one of the programs that would be confused by line markers.  You can see what the line markers look like when you preprocess one of your scripts with
 
 
 <lsl>
@@ -1535,10 +1092,7 @@ cpp your_script.lsl
 </lsl>
 
 
-By default, cpp writes its output to stdout, i. e. it appears on your
-screen.  Since it isn´t very useful to have your LSL scripts appear on
-your screen like that, you may want to redirect the output into a
-file:
+By default, cpp writes its output to stdout, i. e. it appears on your screen.  Since it isn´t very useful to have your LSL scripts appear on your screen like that, you may want to redirect the output into a file:
 
 
 <lsl>
@@ -1546,34 +1100,19 @@ cpp -P your_script.lsl > your_script.i
 </lsl>
 
 
-This creates, without the line markers, a file that contains your
-preprocessed source.  This file is named "your_script.i".
+This creates, without the line markers, a file that contains your preprocessed source.  This file is named "your_script.i".
 
 It´s that simple.
 
-You can now write a script and use defines and macros and preprocess
-it.  You can log in with your sl client, make a box, create a new
-script in the box, open the script, click on the "Edit" button and
-replace the default script that shows up in your favourite editor with
-the one you wrote and preprocessed.
+You can now write a script and use defines and macros and preprocess it.  You can log in with your sl client, make a box, create a new script in the box, open the script, click on the "Edit" button and replace the default script that shows up in your favourite editor with the one you wrote and preprocessed.
 
-It´s not entirely convenient yet because you still need to replace the
-script manually.  You may also want to include files into your script,
-like "lslstddef.h".  You don´t want to keep another copy of
-"lslstddef.h" with all your scripts and include it with '#include
-"lslstddef.h"'.  You only need one copy of "lslstddef.h", and it´s a
-good idea to keep it in a directory, perhaps with other headers you
-use.
+It´s not entirely convenient yet because you still need to replace the script manually.  You may also want to include files into your script, like "lslstddef.h".  You don´t want to keep another copy of "lslstddef.h" with all your scripts and include it with '#include "lslstddef.h"'.  You only need one copy of "lslstddef.h", and it´s a good idea to keep it in a directory, perhaps with other headers you use.
 
-Cpp has another parameter for this: '-I'.  '-I' tells cpp where to
-look for files you include with something like '#include <lslstddef.h>'.
+Cpp has another parameter for this: '-I'.  '-I' tells cpp where to look for files you include with something like '#include <lslstddef.h>'.
 
-If you haven´t pulled (i. e. downloaded) the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article],
-please do so now.
+If you haven´t pulled (i. e. downloaded) the [https://github.com/Ratany/lsl-repo git repository that accompanies this article], please do so now.
 
-When you look into the "projects" directory from the repository,
-you´ll find a few directories in it:
+When you look into the "projects" directory from the repository, you´ll find a few directories in it:
 
 
 <lsl>
@@ -1587,32 +1126,13 @@ projects
 </lsl>
 
 
-The "bin" directory contains tools; "include" is for files like
-"lslstddef.h" which you may want to include into many of your
-sources. The "lib" directory is much like the "include" directory; the
-difference is that "include" is for header files which provide defines
-and macros, while the "lib" directory is for files parts of which will
-be included into your sources when you set up defines which get these
-parts included.  Those parts can be functions or defines or macros,
-and they are put together in files depending on their purpose.
+The "bin" directory contains tools; "include" is for files like "lslstddef.h" which you may want to include into many of your sources. The "lib" directory is much like the "include" directory; the difference is that "include" is for header files which provide defines and macros, while the "lib" directory is for files parts of which will be included into your sources when you set up defines which get these parts included.  Those parts can be functions or defines or macros, and they are put together in files depending on their purpose.
 
-For example, "lib/getlinknumbers.lsl" provides functions related to
-figuring out the link numbers of prims. "getlinknumbers.lsl" is a
-library of such functions, macros and defines.  Since it´s a library,
-it´s in the "lib" directory: "lib" as in "library".
+For example, "lib/getlinknumbers.lsl" provides functions related to figuring out the link numbers of prims. "getlinknumbers.lsl" is a library of such functions, macros and defines.  Since it´s a library, it´s in the "lib" directory: "lib" as in "library".
 
-The "template-directories" directory is a template which you can copy
-when you start writing a new script.  It contains directories to put
-particular files, like the "src" directory where you put the source
-you´re writing.  It also has a "lib" directory which can hold files
-you want to include into one or several of the sources in the "src"
-directory, but which are too specific to the particular project that
-you don´t want to put them into the general "projects/lib" or
-"projects/include" directory.
+The "template-directories" directory is a template which you can copy when you start writing a new script.  It contains directories to put particular files, like the "src" directory where you put the source you´re writing.  It also has a "lib" directory which can hold files you want to include into one or several of the sources in the "src" directory, but which are too specific to the particular project that you don´t want to put them into the general "projects/lib" or "projects/include" directory.
 
-Now when preprocessing your source with cpp, you may want to include
-"lslstddef.h".  Since you´re starting a new project, you first copy
-the template directories:
+Now when preprocessing your source with cpp, you may want to include "lslstddef.h".  Since you´re starting a new project, you first copy the template directories:
 
 
 <lsl>
@@ -1630,8 +1150,7 @@ the template directories:
 </lsl>
 
 
-Now you can use your favourite editor, write your script and save it
-as "projects/your-script/src/your-script.lsl":
+Now you can use your favourite editor, write your script and save it as "projects/your-script/src/your-script.lsl":
 
 
 <lsl>
@@ -1648,8 +1167,7 @@ default
 </lsl>
 
 
-As described above, you run 'cpp -P your_script.lsl > your_script.i'.
-What you get looks like this:
+As described above, you run 'cpp -P your_script.lsl > your_script.i'. What you get looks like this:
 
 
 <lsl>
@@ -1662,8 +1180,7 @@ compilation terminated.
 </lsl>
 
 
-This tells you that cpp didn´t find "lslstddef.h".  You need to tell
-cpp where to find it:
+This tells you that cpp didn´t find "lslstddef.h".  You need to tell cpp where to find it:
 
 
 <lsl>
@@ -1672,10 +1189,7 @@ cpp where to find it:
 </lsl>
 
 
-Using '-I', you tell cpp to look for files that are to be included in
-the directory '../../include'.  Since you do this from within the
-directory 'projects/your-script/src', cpp will look into
-'projects/include' --- where it can find "lslstddef.h".
+Using '-I', you tell cpp to look for files that are to be included in the directory '../../include'.  Since you do this from within the directory 'projects/your-script/src', cpp will look into 'projects/include' --- where it can find "lslstddef.h".
 
 You can now look at the outcome:
 
@@ -1693,108 +1207,48 @@ default
 </lsl>
 
 
-You may think that this is inconvenient.  You do not want to type
-something like 'cpp -I../../include -P your_script.lsl >
-your_script.i' for every script.  You don´t want to do this for every
-script when a file included by the source may have changed.  You don´t
-want to do this for all the scripts that are part of your project just
-in case you have modified one of them, and you don´t want to forget to
-preprocess all the scripts that need to be preprocessed every time you
-modified something.
+You may think that this is inconvenient.  You do not want to type something like 'cpp -I../../include -P your_script.lsl > your_script.i' for every script.  You don´t want to do this for every script when a file included by the source may have changed.  You don´t want to do this for all the scripts that are part of your project just in case you have modified one of them, and you don´t want to forget to preprocess all the scripts that need to be preprocessed every time you modified something.
 
-Fortunately, you don´t need to do that.  There is a tool that can do
-it for you.  It´s called "make".
+Fortunately, you don´t need to do that.  There is a tool that can do it for you.  It´s called "make".
 
 ====Make====
 
-Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool
-which controls the generation of executables and other non-source
-files of a program from the program's source files."
+Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool which controls the generation of executables and other non-source files of a program from the program's source files."
 
 
-As you may have noticed, in the previous section of this article I
-have referred to "scripts" (LSL scripts) and "sources", without
-mentioning what the difference is.  The source is what you write.  It
-can be an LSL script that can be compiled by an LSL compiler right
-away.  That´s probably what you have written until you read this
-article.
+As you may have noticed, in the previous section of this article I have referred to "scripts" (LSL scripts) and "sources", without mentioning what the difference is.  The source is what you write.  It can be an LSL script that can be compiled by an LSL compiler right away.  That´s probably what you have written until you read this article.
 
-After reading this article, you may not want to write plain LSL
-scripts anymore.  You may want to use a decent editor, a preprocessor
-and Make.  What you´ll write is still source, but it may be source
-which cannot be compiled by an LSL compiler right away because it
-needs to go through a preprocessor first.  That´s what I was trying to
-refer to as "source".
+After reading this article, you may not want to write plain LSL scripts anymore.  You may want to use a decent editor, a preprocessor and Make.  What you´ll write is still source, but it may be source which cannot be compiled by an LSL compiler right away because it needs to go through a preprocessor first.  That´s what I was trying to refer to as "source".
 
-You could say that
-'''An LSL script is the output of a preprocessor that processes a source file.''' 
-I don´t write LSL scripts anymore.  I write source files that can be
-turned into LSL scripts.  It´s much easier to create LSL scripts that
-way than it is to write them.
+You could say that '''An LSL script is the output of a preprocessor that processes a source file.'''  I don´t write LSL scripts anymore.  I write source files that can be turned into LSL scripts.  It´s much easier to create LSL scripts that way than it is to write them.
 
-In the sense of Make, the LSL script falls under "other non-source
-files".  Make isn´t used here to generate an
-[http://en.wikipedia.org/wiki/Executable | executable].  LSL scripts
-are not exectutable, and apparently the LSL compiler compiles them
-into [http://en.wikipedia.org/wiki/Bytecode | byte code].
+In the sense of Make, the LSL script falls under "other non-source files".  Make isn´t used here to generate an [http://en.wikipedia.org/wiki/Executable | executable].  LSL scripts are not exectutable, and apparently the LSL compiler compiles them into [http://en.wikipedia.org/wiki/Bytecode | byte code].
 
-"Other non-source files" can also mean documentation.  The provided
-makefile has entries that use pdflatex to create a PDF file from a
-[http://www.latex-project.org/ LaTeX]
-source and to copy the PDF into the project directory.  I don´t
-write PDF files.  I write source files that can be turned into PDF
-files.  It´s much easier to create PDF files that way than it is to
-write them :)
+"Other non-source files" can also mean documentation.  The provided makefile has entries that use pdflatex to create a PDF file from a [http://www.latex-project.org/ LaTeX] source and to copy the PDF into the project directory.  I don´t write PDF files.  I write source files that can be turned into PDF files.  It´s much easier to create PDF files that way than it is to write them :)
 
 
-Preprocessing "your-script.lsl" like in the previous section generates
-a "non-source file" from a source file.  You have controlled the
-generation of the non-source file manually, which can be inconvenient.
+Preprocessing "your-script.lsl" like in the previous section generates a "non-source file" from a source file.  You have controlled the generation of the non-source file manually, which can be inconvenient.
 
-More conveniently, Make can do this job for you.  All you need for
-that is Make, and a so-called Makefile.  It´s called Makefile because
-it tells Make what it needs to do to generate files from files, and
-under which conditions which files need to be created.
+More conveniently, Make can do this job for you.  All you need for that is Make, and a so-called Makefile.  It´s called Makefile because it tells Make what it needs to do to generate files from files, and under which conditions which files need to be created.
 
-You do not need to understand Make or Makefiles to make creating LSL
-scripts easier.  You find a suitable Makefile in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article].
-The Makefile is "projects/make/Makefile".
+You do not need to understand Make or Makefiles to make creating LSL scripts easier.  You find a suitable Makefile in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article]. The Makefile is "projects/make/Makefile".
 
-This Makefile is symlinked into the template-directories.  There is
-only one Makefile for all your projects.  It works for all of
-them.  This has the advantage --- or disadvantage --- that when you
-change the Makefile, the changes apply to all your projects.
+This Makefile is symlinked into the template-directories.  There is only one Makefile for all your projects.  It works for all of them.  This has the advantage --- or disadvantage --- that when you change the Makefile, the changes apply to all your projects.
 
-Should you need to adjust the Makefile because a particular project
-has special requirements, remove the symlink to the Makefile from the
-projects´ directory.  Copy make/Makefile into the projects´ directory
-and then modify the copy.
+Should you need to adjust the Makefile because a particular project has special requirements, remove the symlink to the Makefile from the projects´ directory.  Copy make/Makefile into the projects´ directory and then modify the copy.
 
 
 =====How to use Make=====
 
-Enter the directory of the project you are working on and run 'make'.
-That´s all.
+Enter the directory of the project you are working on and run 'make'. That´s all.
 
-You can run make from within emacs: M-x compile.  Emacs will show you
-the output in a buffer.  If there are error messages, you can move the
-cursor to the error message and press enter and emacs shows you the
-line in the file that triggered the error message.  To compile again,
-you can use 'recompile':  M-x recompile.  You can make a key-binding
-for that with something like '(global-set-key [C-f1] 'recompile)' in
-your ~/.emacs and recompile your source conveniently from within your
-favourite editor --- which by now is, of course, emacs --- by simply
-pressing Ctrl+F1.
+You can run make from within emacs: M-x compile.  Emacs will show you the output in a buffer.  If there are error messages, you can move the cursor to the error message and press enter and emacs shows you the line in the file that triggered the error message.  To compile again, you can use 'recompile': M-x recompile.  You can make a key-binding for that with something like '(global-set-key [C-f1] 'recompile)' in your ~/.emacs and recompile your source conveniently from within your favourite editor --- which by now is, of course, emacs --- by simply pressing Ctrl+F1.
 
 =====Make "your-example.lsl"=====
 
-Assume you want to try out the "your-script.lsl" source from
-above. You need to make an LSL script which you can put into an object
-for this.  Suppose you make a box and name it "testbox".
+Assume you want to try out the "your-script.lsl" source from above. You need to make an LSL script which you can put into an object for this.  Suppose you make a box and name it "testbox".
 
-Enter the directory for the project ("/projects/your-script/") and run
-'make':
+Enter the directory for the project ("/projects/your-script/") and run 'make':
 
 
 <lsl>
@@ -1805,13 +1259,9 @@ COMPILING src/your-script.lsl
 </lsl>
 
 
-This has done a few things which it doesn´t tell you about.  It merely
-tells you that it was compling --- you could say preprocessing instead
-since your script isn´t really compiled --- and that the resulting LSL
-script has 8 lines and 153 characters.
+This has done a few things which it doesn´t tell you about.  It merely tells you that it was compling --- you could say preprocessing instead since your script isn´t really compiled --- and that the resulting LSL script has 8 lines and 153 characters.
 
-You probably can´t wait to see the results now.  Two non-source files
-were generated from the source files:
+You probably can´t wait to see the results now.  Two non-source files were generated from the source files:
 
 
 # "projects/your-script/dbg/your-script.i" and
@@ -1819,19 +1269,12 @@ were generated from the source files:
 # "projects/your-script/bin/your-script.o".
 
 
-The first one is the so-called debugging version, the second one is
-the version you put into the "textbox" as a script.  The second one is
-"compressed" and not easy to read.  You can put either into the
-"testbox" as a script.
+The first one is the so-called debugging version, the second one is the version you put into the "textbox" as a script.  The second one is "compressed" and not easy to read.  You can put either into the "testbox" as a script.
 
-If you remember the perl script that automatically replaces the
-scripts in the built-in editor
+If you remember the perl script that automatically replaces the scripts in the built-in editor
 
 
-With the Makefile from the repository, Make does a bit more than only
-running cpp.  It will show you what it does when you run 'make -n',
-and the '-B' option tells Make to do everything it would, much as if
-you were running it for the first time for your new source:
+With the Makefile from the repository, Make does a bit more than only running cpp.  It will show you what it does when you run 'make -n', and the '-B' option tells Make to do everything it would, much as if you were running it for the first time for your new source:
 
 
 <lsl>
@@ -1849,43 +1292,17 @@ etags src/your_script.lsl ../lib/geometry.lsl ../lib/getlinknumbers.lsl
 </lsl>
 
 
-Make runs cpp, [http://www.gnu.org/software/sed/ sed],
-[http://en.wikipedia.org/wiki/Wc_(Unix) wc],
-[http://astyle.sourceforge.net/ astyle], etags (which comes with
-emacs), [http://en.wikipedia.org/wiki/Cat_(Unix) cat],
-[http://www.gnu.org/software/coreutils/ echo] and
-[http://www.gnu.org/software/coreutils/ md5sum].
+Make runs cpp, [http://www.gnu.org/software/sed/ sed], [http://en.wikipedia.org/wiki/Wc_(Unix) wc], [http://astyle.sourceforge.net/ astyle], etags (which comes with emacs), [http://en.wikipedia.org/wiki/Cat_(Unix) cat], [http://www.gnu.org/software/coreutils/ echo] and [http://www.gnu.org/software/coreutils/ md5sum].
 
-It also runs i2o.pl, which is a perl script.  You can find it in the
-[https://github.com/Ratany/lsl-repo git repository that accompanies this article]
-in the projects/bin directory.
+It also runs i2o.pl, which is a perl script.  You can find it in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in the projects/bin directory.
 
-i2o.pl comes from the [http://opengate.ma8p.com/open9.tar.gz source]
-of the [http://ma8p.com/~opengate/ Open Stargate Network]
-stargates.  It´s slighly modified.  The Makefile is from the same
-source and has also been modified.  The whole idea of preprocessing
-the source with cpp to generate LSL scripts is from there.  It´s
-not my idea, I´m merely using it and writing this article about it.
+i2o.pl comes from the [http://opengate.ma8p.com/open9.tar.gz source] of the [http://ma8p.com/~opengate/ Open Stargate Network] stargates.  It´s slighly modified.  The Makefile is from the same source and has also been modified.  The whole idea of preprocessing the source with cpp to generate LSL scripts is from there.  It´s not my idea, I´m merely using it and writing this article about it.
 
-When you have successfully run 'make', you will find files in the
-'projects/your-script/dbg' and 'projects/your-script/bin'
-directories. 'dbg' stands for 'debug', 'bin' for 'binary'.  The files
-in these directories are LSL scripts that have been generated from
-your source in the 'projects/your-script/src' directory --- in this
-case, from 'projects/your-script/src/your-script.lsl'.
+When you have successfully run 'make', you will find files in the 'projects/your-script/dbg' and 'projects/your-script/bin' directories. 'dbg' stands for 'debug', 'bin' for 'binary'.  The files in these directories are LSL scripts that have been generated from your source in the 'projects/your-script/src' directory --- in this case, from 'projects/your-script/src/your-script.lsl'.
 
-You will find "your-script.i" and "your-script.i.clean" in the 'dbg'
-directory.  "your-script.i.clean" is an intermediate file which was
-created because it is not exactly a good idea to let sed overwrite its
-input file with its output.  You can delete "your-script.i.clean" if
-you like, and/or modify the Makefile to delete it for you.
+You will find "your-script.i" and "your-script.i.clean" in the 'dbg' directory.  "your-script.i.clean" is an intermediate file which was created because it is not exactly a good idea to let sed overwrite its input file with its output.  You can delete "your-script.i.clean" if you like, and/or modify the Makefile to delete it for you.
 
-By filtering the output of cpp with sed, a few unwanted things are
-removed from the LSL scripts.  The things removed with sed are
-introduced through the way I´m using macros which are defined in
-"lslstddef.h".  Some of those lead to closing-braces followed by a
-semicolon ("};"), to double-semicolons (";;") or to an otherwise emtpy
-line with only a semicolon (";").  For example:
+By filtering the output of cpp with sed, a few unwanted things are removed from the LSL scripts.  The things removed with sed are introduced through the way I´m using macros which are defined in "lslstddef.h".  Some of those lead to closing-braces followed by a semicolon ("};"), to double-semicolons (";;") or to an otherwise emtpy line with only a semicolon (";").  For example:
 
 
 <cpp>
@@ -1897,8 +1314,7 @@ line with only a semicolon (";").  For example:
 </cpp>
 
 
-This makes debug messages (of debug level 0) disappear when 'DEBUG0'
-does not evaluate to true.  The source may look like this:
+This makes debug messages (of debug level 0) disappear when 'DEBUG0' does not evaluate to true.  The source may look like this:
 
 
 <lsl>
@@ -1919,46 +1335,15 @@ The output of cpp, when 'DEBUG0' is not true, looks like this:
 </lsl>
 
 
-The debug message disappears because it´s defined to disappear.  But
-the semicolon at the end of the line is not part of the macro
-definition because when a line doesn´t end with a semicolon, emacs
-indents the following lines in an undesired way: That the semicolon is
-missing makes emacs figure that the line continues on the next line,
-which it doesn´t.  If the semicolon was part of the macro definition,
-I´d still have to put it in to get the indentation as desired.  It
-only would create a line with two semicolons when the debug message
-does not disappear.  So when the debug message disappears, the
-semicolon remains.  Sed removes it by deleting the whole line.
+The debug message disappears because it´s defined to disappear.  But the semicolon at the end of the line is not part of the macro definition because when a line doesn´t end with a semicolon, emacs indents the following lines in an undesired way: That the semicolon is missing makes emacs figure that the line continues on the next line, which it doesn´t.  If the semicolon was part of the macro definition, I´d still have to put it in to get the indentation as desired.  It only would create a line with two semicolons when the debug message does not disappear.  So when the debug message disappears, the semicolon remains.  Sed removes it by deleting the whole line.
 
-Sed "knows" what to do because it is instructed by a sed-script.  You
-can find this sed-script as "projects/clean-lsl.sed".
+Sed "knows" what to do because it is instructed by a sed-script.  You can find this sed-script as "projects/clean-lsl.sed".
 
-Wc is a nice tool to give you statistics about text files.  It can
-count words, bytes, lines etc..  It´s purely informational; I put it
-into the Makefile because I wanted to see what difference the debug
-mesages make for the size of the file and number of lines.  You can
-comment it out in the Makefile, or remove it from the Makefile in case
-you don´t want it.
+Wc is a nice tool to give you statistics about text files.  It can count words, bytes, lines etc..  It´s purely informational; I put it into the Makefile because I wanted to see what difference the debug mesages make for the size of the file and number of lines.  You can comment it out in the Makefile, or remove it from the Makefile in case you don´t want it.
 
-The same goes for astyle, it´s not required.  It reformats the code so
-that it´s easier to read than the output of cpp.  It´s useful when you
-want to put the LSL script generated from your source on wiki pages,
-and for debugging.
+The same goes for astyle, it´s not required.  It reformats the code so that it´s easier to read than the output of cpp.  It´s useful when you want to put the LSL script generated from your source on wiki pages, and for debugging.
 
-i2o.pl "compresses" the LSL script.  It removes whitespace and line
-end-markers, and it shortens the names of variables.  One advantage is
-that you may get a script which uncompressed has more than 64kB to
-work because it fits into "a script": The editor built into sl clients
-(or, more likely, the server does it) cuts off anything beyond 64kB
-when you upload something into a notecard or into a script.  Another
-advantage is that your script may need less memory.  My unverified
-impression is that "compressed" scripts even run a tiny bit faster,
-though that seems unlikely since they are compiled to bytecode just
-like uncompressed ones.  Test it if you like --- since you got less to
-upload when the script is "compressed", in theory the "compressed"
-scripts don´t take as long to upload as uncompressed ones and you can
-test them faster.  The server may even experience not so many
-difficulties.
+i2o.pl "compresses" the LSL script.  It removes whitespace and line end-markers, and it shortens the names of variables.  One advantage is that you may get a script which uncompressed has more than 64kB to work because it fits into "a script": The editor built into sl clients (or, more likely, the server does it) cuts off anything beyond 64kB when you upload something into a notecard or into a script.  Another advantage is that your script may need less memory.  My unverified impression is that "compressed" scripts even run a tiny bit faster, though that seems unlikely since they are compiled to bytecode just like uncompressed ones.  Test it if you like --- since you got less to upload when the script is "compressed", in theory the "compressed" scripts don´t take as long to upload as uncompressed ones and you can test them faster.  The server may even experience not so many difficulties.
 
 
 

@@ -1,0 +1,38 @@
+SRC=$(wildcard src/*.lsl)
+LIB=$(wildcard ../lib/*.lsl)
+LOC=$(wildcard ./lib/*.h)
+INC=$(wildcard ../include/*.h)
+DBG=$(subst .lsl,.i,$(subst src/,dbg/,$(SRC)))
+OBJ=$(subst .lsl,.o,$(subst src/,bin/,$(SRC)))
+
+INCDIR=../include
+LIBDIR=../lib
+LOCDIR=./lib
+
+TAGS=./TAGS
+ITO=../bin/i2o.pl
+ADD=../bin/addtotable.pl
+
+DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
+
+all: $(DBG) $(OBJ) $(DEPS)
+
+debug: $(DBG)
+
+dbg/%.i: src/%.lsl
+	@echo "// =`basename $@`" > $@
+	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< >> $@
+	@$(ADD) $< $(CURDIR)/bin/`basename $<`
+
+bin/%.o: dbg/%.i
+	@sed -f ../clean-lsl.sed $< | $(ITO) `basename $<` > $@
+
+dep/%.di: src/%.lsl
+	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -MM $< | sed '/^.*\.o:/s_^_dbg/_' | sed 's/\.o:/\.i:/' > $@
+
+dep/%.d: dep/%.di
+	@sed 's_^dbg/_bin/_' $< | sed 's/\.i:/\.o:/' > $@
+
+
+-include $(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
+-include $(subst .lsl,.di,$(subst src/,dep/,$(SRC)))
