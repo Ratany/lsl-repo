@@ -3,5 +3,6 @@
 *.i
 *.clean
 TAGS
-deps
 replaceassignments.txt
+*.d
+*.di
