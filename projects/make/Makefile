@@ -11,7 +11,7 @@ LIBDIR=../lib
 LOCDIR=./lib
 TAGS=./TAGS
 
-ITO=i2o.pl
+ITO=../bin/i2o.pl
 ADD=../bin/addtotable.pl
 
 
