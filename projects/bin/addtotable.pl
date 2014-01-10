@@ -39,8 +39,6 @@ use File::Basename;
 # the lookup-table
 #
 my ($key, $value) = @ARGV;
-chomp $key;
-chomp $value;
 
 # check whether they look ok or not
 #
@@ -50,10 +48,6 @@ unless(defined($key) && defined($value) && ($key =~ m!^src/.*\.lsl$!) && ($value
     exit(1);
   }
 
-# prepare the key for looking it up in the lookup table
-#
-$key =~ s!src/!!;
-$key =~ s/\.lsl$/\.o/;
 
 # the file name of the lookup table
 #
@@ -61,34 +55,50 @@ $key =~ s/\.lsl$/\.o/;
 #
 my $table = dirname(__FILE__) . "/../make/replaceassignments.txt";
 
-
-# look up the key in the lookup table
+# prepare the key for looking it up in and writing it to the lookup
+# table
 #
-open my $assign, "<", $table;
-while( <$assign> )
+$key =~ s!src/!!;
+$key =~ s/\.lsl$/\.o/;
+
+if(-e $table)
   {
-    # ignore lines starting with "//" as comments
+    # look up the key in the lookup table
     #
-    unless( m!^//!)
+    open my $assign, "<", $table;
+    while( <$assign> )
       {
-	chomp $_;
-	if( m/$key/)
+	# ignore lines starting with "//" as comments
+	#
+	unless( m!^//!)
 	  {
-	    # nothing further to do because the key is already in the table
-	    #
-	    close $assign;
-	    exit(0);
+	    chomp $_;
+	    if( m/$key/)
+	      {
+		# nothing further to do because the key is already in the table
+		#
+		close $assign;
+		exit(0);
+	      }
 	  }
       }
+    close $assign;
   }
-close $assign;
+else
+  {
+    # create the table when it doesn´t exist
+    #
+    open my $fh, ">>", $table;
+    printf $fh "// [%s]: lookup-table created\n", strftime("%Y-%m-%d %H:%M:%S", localtime);
+    close $fh;
+  }
 
 
 # prepare the value to write it to the table together with the key
 #
 $value =~ s/\.lsl$/\.o/;
 
-open $assign, ">>", $table;
+open my $assign, ">>", $table;
 printf $assign "\n// [%s]: added %s\n", strftime("%Y-%m-%d %H:%M:%S", localtime), $key;
 print $assign $key . ": " . $value . "\n";
 close $assign;

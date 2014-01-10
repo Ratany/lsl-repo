@@ -109,7 +109,14 @@ your own source.  Suppose you make a copy of the
 "template-directories" and name the copy "my-test".  You would then
 put your own source into "my-test/src".
 
-You need to edit
+Suppose you want to try out "example-1".  Enter the directory
+"example-1" and run 'make':
+
+[~/src/lsl-repo/projects/example-1] make
+COMPILING src/example-1.lsl
+  39 1202 dbg/example-1.i.clean
+[~/src/lsl-repo/projects/example-1] 
+
 
 
 ====Editor====
