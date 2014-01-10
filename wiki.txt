@@ -162,25 +162,37 @@ tools and try again.
 
 ===Tools you need for the build system===
 
-* astyle (optional when Makefile is modified)
+Required tools:
+
 
 * basename: [http://www.gnu.org/software/coreutils/ coreutils]
 
 * cpp: [http://gcc.gnu.org/ GCC]
 
-* echo (optional when Makefile is modified): [http://www.gnu.org/software/coreutils/ coreutils]
+* echo: [http://www.gnu.org/software/coreutils/ coreutils]
 
-* etags (optional when Makefile is modified): [http://www.gnu.org/software/emacs/ Emacs]
+* editor: your favourite editor, [http://www.gnu.org/software/emacs/ Emacs] is recommended
 
 * make: [http://www.gnu.org/software/make/ Make]
 
-* pdflatex (optional): [http://tug.org/texlive/ TeX Live]
-
-* rm (optional when Makefile is modified): [http://www.gnu.org/software/coreutils/ coreutils]
-
 * sed: [http://sed.sourceforge.net/ sed]
 
-* wc (optional when Makefile is modified)
+
+Optional tools:
+
+
+* astyle: [http://astyle.sourceforge.net/ astyle]
+
+* etags: [http://www.gnu.org/software/emacs/ Emacs]
+
+* pdflatex: [http://tug.org/texlive/ TeX Live]
+
+* rm: [http://www.gnu.org/software/coreutils/ coreutils]
+
+* wc: [http://www.gnu.org/software/coreutils/ coreutils]
+
+You can edit the "make/Makefile" and comment out or delete the lines
+that use the optional tools.  Makefiles are fun to edit.
 
 ====Editor====
 
