@@ -177,6 +177,8 @@ You can use [[Emacs_LSL_Mode]].
 
 A mofied version of lsl-mode is in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "emacs/lsl-mode.el".  This version has been modified for use with a file I named "lslstddef.h" ("projects/include/lslstddef.h" in the repository).  Following sections will refer to and use this file.
 
+\add ~/.emacs
+
 =====Tags=====
 
 Emacs supports so-called tags.  Using tags allows you to find the declaration of functions, defines, macros and variables you use in your sources without searching.  It doesn´t matter in which file they are.
@@ -185,7 +187,7 @@ The build system creates a so-called tags-file for you.  Emacs can read it autom
 
 =====Git=====
 
-Emacs can support [http://git-scm.com/ git] (and other CVS systems). You may need to install additional packages for it.  I haven´t tried out any of them yet.
+See [http://www.gnu.org/software/emacs/tour/ this page]:  A number of version control systems are supported, and [http://git-scm.com/ git] is one of them.  Additional packages are available for this --- I haven´t tried any of them yet.
 
 ====Other Editors====
 
