@@ -201,6 +201,14 @@ That´s what the file "emacs" in the "emacs" directory is.  You can move this fi
 
 Without using lsl-mode.el (or lsl-mode.elc), syntax highlighting for your sources when you create LSL scripts won´t be as nice, so you really want to do this.
 
+=====Line Numbers=====
+
+Line numbers have become an anachronism.  They were used to create what was called "spaghetti code" with statements like "if(A) then goto 100;". Seriously.  There was no other way.  It helped to get you to think straight as a programmer.  Events are horrible when you think straight, and I don´t like them.  They are worse than Makefiles. Seriously.  But there is no other way.
+
+The built-in script editor displays line numbers.  Emacs can do that, too.  There´s a mode for it, called linum-mode.  Try M-x linum-mode.  After all, line numbers can be very useful for reference.
+
+When you need to add line numbers to the contents of a buffer, look  [http://www.emacswiki.org/emacs/NumberLines here].
+
 ====Other Editors====
 
 In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
@@ -547,7 +555,7 @@ The define "iSTRIDE_agents" is the stride of the list, 1 in this case. Using "--
 
 "kAgentKey" is a macro.  It´s a define that takes parameters.  You might think the parameter is an integer which is an index to the list in which the UUIDs of the agents are stored.  It is not: The parameter is ''used'' an index.  The preprocessor doesn´t know anything about lists or integers.
 
-There are no types involved with macro parameters as are with variables: When you declare a function in LSL that takes parameters, you need to declare what type the parameters are of.  Macro parameters don´t have a type.  The preprocessor replaces stuff literally.  You could use a vector or some random string as a parameter with "kAgentKey".  Cpp would do the replacement just fine.  It replaces text like a search-and-replace operation you perform with your favourite editor does.  This can sometimes be limiting:
+There are no types involved with macro parameters as are with parameters of functions:  When you declare a function in LSL that takes parameters, you need to declare what type the parameters are of.  Macro parameters don´t have a type.  The preprocessor replaces stuff literally.  You could use a vector or some random string as a parameter with "kAgentKey".  Cpp would do the replacement just fine and not give you error messages.  It replaces text like a search-and-replace operation you perform with your favourite editor does.  This can sometimes be limiting:
 
 
 <lsl>
@@ -612,8 +620,11 @@ default
 
 You can find this example in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in "projects/components".
 
+'''Macros are not functions.'''
 
-Unfortunately, you cannot define defines or macros with defines: "#define NEWLIST(name, stride) #define list name; #define iSTRIDE_##name stride" will cause cpp to stop proprocessing and to print an error message.  Maybe I´ll write a perl script to pre-preprocess my sources ... that might be easier than learning [http://www.gnu.org/software/m4/ | m4].
+
+Unfortunately, you cannot define defines or macros with defines: "#define NEWLIST(name, stride) #define list name; #define iSTRIDE_##name stride" will cause cpp to stop preprocessing and to print an error message.  Maybe I´ll write a perl script to pre-preprocess my sources ... that might be easier than learning [http://www.gnu.org/software/m4/ | m4].
+
 
 "vAgentPos" and "fAgentDistance" are also macros and work the same way as "kAgentKey".  The code to figure out which agent is the one furthest away from the object is simple, and I´ll skip over it.  It gets interesting when the movement is implemented, so here is example-1_D, the complete source:
 
@@ -693,11 +704,13 @@ default
 </lsl>
 
 
-There isn´t much new to it.  "unless" is defined in "lslstddef.h" and speaks for itself.  "fUNDETERMINED" and "fIsUndetermined" speak for themselves, too: There are no negative distances between positions, and what "llVecDist()" returns is never negative.  There may be no agents on the parcel, in which case the list of agents would be empty.  It´s length would be 0 and the code in the while loop would not be executed.  The variable "distance" would still have the value it was initialized with when it was declared.  What the furthest agent is would be undetermined, and that´s exactly what the code tells you.
+There isn´t much new to it.  "unless" is defined in "lslstddef.h" and speaks for itself.  Just make sure you know what you´re doing when you use "unless(A && B)":  Did you really want "A && B", or did you want "A || B"?  Think about it --- or perhaps keep it simple and don´t use conditions composed of multiple expressions with "unless".
 
-The movement of the object should look nice.  It looks nice when the object always moves at the same speed.  "llSetKeyframedMotion()" doesn´t use speed. You have to specify the duration of the movement. Since the distance between the object and agents it moves to varies, the duration of the movement is adjusted according to the distance. The minimum duration "llSetKeyframedMotion()" works with is 1/45 second.  "fSecondsForMeters" makes sure that the duration is at least 1/45 second through the "FMax" macro which is defined in "lslstddef.h": "FMax" returns the greater value of the two parameters it is supplied with.
+"fUNDETERMINED" and "fIsUndetermined" speak for themselves, too: There are no negative distances between positions, and what "llVecDist()" returns is never negative.  There may be no agents on the parcel, in which case the list of agents would be empty.  It´s length would be 0 and the code in the while loop would not be executed.  The variable "distance" would still have the value it was initialized with when it was declared.  What the furthest agent is would be undetermined, and that´s exactly what the code tells you.
 
-"vRandomDistance" is used to help with that the object doesn´t hit the agent it moves to and ends up at some random distance from them, with a minimum offset.  "PosOffset" from "lslstddef.h" works with two vectors and gives the offset between them as a vector.  It´s one of my favourite macros because I don´t need to ask myself anymore what "offset" is supposed to mean: "here - there" or "there - here".  The offset is simply "PosOffset(here, there)" when it´s an offset from here to there and "PosOffset(there, here)" when it´s offset from there to here.  "llSetKeyframedMotion()" uses offsets ...
+The movement of the object should look nice.  It looks nice when the object always moves at the same speed.  "llSetKeyframedMotion()" doesn´t use speed. You have to specify the duration of the movement. Since the distance between the object and agents it moves to varies, the duration of the movement is adjusted according to the distance. The minimum duration "llSetKeyframedMotion()" works with is 1/45 second.  "fSecondsForMeters" makes sure that the duration is at least 1/45 second through the "FMax" macro which is defined in "lslstddef.h": "FMax" evaluates to the greater value of the two parameters it is supplied with.
+
+"vRandomDistance" is used to help with that the object shouldn´t hit the agent it moves to and ends up at some random distance from them, with a minimum offset.  "PosOffset" from "lslstddef.h" works with two vectors and gives the offset between them as a vector.  It´s one of my favourite macros because I don´t need to ask myself anymore what "offset" is supposed to mean: "here - there" or "there - here".  The offset is simply "PosOffset(here, there)" when it´s an offset from here to there and "PosOffset(there, here)" when it´s offset from there to here.  Like many other things, "llSetKeyframedMotion()" uses offsets ...
 
 The important thing here is this: Why divide the distance and introduce another vector for the offset when you could simply do it in one line like this:
 
@@ -709,7 +722,7 @@ llSetKeyframedMotion([PosOffset(here, vAgentPos(goto) + vMINRANGE(0.5)),
 </lsl>
 
 
-That´s one thing all these macros are for, aren´t they?  Yes they are --- and you need to be aware of what they turn into.  Cpp is designed to preprocess code for a C or C++ compiler, and those are probalby a lot smarter than an LSL compiler.  The C compiler optimizes "1.0/45.0" by replacing it with the result of the division.  C has a ternary operator which makes life a lot easier not only for writing macros like "FMax": "#define MAX(a,b) (((a) > (b)) ? (a) : (b))" works for both integers and floats --- compared to
+That´s one thing all these macros are for, aren´t they?  Yes they are --- and you need to be aware of what they turn into.  Cpp is designed to preprocess code for a C or C++ compiler, and those are probably a lot smarter than an LSL compiler.  The C compiler optimizes "1.0/45.0" by replacing it with the result of the division.  C has a ternary operator which makes life a lot easier not only for writing macros like "FMax": "#define MAX(a,b) (((a) > (b)) ? (a) : (b))" works for both integers and floats --- compared to
 "#define FMax(x, y) (((llFabs((x) >= (y))) * (x)) + ((llFabs((x) <
 (y))) * (y)))" and another one for integers.
 
@@ -725,7 +738,7 @@ llSetKeyframedMotion([( (llList2Vector(llGetObjectDetails(llList2Key(agents, got
 </lsl>
 
 
-Letting aside that the code would be totally different when written in C, a C compiler would optimze that.  I don´t know what the LSL compiler does.
+Letting aside that the code would be totally different when written in C, a C compiler would optimze it.  I don´t know what the LSL compiler does.
 
 '''Always be aware of what your macros turn into.'''  The code from example-1_D turns into:
 
@@ -741,7 +754,7 @@ llSetKeyframedMotion([offset, ( ( (llFabs( ((distance)) >= (0.03) ) ) * ((distan
 </lsl>
 
 
-It´s still awful to read.  What did you expect?  The source looks nice and clear because macros and defines are used, wich is one of the reasons to use them.  More importantly, this code doesn´t employ numerous obsolete divisions because I checked the outcome and modifed my source.
+It´s still awful to read.  What did you expect?  The source looks nice and clear (not in the wiki but in emacs) because macros and defines are used, wich is one of the reasons to use them.  More importantly, this code doesn´t employ numerous obsolete divisions because I checked the outcome and modifed my source.
 
 '''Always check the script for what your macros turn into.'''  It´s easy to check, just load the debugging version into your favourite editor.  You can even use the built-in editor: change the "o" for an "i" and click on the "Edit" button as described earlier.
 
@@ -807,9 +820,9 @@ I use defines for constants --- not because it apparently may save 8 bytes, but 
 
 It seems obvious that you would waste memory when you use a macro that the preprocessor turns into a lengthy expression which occurs in the script multiple times.  When it matters, test it; you may be surprised.
 
-You can also try to test for performance.  Provided you find a suitable place to set up your test objects and let the tests run for at least a week, you may get valid results.  Such tests could be interesting because you may want to define a function instead of a macro --- or a function that uses a macro --- to save script memory when the macro turns into a lengthy expression.  In theory, the macro would be faster because using a function requires the script interpreter to jump around in the code and to deal with putting parameters on the stack and with removing them while the macro does not.  But in theory, declared variables use script memory.
+You can also try to test for performance.  Provided you find a suitable place to set up your test objects and let the tests run for at least a week, you may get valid results.  Such tests could be interesting because you may want to define a function instead of a macro --- or a function that uses a macro --- to save script memory when the macro turns into a lengthy expression.  In theory, the macro would be faster because using a function requires the script interpreter to jump around in the code and to deal with putting parameters on the stack and with removing them while the macro does not.  But in theory, declared variables use script memory.  Perhaps the LSL compiler is capable of inlining functions?
 
-When programming in C and you have a statement like
+When programming in C or perl and you have a statement like
 
 
 <lsl>
@@ -829,7 +842,7 @@ if((A < 6) && (some_function(B) < 20))
 </lsl>
 
 
-LSL is stupid in that it will call the function or evaluate the expression the macro turned into even when '(A < 6)' evaluates to false.  It´s impossible for the whole condition to evaluate to true when '(A < 6)' is false, and evaluating a condition should stop once its outcome has been evaluated.  Calling a function takes time, and the function even might be fed with illegal parameters because B could have an illegal value the function cannot handle, depending on what the value of A is:
+LSL is buggy in that it will call the function or evaluate the expression the macro turned into even when '(A < 6)' evaluates to false.  It´s impossible for the whole condition to evaluate to true when '(A < 6)' is false, and evaluating a condition should stop once its outcome has been evaluated.  Calling a function takes time, and the function even might be fed with illegal parameters because B could have an illegal value the function cannot handle, depending on what the value of A is:
 
 
 <lsl>
@@ -858,11 +871,13 @@ default
 </lsl>
 
 
-This example will yield a math error because some_function() is called even when it should not be called.  Such nonsense should be fixed.  Calling the function is an undesireable side effect.  To work around it so that some_function() isn´t called, you need to add another "if" statement, which eats memory.
+This example will yield a math error because some_function() is called even when it should not be called.  Such nonsense should be fixed.  To work around it so that some_function() isn´t called, you need to add another "if" statement, which eats memory.
 
-Depending on what the function or the macro does, your "if" statements can affect performance.  This is independent of using a preprocessor, but since you may be tempted to use macros in your sources when you use a preprocessor, you may be tempted to use them in "if" statements and create more undisirable side effects than you otherwise would.
+Depending on what the function or the macro does, your "if" statements can affect performance.  This is independent of using a preprocessor, but since you may be tempted to use macros in your sources when you use a preprocessor, you may be tempted to use them in "if" statements and diminish performance more than you otherwise would.
 
-'''Avoid "if" statements which evaluate expressions that should not be evaluated.'''
+'''Avoid creating "if" statements with conditions composed in such a way that expressions are evaluated which should not be evaluated.'''
+
+Imagine how much processing power could be saved if this bug was fixed.
 
 ======Use Parentheses======
 
@@ -974,9 +989,9 @@ if((A || B) && (C || (D > 500)))
 </lsl>
 
 
-That is not ambiguous.  Since "&&" usually takes precedence over "||", it´s different from the version without parentheses.  (It probably doesn´t matter in this case, but I´m not even trying to figure it out. It does matter in C because it has an effect on which of the expressions are evaluated and wich are not.  Simply write what you mean, with parentheses, and don´t let LSL get you to develop a bad style.)  When you have the above "if" statements in a macro, use parentheses around "A", "B", "C" and "D", for reasons shown above.
+That is not ambiguous.  Since "&&" usually takes precedence over "||", it´s different from the version without parentheses.  It probably doesn´t matter with LSL for the bug mentioned above, but I´m not even trying to figure it out.  It does matter in C and perl at least because it has an effect on which of the expressions are evaluated and wich are not.  Simply write what you mean, with parentheses, and don´t let LSL get you to develop a bad style.  When you have the above "if" statements in a macro, use parentheses around "A", "B", "C" and "D", for reasons shown above.
 
-Save yourself the hassle.  My LSL scripts tend to have lots of parentheses, a lot of them not strictly needed because they come from macro definitions.  They don´t hurt anything.  Not having them can hurt badly.
+Save yourself the hassle and use parentheses.  My LSL scripts tend to have lots of parentheses, a lot of them not strictly needed because they come from macro definitions.  They don´t hurt anything.  Not having them can hurt badly.
 
 =====How to use cpp=====
 
@@ -994,7 +1009,7 @@ cpp your_script.lsl
 </lsl>
 
 
-By default, cpp writes its output to stdout, i. e. it appears on your screen.  Since it isn´t very useful to have your LSL scripts appear on your screen like that, you may want to redirect the output into a file:
+By default, cpp writes its output to stdout, i. e. it appears on your screen.  Since it isn´t necessarily useful to have your LSL scripts appear on your screen like that, you may want to redirect the output into a file:
 
 
 <lsl>
@@ -1008,31 +1023,38 @@ It´s that simple.
 
 You can now write a script and use defines and macros and preprocess it.  You can log in with your sl client, make a box, create a new script in the box, open the script, click on the "Edit" button and replace the default script that shows up in your favourite editor with the one you wrote and preprocessed.
 
-It´s not entirely convenient yet because you still need to replace the script manually.  You may also want to include files into your script, like "lslstddef.h".  You don´t want to keep another copy of "lslstddef.h" with all your scripts and include it with '#include "lslstddef.h"'.  You only need one copy of "lslstddef.h", and it´s a good idea to keep it in a directory, perhaps with other headers you use.
+It´s not entirely convenient yet because you still need to replace the script manually.  You may also want to include files into your script, like "lslstddef.h".  You don´t want to keep another copy of "lslstddef.h" with all your scripts and include it with '#include "lslstddef.h"'.  You only need one copy of "lslstddef.h", and it´s a good idea to keep it in a seperate directory, perhaps with other headers you frequently use.  You don´t want to specify in which directory you keep your "lslstddef.h" or other headers in all your sources:  The directory might change.
 
 Cpp has another parameter for this: '-I'.  '-I' tells cpp where to look for files you include with something like '#include <lslstddef.h>'.
+
+The difference between '#include "lslstddef.h"' and "#include <lslstddef.h>" is that '#include "lslstddef.h"' will make cpp look for "lslstddef.h" in the current directory (where your source is) while "#include <lslstddef.h>" makes it look in default directories.  Such directories can be specified with '-I'.
 
 If you haven´t pulled (i. e. downloaded) the [https://github.com/Ratany/lsl-repo git repository that accompanies this article], please do so now.
 
 When you look into the "projects" directory from the repository, you´ll find a few directories in it:
 
 
-<lsl>
-projects
+<bash>
+.
 |-- bin
+|-- clean-lsl.sed -> make/clean-lsl.sed
+|-- components
 |-- example-1
 |-- include
 |-- lib
+|-- make
+|-- memtest
 |-- rfedip-reference-implementation
-`-- template-directories
-</lsl>
+|-- template-directories
+`-- your-script
+</bash>
 
 
 The "bin" directory contains tools; "include" is for files like "lslstddef.h" which you may want to include into many of your sources. The "lib" directory is much like the "include" directory; the difference is that "include" is for header files which provide defines and macros, while the "lib" directory is for files parts of which will be included into your sources when you set up defines which get these parts included.  Those parts can be functions or defines or macros, and they are put together in files depending on their purpose.
 
 For example, "lib/getlinknumbers.lsl" provides functions related to figuring out the link numbers of prims. "getlinknumbers.lsl" is a library of such functions, macros and defines.  Since it´s a library, it´s in the "lib" directory: "lib" as in "library".
 
-The "template-directories" directory is a template which you can copy when you start writing a new script.  It contains directories to put particular files, like the "src" directory where you put the source you´re writing.  It also has a "lib" directory which can hold files you want to include into one or several of the sources in the "src" directory, but which are too specific to the particular project that you don´t want to put them into the general "projects/lib" or "projects/include" directory.
+The "template-directories" directory is a template which you can copy when you start writing a new script.  It contains directories to put particular files, like the "src" directory where you put the source you´re writing.  It also has a "lib" directory which can hold files you want to include into one or several of the sources in the "src" directory, but which are too specific to the particular project to put them into the general "projects/lib" or "projects/include" directory.
 
 Now when preprocessing your source with cpp, you may want to include "lslstddef.h".  Since you´re starting a new project, you first copy the template directories:
 
@@ -1046,7 +1068,7 @@ Now when preprocessing your source with cpp, you may want to include "lslstddef.
 ‘template-directories/lib’ -> ‘your-script/lib’
 ‘template-directories/src’ -> ‘your-script/src’
 ‘template-directories/tmp’ -> ‘your-script/tmp’
-‘template-directories/bak’ -> ‘your-script/dep’
+‘template-directories/dep’ -> ‘your-script/dep’
 ‘template-directories/Makefile’ -> ‘your-script/Makefile’
 [~/src/lsl-repo/projects]
 </lsl>
