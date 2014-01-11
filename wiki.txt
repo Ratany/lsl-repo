@@ -287,14 +287,14 @@ The "compressed" version can be pretty unreadable, which can make debugging diff
 
 To see the debugging version of the script in the built-in editor, change the first line of the script in the built-in editor from like "// =example-script.o" to "// =example-script.i" and click on the "Edit" button.  That puts the version of the script which is not compressed into the built-in editor.  Switch the "i" back to an "o", click the "Edit" button and the "compressed" version is put back.
 
-====A Preprocessor====
+===A Preprocessor: cpp===
 
 The [http://en.wikipedia.org/wiki/Preprocessor Wikipedia article] about preprocessors gives an interesting explanation of what a preprocessor is and provides an overview.  For the purpose of making it easier to create LSL scripts, a preprocessor as is used with [http://en.wikipedia.org/wiki/C_(programming_language) C] (and C++) compilers is a very useful tool.
 
 The particular preprocessor I´m using is called "cpp" and comes with
 [http://gcc.gnu.org/ GCC].
 
-=====What a preprocessor does=====
+====What a preprocessor does====
 
 A preprocessor enables you:
 
@@ -336,7 +336,7 @@ That doesn´t sound like much, yet these are rather powerful features. Some of t
 
 There are probably lots of advantages that don´t come to mind at the moment.  You can be creative and find uses and advantages I would never think of.
 
-=====How cpp works=====
+====How cpp works====
 
 Some extensive documentation about cpp can be found [http://gcc.gnu.org/onlinedocs/cpp/ here].
 
@@ -760,7 +760,7 @@ It´s still awful to read.  What did you expect?  The source looks nice and clea
 
 One thing is new in example-1_D: The defines that were used to make the list with the UUIDs of the agents usable are undefined with "#undef".  It´s not necessary to do this, it´s tidy.  As mentioned before, the list has local scope.  That´s the reason I undefined the defines that relate to it.  It ends their "scope" as well.  You can create new defines with the same names outside this scope if you like. They are undefined and out of the way.  Perhaps at some time, you include something into your source that happens to use defines with the same name.  You would get an error message and have to go back to the perhaps old source and figure out where you can undefine them.  It doesn´t hurt to undefine them right away and saves you time later.
 
-======Script memory and performance with cpp======
+====Script memory and performance with cpp====
 
 You may have seen or written scripts that use variables as constants. Look at this example:
 
@@ -879,7 +879,7 @@ Depending on what the function or the macro does, your "if" statements can affec
 
 Imagine how much processing power could be saved if this bug was fixed.
 
-======Use Parentheses======
+====Use Parentheses====
 
 When you look at this simple macro
 
@@ -993,7 +993,7 @@ That is not ambiguous.  Since "&&" usually takes precedence over "||", it´s dif
 
 Save yourself the hassle and use parentheses.  My LSL scripts tend to have lots of parentheses, a lot of them not strictly needed because they come from macro definitions.  They don´t hurt anything.  Not having them can hurt badly.
 
-=====How to use cpp=====
+====How to use cpp====
 
 Finally, there is the question of how to use cpp.  Cpp has a lot of command line parameters, and one particularly useful when using cpp for LSL is '-P'.  The manpage of cpp says:
 
@@ -1059,7 +1059,7 @@ The "template-directories" directory is a template which you can copy when you s
 Now when preprocessing your source with cpp, you may want to include "lslstddef.h".  Since you´re starting a new project, you first copy the template directories:
 
 
-<lsl>
+<bash>
 [~/src/lsl-repo/projects] cp -avx template-directories/ your-script
 ‘template-directories/’ -> ‘your-script’
 ‘template-directories/bin’ -> ‘your-script/bin’
@@ -1067,12 +1067,13 @@ Now when preprocessing your source with cpp, you may want to include "lslstddef.
 ‘template-directories/doc’ -> ‘your-script/doc’
 ‘template-directories/lib’ -> ‘your-script/lib’
 ‘template-directories/src’ -> ‘your-script/src’
-‘template-directories/tmp’ -> ‘your-script/tmp’
 ‘template-directories/dep’ -> ‘your-script/dep’
 ‘template-directories/Makefile’ -> ‘your-script/Makefile’
 [~/src/lsl-repo/projects]
-</lsl>
+</bash>
 
+
+Make sure that all files and directories from the "template-directories" are copied.  When something is missing, the build system may not work.
 
 Now you can use your favourite editor, write your script and save it as "projects/your-script/src/your-script.lsl":
 
@@ -1094,23 +1095,23 @@ default
 As described above, you run 'cpp -P your_script.lsl > your_script.i'. What you get looks like this:
 
 
-<lsl>
+<bash>
 [~/src/lsl-repo/projects/your-script/src] cpp -P your_script.lsl > your_script.i
 your_script.lsl:1:23: fatal error: lslstddef.h: No such file or directory
  #include <lslstddef.h>
                        ^
 compilation terminated.
 [~/src/lsl-repo/projects/your-script/src]
-</lsl>
+</bash>
 
 
 This tells you that cpp didn´t find "lslstddef.h".  You need to tell cpp where to find it:
 
 
-<lsl>
+<bash>
 [~/src/lsl-repo/projects/your-script/src] cpp -I../../include -P your_script.lsl > your_script.i
 [~/src/lsl-repo/projects/your-script/src]
-</lsl>
+</bash>
 
 
 Using '-I', you tell cpp to look for files that are to be included in the directory '../../include'.  Since you do this from within the directory 'projects/your-script/src', cpp will look into 'projects/include' --- where it can find "lslstddef.h".
@@ -1131,11 +1132,11 @@ default
 </lsl>
 
 
-You may think that this is inconvenient.  You do not want to type something like 'cpp -I../../include -P your_script.lsl > your_script.i' for every script.  You don´t want to do this for every script when a file included by the source may have changed.  You don´t want to do this for all the scripts that are part of your project just in case you have modified one of them, and you don´t want to forget to preprocess all the scripts that need to be preprocessed every time you modified something.
+So much effort to finally create such a little LSL script?  No --- the effort here lies in giving you a reference which is supposed to help you to better understand the build system.
 
-Fortunately, you don´t need to do that.  There is a tool that can do it for you.  It´s called "make".
+The effort to create an LSL script is no more than copying the "template-directories", saving your source in the "src" directory of the copy and running 'make'.  You got a build system that does everything else for you when you run 'make'.
 
-====Make====
+===Make===
 
 Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool which controls the generation of executables and other non-source files of a program from the program's source files."
 
@@ -1153,13 +1154,13 @@ This Makefile is symlinked into the template-directories.  There is only one Mak
 
 Should you need to adjust the Makefile because a particular project has special requirements, remove the symlink to the Makefile from the projects´ directory.  Copy make/Makefile into the projects´ directory and then modify the copy.
 
-=====How to use Make=====
+====How to use Make====
 
 Enter the directory of the project you are working on and run 'make'. That´s all.  The section "Repository" has some details.
 
 You can run make from within emacs: M-x compile.  Emacs will show you the output in a buffer.  If there are error messages, you can move the cursor to the error message and press enter and emacs shows you the line in the file that triggered the error message.  To compile again, you can use 'recompile': M-x recompile.  You can make a key-binding for that with something like '(global-set-key [C-f1] 'recompile)' in your ~/.emacs and recompile your source conveniently from within your favourite editor --- which by now is, of course, emacs --- by simply pressing Ctrl+F1.
 
-=====Make "your-script.lsl"=====
+====Make "your-script.lsl"====
 
 Assume you want to try out the "your-script.lsl" source from above: Enter the directory for the project ("/projects/your-script/") and run 'make' --- or load the source into emacs and run make from within emacs.  I´ll do it with emacs:
 
@@ -1197,13 +1198,13 @@ To try out the script you just created in sl, you can switch to your sl client a
 
 Now click on the "Edit" button of the built-in script editor.  Provided that you successfully prepared the automatic replacement of your scripts as described above, the compressed version of your script appears in the built-in script editor.  It will be compiled by the sl server and run --- or you will see an error message in the built-in script editor.
 
-====astyle====
+===astyle===
 
 Astyle is a nice tool to format your code so that it´s easier to read.  Since you write your sources so that they are easy to read anyway, you may not want to use it to reformat your sources --- unless some lines are so long that they don´t fit very well on wiki pages maybe.
 
 However, the output of cpp isn´t too readable.  Therefore, the build system uses astyle to reformat it when it generates debugging versions of the scripts (in dbg/*.i).  This is entirely optional.
 
-====sed====
+===sed===
 
 Sed is used by the build system for a number of things.  One of these things is what you might call postprocessing:  Preprocessing your sources can leave artifacts in the output of cpp due to the way macros (see "lslstddef.h") are used.
 
