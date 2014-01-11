@@ -263,15 +263,15 @@ To make this work, you need to:
 * make sure that the look-up table exists --- the build system does this for you
 
 
-To modify the perl script to use your favourite editor, edit it and change "my $editor = "emacsclient";" --- and perhaps "my $editorparam = "-c";".  There are comments in the script explaining this.
+To modify the perl script to use your favourite editor, edit it and change "use constant EDITOR => "emacsclient";" --- and perhaps "use constant EDITORPARAM => "-c";".  There are comments in the script explaining this.
 
 When you have your sl client start the perl script, it is difficult or impossible to see error messages you may get when running the perl script.  If there is an error, it will probably seem as if nothing happens when you click on the "Edit" button.
 
-One way to test it is to make sure that the look-up table does not exist and then to click on the "Edit" button of the built-in script editor in your sl client.  If the look-up table exists, you find the table as "projects/make/replaceassignments.txt".  When your favourite editor starts to let you edit both the file your sl client saved and the (empty) look-up table, it is very likely that it´s working.
+One way to test if it works is to make sure that the look-up table does not exist and then to click on the "Edit" button of the built-in script editor in your sl client.  If the look-up table exists, you find the table as "projects/make/replaceassignments.txt".  When your favourite editor starts to let you edit both the file your sl client saved and the (empty) look-up table, it is very likely that it´s working.
 
 The build system fills the look-up table for you.  It adds entries for new scripts as needed when you run 'make'.  It does not delete entries from the table.  To make such entries, the perl script "projects/bin/addtotable.pl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] is used.
 
-The first entry in the table that matches is used.  If you plan to have multiple scripts with the same name, you may need to adjust addtotable.pl, replace.pl and the Makefile (see below).
+The first entry in the table that matches is used.  If you plan to have multiple scripts with the same name, you may need to adjust addtotable.pl, replace.pl and the Makefile.
 
 The build system creates "compressed" versions of the scripts and versions that are not compressed.  The "compressed" versions are named *.o and the not-compressed versions are named *.i.
 
@@ -344,7 +344,7 @@ Finding out which agent is the furthest away from the object requires to find ou
 
 The object should move to a position at "some distance" from the agent.  It seems nicer to use a random distance rather than a fixed one.  This can easily be done by creating a "random vector", i. e. a vector the components of which are randomized.  What [[LlFrand||llFrand()]] returns is not really a random number, but it´s sufficient for this purpose.
 
-As with all sources, I want to use some of the defines that are gathered in my "lslstddef.h".  One of them is the macro "RemotePos()". It is a shortcut for using llGetObjectDetails() to find out the position of and object or prim or agent.  Another one is "SLPPF()", a shortcut for llSetLinkPrimitiveParamsFast() because llSetLinkPrimitiveParamsFast() is awfully long.
+As with all sources, I want to use some of the defines that are gathered in my "lslstddef.h".  One of them is the macro "RemotePos()". It is a shortcut for using llGetObjectDetails() to find out the position of an object or prim or agent.  Another one is "SLPPF()", a shortcut for llSetLinkPrimitiveParamsFast() because llSetLinkPrimitiveParamsFast() is awfully long.
 
 This makes for a source (example-1_A) that looks like this:
 
@@ -399,10 +399,12 @@ By including "lslstddef.h", cpp knows this and replaces all occurances of "event
 </cpp>
 
 
-This would create a define named "test" only if "event" is defined. Much like cpp replaces "event" with nothing, it would now replace "test" with "1" because "test" is defined to be "1".
+This would create a define named "test" only if "event" is defined. Much like cpp replaces "event" with nothing, it would now replace "test" with "1" because "test" is defined to be "1".  With conditionals like "#ifdef", "#if" or "#ifndef", you can have code from your source put into the script depending on what is defined.  For example, you can disable a block of code simly by putting "#if 0" at the start of the block and "#endif" at the end of the block.  That´s easier than commenting out the whole region.
+
+The library files in "projects/lib" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] make use of conditionals.  The whole library file is included into the source, and defines are used to decide which functions from the libraries will be in the resulting script.  You can see in "projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl" how it´s done.
 
 
-The next thing the example script needs is to set the physics type. The define "SLPPF" is a shortcut for "llSetLinkPrimitiveParamsFast", so use that.  The script also needs to check if it was the owner of the object who touched it and do nothing when it was someone else.  It needs to know the position of the object the script is in and what agents are around so it can figure out which agent is the furthest away from the object. Add all this to the source, which is now example-1_B:
+The example script needs to set the physics type and to check if it was the owner of the object who touched it.  It needs to know the position of the object the script is in and what agents are around. Add all this to the source, which is now example-1_B:
 
 
 <lsl>
@@ -455,7 +457,7 @@ even longer expressions like
 
 
 <lsl>
-llVecDist(llList2Vector(llGetObjectDetails(llList2Key(agents, 0), [OBJECT_POS] ), 0),
+float d = llVecDist(llList2Vector(llGetObjectDetails(llList2Key(agents, 0), [OBJECT_POS] ), 0),
           llList2Vector(llGetObjectDetails(llList2Key(agents, 1), [OBJECT_POS] ), 0));
 </lsl>
 
@@ -463,11 +465,30 @@ llVecDist(llList2Vector(llGetObjectDetails(llList2Key(agents, 0), [OBJECT_POS] )
 if you were to compute the distance between two agents.
 
 
-Lists are sometimes strided, and then you also need to remember which item of a stride is to be interpreted as what.  Your code becomes hard to write, hard to read and hard to modify.  You can use defines and macros to avoid this.
+Lists are sometimes strided, and then you also need to remember which item of a stride is to be interpreted as what.  You can use defines and macros to avoid this.  If you were to compute the distance between two agents, you could use defines like:
+
+
+<cpp>
+#include <lslstddef.h>
+
+#define kAgentKey(x)       llList2Key(agents, x)
+#define fAgentsDist(a, b)  llVecDist(RemotePos(a), RemotePos(b))
+</cpp>
+
+
+Instead of the lengthy expression above, your source would then be:
+
+
+<lsl>
+float d = fAgentsDist(0, 1);
+</lsl>
+
+
+How much easier to write and read and maintain is that?  How much less prone to errors is it?
 
 The list used in example-1_B is not strided, simple and a local variable.  Using a define and macros to make it useable is overdoing it, but I want to show you how it can be done.
 
-You can put preprocessor directives anywhere into your source.  They don´t need to be kept in seperate files.  Traditionally, they had to be at the beginning of a line.  This isn´t required anymore --- but do not indent them!  They are not part of your code.  They modify your code.  You could see them as "metacode".
+You can put preprocessor directives anywhere into your source.  They don´t need to be kept in seperate files.  Traditionally, they had to be at the beginning of a line.  This isn´t required anymore --- but do not indent them!  They are not part of your code.  They modify your code.  You could see them as "metacode".  They do not belong indented.
 
 With example-1_B, four things can be defined to make the list of agents easier to use:
 
@@ -522,11 +543,75 @@ default
 
 Since the list is a local variable, the defines are placed after its declaration.  You could place them somewhere else, maybe at the top of the source.  Placing them inside the scope of the list makes clear that they are related to this particular list.
 
-The define "iSTRIDE_agents" is the stride of the list, 1 in this case. Using "--agent;" in the loop instead of "agent -= iSTRADE_agents;" would be better, but it´s done for the purpose of demonstration.  When you have a strided list, it is a good idea to always use a define for it: It doesn´t hurt anything and makes it easy to modify your source because there is only one place you need to change.  With strided lists, use defines for the indices of stride-items so you don´t need to go through the macro definitions to make sure the indices are ok when you change the composition of the list.  You can look at "projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] for a better example.
+The define "iSTRIDE_agents" is the stride of the list, 1 in this case. Using "--agent;" in the loop instead of "agent -= iSTRADE_agents;" would be better, but it´s done for the purpose of demonstration.  When you have a strided list, it is a good idea to always use a define for it: It doesn´t hurt anything and makes it easy to modify your source because there is only one place you need to change.  With strided lists, use defines for the indices of stride-items so you don´t need to go through the macro definitions to make sure the indices are ok when you change the composition of the list.  You can look at "projects/rfedip-reference-implementation/src/rfedipdev-enchain.lsl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] for a source that uses a strided list.
 
 "kAgentKey" is a macro.  It´s a define that takes parameters.  You might think the parameter is an integer which is an index to the list in which the UUIDs of the agents are stored.  It is not: The parameter is ''used'' an index.  The preprocessor doesn´t know anything about lists or integers.
 
-There are no types involved with macro parameters as are with variables: When you declare a function in LSL that takes parameters, you need to declare what type the parameters are of.  Macro parameters don´t have a type.  The preprocessor replaces stuff literally.  You could use a vector or some random string as a parameter with "kAgentKey".  Cpp would do the replacement just fine.  It replaces text like a search-and-replace operation you perform with your favourite editor does.
+There are no types involved with macro parameters as are with variables: When you declare a function in LSL that takes parameters, you need to declare what type the parameters are of.  Macro parameters don´t have a type.  The preprocessor replaces stuff literally.  You could use a vector or some random string as a parameter with "kAgentKey".  Cpp would do the replacement just fine.  It replaces text like a search-and-replace operation you perform with your favourite editor does.  This can sometimes be limiting:
+
+
+<lsl>
+#include <lslstddef.h>
+
+#define component(f)   ((string)(f))
+#define components(v)  llSay(0, component(v.x) + component(v.y) + component(v.z))
+
+
+default
+{
+	event touch_start(int t)
+	{
+		vector one = ZERO_VECTOR;
+		vector two = <0.5, 0.5, 2.2>;
+
+		components(one + two);
+	}
+}
+</lsl>
+
+
+The above source will turn into a script that does not compile because  cpp replaces literally:
+
+
+<lsl>
+default
+{
+	touch_start(integer t)
+	{
+		vector one = ZERO_VECTOR;
+		vector two = <0.5, 0.5, 2.2>;
+		llSay(0, ((string)(one + two.x)) + ((string)(one + two.y)) + ((string)(one + two.z)));
+	}
+}
+</lsl>
+
+
+Introduce another vector and it works great:
+
+
+<lsl>
+#include <lslstddef.h>
+
+#define component(f)   ((string)(f))
+#define components(v)  llSay(0, component(v.x) + component(v.y) + component(v.z))
+
+
+default
+{
+	event touch_start(int t)
+	{
+		vector one = ZERO_VECTOR;
+		vector two = <0.5, 0.5, 2.2>;
+
+		vector composed = one + two;
+		components(composed);
+	}
+}
+</lsl>
+
+
+You can find this example in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in "projects/components".
+
 
 Unfortunately, you cannot define defines or macros with defines: "#define NEWLIST(name, stride) #define list name; #define iSTRIDE_##name stride" will cause cpp to stop proprocessing and to print an error message.  Maybe I´ll write a perl script to pre-preprocess my sources ... that might be easier than learning [http://www.gnu.org/software/m4/ | m4].
 
