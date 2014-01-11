@@ -48,17 +48,19 @@ You can put the "projects" directory anywhere you like, and you can give it a di
 Inside the "projects" directory, you have more directories like this:
 
 
+<bash>
 .
-!-- bin
-!-- clean-lsl.sed -> make/clean-lsl.sed
-!-- example-1
-!-- include
-!-- lib
-!-- make
-!-- memtest
-!-- rfedip-reference-implementation
-!-- template-directories
+|-- bin
+|-- clean-lsl.sed -> make/clean-lsl.sed
+|-- example-1
+|-- include
+|-- lib
+|-- make
+|-- memtest
+|-- rfedip-reference-implementation
+|-- template-directories
 `-- your-script
+</bash>
 
 
 When you rename or move "bin", "include", "lib", "make" or "clean-lsl.sed", your build system will not work anymore (unless you edit some files and make adjustments).  Don´t rename or move them.
@@ -68,23 +70,23 @@ When you rename or move "bin", "include", "lib", "make" or "clean-lsl.sed", your
 Suppose you want to try out "example-1".  Enter the directory "example-1" and run 'make':
 
 
-<lsl>
+<bash>
 [~/src/lsl-repo/projects/example-1] make
 generating dependencies: dep/example-1.di
 generating dependencies: dep/example-1.d
 preprocessing src/example-1.lsl
   39 1202 dbg/example-1.i.clean
 [~/src/lsl-repo/projects/example-1] 
-</lsl>
+</bash>
 
 
 You will find the LSL script as "projects/example-1/bin/example-1.o". A debugging version is "projects/example-1/dbg/example-1.i".  When you modify the source ("projects/example-1/src/example-1.lsl") just run make again after saving it, and new versions of the script will be created that replace the old ones.
 
-Files are generated in the "dep" directory.  They are needed by the build system to figure out when a script needs to be rebuilt.  You can ignore those.  A file is generated in the "make" directory.  The file is needed to automatically replace scripts with the script editor built into your sl client, which will be described later.
+Some files are generated in the "dep" directory.  They are needed by the build system to figure out when a script needs to be rebuilt and whether entries need to be added to a look-up table or not.  You can ignore those.  A file is generated in the "make" directory.  The file is needed to automatically replace scripts with the script editor built into your sl client, which will be described later.
 
 Now you can log into sl with your sl client.  Make a box, create a "New Script" in the box and open the "New Script".  It shows up in the built-in editor.  Delete the script in the built-in editor and copy-and-paste the contents of "projects/example-1/bin/example-1.o" into the built-in editor.  Then click on the "Save" button of the built-in editor.  (There is a way to do this kind of script-replacement automatically. It will be explained later.)
 
-The "template-directories" is what you copy when you want to write your own source.  Suppose you make a copy of the "template-directories" and name the copy "my-test".  You would then put your own source into "my-test/src", like "my-test/src/my-test.lsl".
+The "template-directories" is what you copy when you want to write your own source.  Copy it with all the files and directories that are in it.  Suppose you make a copy of the "template-directories" and name the copy "my-test".  You would then put your own source into "my-test/src", like "my-test/src/my-test.lsl".
 
 Of course, you can have several source files in "my-test/src".  For all of them, scripts will be created.  The "my-test" directory is the project directory for your project "my-test".  When you are working on an object that requires several scripts, you´ll probably want to keep them all together in the project directory you made for this object.
 
@@ -157,7 +159,7 @@ Not using the buit-in script editor has several advantages like:
 * And yes, you can use a decent editor, even your favourite one :)
 
 
-You can use any editor you like.  An editor is essential and one of your most important tools.  When you editor sucks, you cannot be productive.  Use the best editor you can find.
+You can use any editor you like.  An editor is essential and one of your most important tools.  When your editor sucks, you cannot be productive.  Use the best editor you can find.
 
 ====Emacs====
 
@@ -165,7 +167,7 @@ You can use any editor you like.  An editor is essential and one of your most im
 
 By default, the cursor keys move the cursor.  Ctrl+xf loads a file into a new buffer and Ctrl+xs saves it.  Ctrl+x b lets you switch to another buffer.  These are usually written as C-x-f, C-x-s and C-x-b.
 
-Emacs is worthwhile to learn.  It´s the only editor you need to learn because you don´t need any others.  It has been around since a long time.  If you had learned it twenty five years ago, that would have saved you the time wasted with other editors which nowadays may not even exist anymore.
+Emacs is worthwhile to learn.  It´s the only editor you need to learn because you don´t need any others.  It has been around since a long time.  If you had learned it twenty-five years ago, that would have saved you the time wasted with other editors which nowadays may not even exist anymore.
 
 It doesn´t hurt to give it a serious try.
 
@@ -203,7 +205,7 @@ Without using lsl-mode.el (or lsl-mode.elc), syntax highlighting for your source
 
 In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
 
-You don´t need to try any other editors. [http://en.wikipedia.org/wiki/User:Dozen/E_(text_editor_family)#EPM_.28OS.2F2.29 EPM] was nice, but it crashed all the time.
+You don´t need to try any other editors.  Your time is better spent on learning emacs or vi.
 
 ===Automatically replacing Scripts===
 
@@ -225,11 +227,11 @@ Your sl client would notice that the file changed and put it into the built-in e
 
 At this point, things suddenly aren´t nice anymore: Replacing the script with your favourite editor all the time is a stupid process (unless you program your editor to do it for you).  Even when you have only one script, having to replace the script over and over again while you are adding to it and debugging it sucks.  It sucks even more when your object has 11 scripts working toegether and a little change makes it necessary to replace all of them.
 
-You could mess around with the built-in editor and try to edit your script further with it, saving the replacing.  That also sucks: The built-in editor is unusable, and you end up with at least two versions of the script.  Since you want the script safely stored on your storage system and not lose your work when your sl client crashes or the like, you end up replacing the script on your storage system with the version you have in the built-in editor every now and then.  When your object has 11 scripts that work together, it eventually becomes a little difficult to keep an overview of what´s going on --- not to mention that you need a huge monitor with a really high resolution to fit 11 built-in editor windows in a usable way on your screen to work on your scripts since there is no C-x b with the built-in editor to switch to a different buffer ...
+You could mess around with the built-in editor and try to edit your script further with it, saving the replacing.  That also sucks: The built-in editor is unusable, and you end up with at least two versions of the script.  Since you want the script safely stored on your storage system and not loose your work when your sl client crashes or the like, you end up replacing the script on your storage system with the version you have in the built-in editor every now and then.  When your object has 11 scripts that work together, it eventually becomes a little difficult to keep an overview of what´s going on --- not to mention that you need a huge monitor with a really high resolution (or a magnifying glass with a non-huge monitor with a really high resolution) to fit 11 built-in editor windows in a usable way on your screen to work on your scripts since there is no C-x b with the built-in editor to switch to a different buffer ...
 
 Fortunately, there is a much better and very simple solution: A program which is started by your sl client ''instead'' of your favourite editor can replace the script for you.
 
-A program that replaces the script needs to know which script must be replaced with which file.  To let the program know this, a useful comment is put into the script, and a look-up table is used.  The comment tells the program the name of the script.  The look-up table holds the information which script is to be replaced with which file.  The build system puts the comment into the script and creates entries in the look-up table.  You just click the "Edit" button.
+A program that replaces the script needs to know which script must be replaced with which file.  To let the program know this, a useful comment is put into the script, and a look-up table is used.  The comment tells the program the name of the script.  The look-up table holds the information which script is to be replaced with which file.  The build system puts the comment into the script and creates entries in the look-up table.  You just click the "Edit" button to replace the script.
 
 You can easily write a program that replaces files yourself.  I wrote one when I got tired of all the replacing.  It´s not really a program, but a [http://www.perl.org/ perl] script.  It´s written in perl because perl is particularly well suited for the purpose.
 
@@ -959,7 +961,7 @@ Now when preprocessing your source with cpp, you may want to include "lslstddef.
 ‘template-directories/lib’ -> ‘your-script/lib’
 ‘template-directories/src’ -> ‘your-script/src’
 ‘template-directories/tmp’ -> ‘your-script/tmp’
-‘template-directories/bak’ -> ‘your-script/bak’
+‘template-directories/bak’ -> ‘your-script/dep’
 ‘template-directories/Makefile’ -> ‘your-script/Makefile’
 [~/src/lsl-repo/projects]
 </lsl>
@@ -1030,21 +1032,13 @@ Fortunately, you don´t need to do that.  There is a tool that can do it for you
 
 Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool which controls the generation of executables and other non-source files of a program from the program's source files."
 
+Make uses a so-called Makefile.  It´s called Makefile because it tells Make what it needs to do to generate files from files, and under which conditions which files need to be created.
 
-As you may have noticed, in the previous section of this article I have referred to "scripts" (LSL scripts) and "sources", without mentioning what the difference is.  The source is what you write.  It can be an LSL script that can be compiled by an LSL compiler right away.  That´s probably what you have written until you read this article.
+Suppose you have written a source "example.lsl".  It includes "lslstddef.h" and uses a function defined in "getlinknumbers.lsl".  Without Make, you´d have to run cpp to preprocess your source and use sed to clean it up.  Then you´d have to make an entry in the look-up table so you can have the script replaced automatically.  If you want to see the debugging version of the script, you´d use astyle to format it nicely.  Since you want to use the compressed version of the script, you´d use i2o.pl to create the compressed version.  Finally, you modify the source to fix a bug you found when testing the script.  Except for making an entry in the look-up table, you´d have to do all the steps again.
 
-After reading this article, you may not want to write plain LSL scripts anymore.  You may want to use a decent editor, a preprocessor and Make.  What you´ll write is still source, but it may be source which cannot be compiled by an LSL compiler right away because it needs to go through a preprocessor first.  That´s what I was trying to refer to as "source".
+Suppose you modify "lslstddef.h" or "getlinknumbers.lsl".  You´d have to remember that you did this and that you need to process your source again.  You might have several sources because the object you´re working on has several scripts.  Some of them do not include "getlinknumbers.lsl".  Which ones do you need to process again because they include a file you have modified, and which ones not?
 
-You could say that '''An LSL script is the output of a preprocessor that processes a source file.'''  I don´t write LSL scripts anymore.  I write source files that can be turned into LSL scripts.  It´s much easier to create LSL scripts that way than it is to write them.
-
-In the sense of Make, the LSL script falls under "other non-source files".  Make isn´t used here to generate an [http://en.wikipedia.org/wiki/Executable | executable].  LSL scripts are not exectutable, and apparently the LSL compiler compiles them into [http://en.wikipedia.org/wiki/Bytecode | byte code].
-
-"Other non-source files" can also mean documentation.  The provided makefile has entries that use pdflatex to create a PDF file from a [http://www.latex-project.org/ LaTeX] source and to copy the PDF into the project directory.  I don´t write PDF files.  I write source files that can be turned into PDF files.  It´s much easier to create PDF files that way than it is to write them :)
-
-
-Preprocessing "your-script.lsl" like in the previous section generates a "non-source file" from a source file.  You have controlled the generation of the non-source file manually, which can be inconvenient.
-
-More conveniently, Make can do this job for you.  All you need for that is Make, and a so-called Makefile.  It´s called Makefile because it tells Make what it needs to do to generate files from files, and under which conditions which files need to be created.
+Make figures out from the Makefile how to process your sources.  It also figures out which source files do need to be processed again and which ones don´t when files the sources include have been modified.  Instead of running a bunch of commands, you simply run 'make'.
 
 You do not need to understand Make or Makefiles to make creating LSL scripts easier.  You find a suitable Makefile in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article]. The Makefile is "projects/make/Makefile".
 
@@ -1052,113 +1046,73 @@ This Makefile is symlinked into the template-directories.  There is only one Mak
 
 Should you need to adjust the Makefile because a particular project has special requirements, remove the symlink to the Makefile from the projects´ directory.  Copy make/Makefile into the projects´ directory and then modify the copy.
 
-
 =====How to use Make=====
 
-Enter the directory of the project you are working on and run 'make'. That´s all.
+Enter the directory of the project you are working on and run 'make'. That´s all.  The section "Repository" has some details.
 
 You can run make from within emacs: M-x compile.  Emacs will show you the output in a buffer.  If there are error messages, you can move the cursor to the error message and press enter and emacs shows you the line in the file that triggered the error message.  To compile again, you can use 'recompile': M-x recompile.  You can make a key-binding for that with something like '(global-set-key [C-f1] 'recompile)' in your ~/.emacs and recompile your source conveniently from within your favourite editor --- which by now is, of course, emacs --- by simply pressing Ctrl+F1.
 
-=====Make "your-example.lsl"=====
+=====Make "your-script.lsl"=====
 
-Assume you want to try out the "your-script.lsl" source from above. You need to make an LSL script which you can put into an object for this.  Suppose you make a box and name it "testbox".
-
-Enter the directory for the project ("/projects/your-script/") and run 'make':
+Assume you want to try out the "your-script.lsl" source from above: Enter the directory for the project ("/projects/your-script/") and run 'make' --- or load the source into emacs and run make from within emacs.  I´ll do it with emacs:
 
 
-<lsl>
-[~/src/lsl-repo/projects/your-script] make
-COMPILING src/your-script.lsl
+C-x-f ~/src/lsl-repo/projects/your-script/src/your-script.lsl
+M-x compile
+
+
+Emacs now asks you for the command to use and suggests 'make -k'.  This won´t work because Make needs to be run from within one directory above, i. e. "~/src/lsl-repo/projects/your-script/" rather than "~/src/lsl-repo/projects/your-script/src".  So instead of 'make -k', you need to use 'cd ..; make -k'.  Just edit what emacs suggests, then press Enter.
+
+Emacs will check if it has any files that haven´t been saved yet because you might have forgotten to save your source.  If there are files to save, it will ask you whether to save them or not.  Then emacs will run make and open a new buffer to show you the output of 'make':
+
+
+-*- mode: compilation; default-directory: "~/src/lsl-repo/projects/your-script/" -*-
+Compilation started at Sat Jan 11 15:21:51
+
+cd ..; make -k 
+generating dependencies: dep/your-script.di
+generating dependencies: dep/your-script.d
+preprocessing src/your-script.lsl
   8 153 dbg/your-script.i.clean
-[~/src/lsl-repo/projects/your-script] 
-</lsl>
+
+Compilation finished at Sat Jan 11 15:21:52
 
 
-This has done a few things which it doesn´t tell you about.  It merely tells you that it was compling --- you could say preprocessing instead since your script isn´t really compiled --- and that the resulting LSL script has 8 lines and 153 characters.
+When you need to process your script again, you can also do this within emacs: M-x recompile.  I have bound the function to C-f1, so I´d just press Ctrl+f1.  For an example of how to do such a keybinding, please see "emacs/emacs" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article].
 
-You probably can´t wait to see the results now.  Two non-source files were generated from the source files:
-
-
-# "projects/your-script/dbg/your-script.i" and
-
-# "projects/your-script/bin/your-script.o".
-
-
-The first one is the so-called debugging version, the second one is the version you put into the "textbox" as a script.  The second one is "compressed" and not easy to read.  You can put either into the "testbox" as a script.
-
-If you remember the perl script that automatically replaces the scripts in the built-in editor
-
-
-With the Makefile from the repository, Make does a bit more than only running cpp.  It will show you what it does when you run 'make -n', and the '-B' option tells Make to do everything it would, much as if you were running it for the first time for your new source:
+To try out the script you just created in sl, you can switch to your sl client and make a box.  Make a new script in the box and open the new script.  In the built-in script editor, type into the first line:
 
 
 <lsl>
-[~/src/lsl-repo/projects/your-script] make -Bn
-echo "COMPILING src/your_script.lsl"
-echo -n "//" > dbg/your_script.i
-cpp -I../lib -I./lib -I../include -DVERSION='version 0.00' -P  src/your_script.lsl | md5sum >> dbg/your_script.i
-cpp -I../lib -I./lib -I../include -DVERSION='version 0.00' -P  -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` src/your_script.lsl >> dbg/your_script.i
-sed -f ../clean-lsl.sed dbg/your_script.i > dbg/your_script.i.clean
-wc -cl dbg/your_script.i.clean
-astyle --style=allman -f < dbg/your_script.i.clean > dbg/your_script.i
-cat dbg/your_script.i | sed -f ../clean-lsl.sed | ../bin/i2o.pl  `basename dbg/your_script.i` > bin/your_script.o
-etags src/your_script.lsl ../lib/geometry.lsl ../lib/getlinknumbers.lsl 
-[~/src/lsl-repo/projects/your-script] 
+// =your-script.o
 </lsl>
 
 
-Make runs cpp, [http://www.gnu.org/software/sed/ sed], [http://en.wikipedia.org/wiki/Wc_(Unix) wc], [http://astyle.sourceforge.net/ astyle], etags (which comes with emacs), [http://en.wikipedia.org/wiki/Cat_(Unix) cat], [http://www.gnu.org/software/coreutils/ echo] and [http://www.gnu.org/software/coreutils/ md5sum].
+Now click on the "Edit" button of the built-in script editor.  Provided that you successfully prepared the automatic replacement of your scripts as described above, the compressed version of your script appears in the built-in script editor.  It will be compiled by the sl server and run --- or you will see an error message in the built-in script editor.
 
-It also runs i2o.pl, which is a perl script.  You can find it in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in the projects/bin directory.
+====astyle====
 
-i2o.pl comes from the [http://opengate.ma8p.com/open9.tar.gz source] of the [http://ma8p.com/~opengate/ Open Stargate Network] stargates.  It´s slighly modified.  The Makefile is from the same source and has also been modified.  The whole idea of preprocessing the source with cpp to generate LSL scripts is from there.  It´s not my idea, I´m merely using it and writing this article about it.
+Astyle is a nice tool to format your code so that it´s easier to read.  Since you write your sources so that they are easy to read anyway, you may not want to use it to reformat your sources --- unless some lines are so long that they don´t fit very well on wiki pages maybe.
 
-When you have successfully run 'make', you will find files in the 'projects/your-script/dbg' and 'projects/your-script/bin' directories. 'dbg' stands for 'debug', 'bin' for 'binary'.  The files in these directories are LSL scripts that have been generated from your source in the 'projects/your-script/src' directory --- in this case, from 'projects/your-script/src/your-script.lsl'.
+However, the output of cpp isn´t too readable.  Therefore, the build system uses astyle to reformat it when it generates debugging versions of the scripts (in dbg/*.i).  This is entirely optional.
 
-You will find "your-script.i" and "your-script.i.clean" in the 'dbg' directory.  "your-script.i.clean" is an intermediate file which was created because it is not exactly a good idea to let sed overwrite its input file with its output.  You can delete "your-script.i.clean" if you like, and/or modify the Makefile to delete it for you.
+====sed====
 
-By filtering the output of cpp with sed, a few unwanted things are removed from the LSL scripts.  The things removed with sed are introduced through the way I´m using macros which are defined in "lslstddef.h".  Some of those lead to closing-braces followed by a semicolon ("};"), to double-semicolons (";;") or to an otherwise emtpy line with only a semicolon (";").  For example:
+Sed is used by the build system for a number of things.  One of these things is what you might call postprocessing:  Preprocessing your sources can leave artifacts in the output of cpp due to the way macros (see "lslstddef.h") are used.
 
+Sed is used to remove these artifacts, i. e. lines like "};" and ";".  A closing bracket doesn´t need to be followed by a semicolon, and lines empty except for a semicolon are obsolete.  Postprocessing with sed replaces "};" which "}" and removes empty lines.
 
-<cpp>
-#if DEBUG0
-#define DEBUGmsg0(...)                  DEBUGmsg(__VA_ARGS__)
-#else
-#define DEBUGmsg0(...)
-#endif
-</cpp>
+The rules used by sed for this are in a so-called script which you can find as "projects/make/clean-lsl.sed" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article].
 
+===i2o.pl===
 
-This makes debug messages (of debug level 0) disappear when 'DEBUG0' does not evaluate to true.  The source may look like this:
+The perl script i2o.pl comes from the [http://opengate.ma8p.com/open9.tar.gz source] of the [http://ma8p.com/~opengate/ Open Stargate Network] stargates.
 
+It "compresses" your scripts by removing whitespace and by shortening the names of variables.  Since variables are renamed, the compression cannot be undone entirely (like with astyle).  Perhaps "shrinking" is a better word for this than "compressing".
 
-<lsl>
-#include <lslstddef.h>
-// [...]
-	int a = Len(lChains);
-	DEBUGmsg0("there are", a / iSTRIDE_lChains, "chains");
-// [...]
-</lsl>
+The point of shrinking your scripts is saving memory.  You cannot save (i. e. upload) a script (or contents of a notecard) that takes more than 64kB: The script (or the notecard) gets truncated, probably by the sl server.  Cpp already removes comments and blank lines from the source, and i2o.pl shrinks the script further.
 
-
-The output of cpp, when 'DEBUG0' is not true, looks like this:
-
-
-<lsl>
- integer a = llGetListLength(lChains);
- ;
-</lsl>
-
-
-The debug message disappears because it´s defined to disappear.  But the semicolon at the end of the line is not part of the macro definition because when a line doesn´t end with a semicolon, emacs indents the following lines in an undesired way: That the semicolon is missing makes emacs figure that the line continues on the next line, which it doesn´t.  If the semicolon was part of the macro definition, I´d still have to put it in to get the indentation as desired.  It only would create a line with two semicolons when the debug message does not disappear.  So when the debug message disappears, the semicolon remains.  Sed removes it by deleting the whole line.
-
-Sed "knows" what to do because it is instructed by a sed-script.  You can find this sed-script as "projects/clean-lsl.sed".
-
-Wc is a nice tool to give you statistics about text files.  It can count words, bytes, lines etc..  It´s purely informational; I put it into the Makefile because I wanted to see what difference the debug mesages make for the size of the file and number of lines.  You can comment it out in the Makefile, or remove it from the Makefile in case you don´t want it.
-
-The same goes for astyle, it´s not required.  It reformats the code so that it´s easier to read than the output of cpp.  It´s useful when you want to put the LSL script generated from your source on wiki pages, and for debugging.
-
-i2o.pl "compresses" the LSL script.  It removes whitespace and line end-markers, and it shortens the names of variables.  One advantage is that you may get a script which uncompressed has more than 64kB to work because it fits into "a script": The editor built into sl clients (or, more likely, the server does it) cuts off anything beyond 64kB when you upload something into a notecard or into a script.  Another advantage is that your script may need less memory.  My unverified impression is that "compressed" scripts even run a tiny bit faster, though that seems unlikely since they are compiled to bytecode just like uncompressed ones.  Test it if you like --- since you got less to upload when the script is "compressed", in theory the "compressed" scripts don´t take as long to upload as uncompressed ones and you can test them faster.  The server may even experience not so many difficulties.
+Side effects of shrinking are that sometimes a script appears to need less script memory to run, and shrunken scripts appear to run a little faster.  I haven´t really tested either, and both doesn´t seem to make sense because the scripts are compiled to byte-code anyway.  Test it if you like; it would be interesting to see the results.  I always use the shrunken version unless I need to look at the debugging version, and it works great.
 
 
 

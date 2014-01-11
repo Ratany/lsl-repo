@@ -43,13 +43,13 @@ use File::Basename;
 # you´re done editing, and it may not replace the contents of its
 # built-in editor with the contents of the file you´re editing.
 #
-my $editor = "emacsclient";
+use constant EDITOR => "emacsclient";
 #
 # "-c" makes emacsclient create a new frame.  If you start your
 # favourite editor without such a parameter, you want to remove
-# $editorparam here an in the 'start_editor' function.
+# EDITORPARAM here an in the 'start_editor' function.
 #
-my $editorparam = "-c";
+use constant EDITORPARAM => "-c";
 
 
 # a wrapper function to start the editor
@@ -58,7 +58,7 @@ sub start_editor
   {
     my (@files_to_edit) = @_;
 
-    system($editor, $editorparam, @files_to_edit);
+    system(EDITOR, EDITORPARAM, @files_to_edit);
   }
 
 
