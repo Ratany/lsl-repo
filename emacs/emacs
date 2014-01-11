@@ -33,10 +33,12 @@
 ;;  '(font-lock-warning-face ((t (:inherit error :foreground "DarkSlateGray1")))))
 ;;
 ;;
-;; To use the lsl-mode, add the following to your ~/.emacs file:
+;; To use the lsl-mode, add the following to your ~/.emacs file.  It
+;; loads "~/emacs/lsl-mode.el" and when you have compiled it, change
+;; it so it loads "~/emacs/lsl-mode.elc":
 ;;
 
-(load "~/emacs/lsl-mode.elc")
+(load "~/emacs/lsl-mode.el")
 (setq auto-mode-alist
        (nconc
          '(("\\.lsl$" . lsl-mode))
@@ -60,6 +62,8 @@
 	      indent-tabs-mode t
 	      c-default-style "gnu")
 
+;; reload the TAGS without asking
+(setq tags-revert-without-query 1)
 
 ;;
 ;; 'goto-matching-fence' is a very useful function you may want to add
@@ -116,9 +120,27 @@
 ;;
 ;; This starts the server process and allows you to use emacsclient
 ;; instead of starting another instance of emacs every time.  Using
-;; emacsclient can be a lot faster than starting emacs.  I start emacs
-;; only once after rebooting every couple months and have it running
-;; all the time.  About 450 buffers are re-created on startup through
-;; emacs DeskTop (see http://www.emacswiki.org/emacs/DeskTop), which
-;; can take a while. Visiting a file via emacsclient shows the file
-;; instantly.
+;; emacsclient can be a lot faster than starting emacs.
+
+
+;; see http://www.emacswiki.org/emacs/DeskTop
+(setq desktop-base-file-name ".emacs.dsktop")
+(desktop-save-mode 1)
+
+;; code folding
+(load "folding" 'nomessage 'noerror)
+
+;; You may want to change some key bindings like this:
+;;
+;; (global-set-key [C-f1] 'recompile)
+;; (global-set-key [C-f2] 'hs-toggle-hiding)
+;; (global-set-key [C-f3] 'hs-hide-level)
+;; (global-set-key (kbd "C-x <f6>") 'my-insert-date)
+
+;; ... and write your own functions:
+;;
+(defun my-insert-date ()
+  "insert date at point"
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d"))
+  )

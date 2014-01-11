@@ -125,7 +125,7 @@ Optional tools:
 * wc: [http://www.gnu.org/software/coreutils/ coreutils]
 
 
-You can replace "make/Makefile" with "make/Makefile-no-optional" and try without the optional tools.  You can make "echo" optional, but automatically replacing scripts won´t work unless you can find a replacement for "@echo "// =`basename $@`" > $@" in the Makefile. Since perl is required, you could replace "echo" (and "basename" and "sed") with perl scripts.  You can probaly make further modifications so you won´t need perl, but what does one without it?
+You can replace "make/Makefile" with "make/Makefile-no-optional" and try without the optional tools.  You can make "echo" optional, but automatically replacing scripts won´t work unless you can find a replacement for "@echo "// =`basename $@`" > $@" in the Makefile. Since perl is required, you could replace "echo" (and "basename" and "sed") with perl scripts.  You can probaly make further modifications so you won´t need perl, but what do you do without it?
 
 ===Editor===
 
@@ -157,17 +157,17 @@ Not using the buit-in script editor has several advantages like:
 * And yes, you can use a decent editor, even your favourite one :)
 
 
-You can use any editor you like.  An editor is one of your most important tools.  Use the best one you can find.
+You can use any editor you like.  An editor is essential and one of your most important tools.  When you editor sucks, you cannot be productive.  Use the best editor you can find.
 
 ====Emacs====
 
-[http://www.gnu.org/software/emacs/ Emacs] is my favourite editor.  Give it a try, and don´t expect to learn everything about it within a day.  It´s enough when you can move the cursor around, type something and load and save files.  Over time, you will learn more just by looking up how to do something and trying it and finding ''your'' way of doing what you need.  Lots of documentation is available.
+[http://www.gnu.org/software/emacs/ Emacs] is my favourite editor. Give it a try, and don´t expect to learn everything about it within a day.  It´s enough when you can move the cursor around, type something and load and save files.  Over time, you will learn more just by looking up how to do something and trying it.  You will find ''your'' way of doing what you need and adjust emacs to what ''you'' want --- or you don´t and use it as it is.  Lots of documentation is available.
 
-By default, the cursor keys move the cursor.  Ctrl+xf loads a file into a new buffer and Ctrl+xs saves it.  Ctrl+x b lets you switch to another buffer.  These are usually written as C-xf, C-xs and C-x-b.
+By default, the cursor keys move the cursor.  Ctrl+xf loads a file into a new buffer and Ctrl+xs saves it.  Ctrl+x b lets you switch to another buffer.  These are usually written as C-x-f, C-x-s and C-x-b.
 
-Emacs is worthwhile to learn.  It´s the only editor you need to learn about because you don´t need any others.  It has been around since a long time.  If you had learned it twenty five years ago, that would have saved you the time wasted with other editors which nowadays may not even exist anymore.
+Emacs is worthwhile to learn.  It´s the only editor you need to learn because you don´t need any others.  It has been around since a long time.  If you had learned it twenty five years ago, that would have saved you the time wasted with other editors which nowadays may not even exist anymore.
 
-It doesn´t hurt to try it out.
+It doesn´t hurt to give it a serious try.
 
 =====Syntax Highlighting=====
 
@@ -175,9 +175,7 @@ Emacs comes with syntax highlighting for many programming languages. It doesn´t
 
 You can use [[Emacs_LSL_Mode]].
 
-A mofied version of lsl-mode is in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "emacs/lsl-mode.el".  This version has been modified for use with a file I named "lslstddef.h" ("projects/include/lslstddef.h" in the repository).  Following sections will refer to and use this file.
-
-\add ~/.emacs
+A mofied version of lsl-mode is in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "emacs/lsl-mode.el".  This version has been modified for use with a file I named "lslstddef.h" ("projects/include/lslstddef.h" in the repository) to give you better syntax highlighting with it.
 
 =====Tags=====
 
@@ -189,13 +187,23 @@ The build system creates a so-called tags-file for you.  Emacs can read it autom
 
 See [http://www.gnu.org/software/emacs/tour/ this page]:  A number of version control systems are supported, and [http://git-scm.com/ git] is one of them.  Additional packages are available for this --- I haven´t tried any of them yet.
 
+=====Customizing Emacs=====
+
+The [https://github.com/Ratany/lsl-repo git repository that accompanies this article] has a directory "emacs".  It is recommended that you copy this directory to a suitable location like  your home directory.
+
+Two files are in this directory, "emacs" and "lsl-mode.el".  "lsl-mode.el" provides a syntax highlighting mode for emacs.  When you start emacs, it loads a file, usually "~/.emacs", and evaluates its contents.  You could say it´s a configuration file.
+
+That´s what the file "emacs" in the "emacs" directory is.  You can move this file to "~/.emacs" or take a look at it and add what you need from it to the "~/.emacs" file you may already have when you are already using emacs.
+
+"~/.emacs" contains instructions that make emacs load a file called "~/emacs/lsl-mode.el".  You compile this file from within emacs with M-x byte-compile-file.  Compiling it creates "~/emacs/lsl-mode.elc".  Compiling "~/emacs/lsl-mode.el" is recommended, and once you have compiled it, you need to edit "~/.emacs" and change "(load "~/emacs/lsl-mode.el")" to "(load "~/emacs/lsl-mode.elc")".
+
+Without using lsl-mode.el (or lsl-mode.elc), syntax highlighting for your sources when you create LSL scripts won´t be as nice, so you really want to do this.
+
 ====Other Editors====
 
 In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
 
 You don´t need to try any other editors. [http://en.wikipedia.org/wiki/User:Dozen/E_(text_editor_family)#EPM_.28OS.2F2.29 EPM] was nice, but it crashed all the time.
-
-In any case, use an editor you are happy with because it does what you want.  An editor is one of the most essential tools.  You want your tools to work the way you want them to.  You don´t want tools that get into your way.
 
 ===Automatically replacing Scripts===
 
@@ -203,7 +211,7 @@ The editor built into sl clients comes with buttons like to save and to reset th
 
 [[Image:Cpp-wiki-builtineditor.jpg|thumb|Built-in Editor with "Edit" button]]
 
-Open a script in your sl client and click on the edit button of the built-in editor.  You might get an error message telling you that the debug setting "ExternalEditor" is not set.  Don´t panic!  Set this debug setting so that your favourite editor is used, and click on the edit button again.  This is merely to show the concept, and things will get more convenient.
+Open a script in your sl client and click on the edit button of the built-in editor.  You might get an error message telling you that the debug setting "ExternalEditor" is not set.  Don´t panic!  Set this debug setting so that your favourite editor is used, and click on the edit button again.
 
 [[Image:Cpp-wiki-externaleditor.jpg|thumb|Debug Setting "ExternalEditor"]]
 
@@ -219,250 +227,61 @@ At this point, things suddenly aren´t nice anymore: Replacing the script with y
 
 You could mess around with the built-in editor and try to edit your script further with it, saving the replacing.  That also sucks: The built-in editor is unusable, and you end up with at least two versions of the script.  Since you want the script safely stored on your storage system and not lose your work when your sl client crashes or the like, you end up replacing the script on your storage system with the version you have in the built-in editor every now and then.  When your object has 11 scripts that work together, it eventually becomes a little difficult to keep an overview of what´s going on --- not to mention that you need a huge monitor with a really high resolution to fit 11 built-in editor windows in a usable way on your screen to work on your scripts since there is no C-x b with the built-in editor to switch to a different buffer ...
 
-Fortunately, there is a much better and very simple solution: A program which is started by your sl client ''instead'' of your favourite editor can replace the script for you.  It´s the same concept from above you have tried out now.  The concept does not require that you must abuse your favourite editor to replace scripts.
+Fortunately, there is a much better and very simple solution: A program which is started by your sl client ''instead'' of your favourite editor can replace the script for you.
 
-You can easily write a program that replaces files yourself.  I wrote one when I got tired of all the replacing.  It´s not really a program, but a [http://www.perl.org/ perl] script.  It´s written in perl because perl is particularly well suited for the purpose.  It looks like this:
+A program that replaces the script needs to know which script must be replaced with which file.  To let the program know this, a useful comment is put into the script, and a look-up table is used.  The comment tells the program the name of the script.  The look-up table holds the information which script is to be replaced with which file.  The build system puts the comment into the script and creates entries in the look-up table.  You just click the "Edit" button.
 
+You can easily write a program that replaces files yourself.  I wrote one when I got tired of all the replacing.  It´s not really a program, but a [http://www.perl.org/ perl] script.  It´s written in perl because perl is particularly well suited for the purpose.
 
-<perl>
-#!/bin/perl
+You´ll find this script in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "projects/bin/replace.pl".  It works like this:
 
-
-# This program is free software: you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation, either version 3 of the
-# License, or (at your option) any later version.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program.  If not, see
-# <http://www.gnu.org/licenses/>.
-
-
-# usage: replace.pl <filename>
-#
-# replace file A with file B when the first line of file A is a key
-# found in a look-up table; file B is specified by the value of the
-# key
-#
-# Entries in the look-up table are lines.  Each line holds a key-value
-# pair, seperated by a colon and a space: 'key: value'.
-#
-
-
-use strict;
-use warnings;
-use autodie;
-
-use File::Copy;
-
-
-# the editor to use
-#
-# Note: Use an editor that waits before it exits until you are
-# finished editing the file.  Your sl client stops monitoring the file
-# when the editor exits (or forks off into the background) before
-# you´re done editing, and it may not replace the contents of its
-# built-in editor with the contents of the file you´re editing.
-#
-my $editor = "emacsclient";
-#
-# "-c" makes emacsclient create a new frame.  If you start your
-# favourite editor without such a parameter, you want to remove
-# $editorparam here an in the 'start_editor' function.
-#
-my $editorparam = "-c";
-
-
-# a wrapper function to start the editor
-#
-sub start_editor
-  {
-    my (@files_to_edit) = @_;
-
-    system($editor, $editorparam, @files_to_edit);
-  }
-
-
-# unless the filename given as parameter is *.lsl, edit the file
-#
-unless($ARGV[0] =~ m/.*\.lsl/)
-{
-  start_editor($ARGV[0]);
-  exit(0);
-}
-
-
-# the file name of the lookup table; specify an absolute path here
-#
-my $table = "/absolute/path/to/replaceassignments.txt";
-
-
-# read the first line of the file; unless it matches a pattern like
-# "// =filename.[o|i]", edit the file and the lookup table
-#
-open my $script, "<", $ARGV[0];
-my $line = <$script>;
-close $script;
-chomp $line;
-$line =~ s!// =!!;
-unless(($line =~ m/.*\.o/) || ($line =~ m/.*\.i/))
-  {
-    start_editor($ARGV[0], $table);
-    exit(0);
-  }
-
-
-# look up the key in the lookup table
-#
-# the key is looked up for *.o and *.i so that only one entry per
-# script is needed in the lookup table to cover both *.i and *.o,
-# provided that the directory structure doesn´t change
-#
-my $i_line = $line;
-$i_line =~ s/\.i$/\.o/;
-$i_line .= ": ";
-$line .= ": ";
-my $replacementfile = undef;
-open my $assign, "<", $table;
-while( <$assign> )
-  {
-    # ignore lines starting with "//" as comments
-    #
-    unless( m!^//!)
-      {
-	chomp $_;
-	if( m/$line/ || m/$i_line/)
-	  {
-	    $replacementfile = $';
-	    last;
-	  }
-      }
-  }
-close $assign;
-
-if(defined($replacementfile))
-  {
-    if($line =~ m/.*\.i:/)
-      {
-	$replacementfile =~ s!/bin/!/dbg/!;
-	$replacementfile =~ s/\.o$/\.i/;
-      }
-
-    # when the value of the key looks ok, replace the file, otherwise edit
-    # the file and the table
-    #
-    if(($replacementfile =~ m/.*\.o$/) || ($replacementfile =~ m/.*\.i$/))
-      {
-	copy($replacementfile, $ARGV[0]);
-      }
-  }
-else
-  {
-    start_editor($ARGV[0], $table);
-  }
-</perl>
-
-
-You´ll find this script in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "projects/bin/replace.pl".  What it basically does is simple:
 
 * look at the name of the file which is supplied as a command line argument; when it´s not named like "*.lsl", start your favourite editor to edit the file
 
 * otherwise, look at the first line of the file
 
-* when the line starts with "// =", treat the rest of the line from there as a key; otherwise start your favourite editor to edit the file and another one which is a lookup-table
+* when the line starts with "// =", treat the rest of the line from there as a key; otherwise start your favourite editor to edit both the file and the look-up table
 
-* look up the key in a look-up table (a file) that associates the key with a value
+* look up the key in the look-up table
 
 * when the key is found in the table, replace the file saved by the sl client with the file the name of which is specified by the value associated with the key
 
-* when the key is not found in the table, start your favourite editor to edit the file that was saved by the sl client and to edit the table
+* when the key is not found in the table, start your favourite editor to edit both the file and the look-up table
 
-
-Entries in the table are so-called key-value pairs.  The table looks like this:
-
-
-<lsl>
-example-script.o: /path/to/bin/example-script.o
-
-//
-// this is a comment
-//
-
-foobar-script.o: /path/to/bin/foobar-script.o
-</lsl>
-
-
-Note: The space between the colon and the file name is mandatory (because the perl script is written like that).
-
-This means when you have a script in the built-in script editor like
-
-
-<lsl>
-// =example-script.o
-
-default
-{
-	state_entry()
-	{
-		Say(0, "test");
-	}
-}
-</lsl>
-
-
-and click on the "Edit" button of the built-in script editor, the script will automatically be replaced with the contents of the file "/path/to/example-script.o".
 
 To make this work, you need to:
 
 
 * modify the perl script to start your favourite editor (in the unlikely case that your favourite editor isn´t emacs)
 
-* modify the perl script to tell it where to find the table that associates the keys and values ('my $table = "/absolute/path/to/replaceassignments.txt";')
+* change the debug setting "ExternalEditor" so that your sl client starts the perl script instead of your favourite editor
 
-* change the debug setting "ExternalEditor" so that your sl client starts above perl script instead of your favourite editor
+* make sure that your LSL script starts with a line like "// =example-script.o" --- the build system does this for you
 
-* create the look-up table (the table can be empty)
+* make sure that the look-up table exists --- the build system does this for you
 
-* make sure that your script starts with a line like "// =example-script.o"
 
-* try out the perl script:
-
+To modify the perl script to use your favourite editor, edit it and change "my $editor = "emacsclient";" --- and perhaps "my $editorparam = "-c";".  There are comments in the script explaining this.
 
 '''You should first try out the perl script to see if it works.'''
 
-When you have your sl client start it, it is difficult or impossible to see error messages you may get when running the perl script:
+When you have your sl client start the perl script, it is difficult or impossible to see error messages you may get when running the perl script.  If there is an error, it will probably seem as if nothing happens when you click on the "Edit" button.
+
+Trying out the script goes like this:
+
+[~/src/lsl-repo/projects] mkdir tryout
+[~/src/lsl-repo/projects] cd tryout/
 
 
-<lsl>
-[~/tmp] echo "// =example-script.o" > example-script.lsl                                                                                                                                                                                    
-[~/tmp] ~/src/lsl-repo/projects/bin/replace.pl example-script.lsl 
-Can't open '/absolute/path/to/replaceassignments.txt' for reading: 'No such file or directory' at ~/src/lsl-repo/projects/bin/replace.pl line 97
-[~/tmp] 
-</lsl>
+The build system fills the look-up table for you.  It adds entries for new scripts as needed when you run 'make'.  It does not delete entries from the table; you´ll have to do that yourself.  To make such entries, the perl script "projects/bin/addtotable.pl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] is used.
 
+The first entry in the table that matches is used.  If you plan to have multiple scripts with the same name, you may need to adjust addtotable.pl and the Makefile (see below).  It´s a good idea to decide about this before filling your table: When you want multiple scripts with the same name some time later, you will have to edit your table.
 
-You see what I mean: You forgot to adjust the file name of the look-up table (or forgot to create the table) and get an error message because the file doesn´t exist.  If you had your sl client start the perl script, apparently nothing would happen when you click the "Edit" button.
+The build system creates "compressed" versions of the scripts and versions that are not compressed.  The "compressed" versions are named *.o and the not-compressed versions are named *.i.
 
-Once you have verified that the perl script works, you´re fine. However, when you have a typing error in the lookup-table, the script in the built-in editor might silently not be replaced with the new version.  (You could modify the perl script so that it beeps when it does not replace the script, or experiment with something like 'xterm -hold -e replace.pl "%s"'.  If 'xterm -hold ...' works, you could do something to run 'make' (see below) automatically when you click the "Edit" button.)
-
-The perl script starts your favourite editor when it doesn´t find the key (i. e. "example-script.o") in the table.  You can then edit both the script and the table.  This means that you don´t need to fill the table in advance.  You can start with an empty table ('touch /absolute/path/to/replaceassignments.txt') and add entries as you go.
-
-The perl script uses the first entry in the table that matches.  If you plan to have multiple scripts with the same name, you can make adjustments to the Makefile (see below) and don´t need to modify the perl script.  It´s a good idea to decide about this before filling your table: When you want multiple scripts with the same name some time later, you will have to edit your table.
-
-The build system (see below) creates "compressed" versions of the scripts and versions that are not compressed.  The "compressed" versions are named *.o and the not-compressed versions are named *.i.
-
-The "compressed" versions can be pretty unreadable, which can make debugging difficult.  The not-compressed version is formattted with astyle (see below) to make it easier to read.  It can be used for debugging.  (The "compressed" version is what you want to put as a script into your object.)
+The "compressed" version can be pretty unreadable, which can make debugging difficult.  The not-compressed version is formattted with astyle (see below) to make it easier to read.  It can be used for debugging.  (The "compressed" version is what you want to put as a script into your object.)
 
 To see the debugging version of the script in the built-in editor, change the first line of the script in the built-in editor from like "// =example-script.o" to "// =example-script.i" and click on the "Edit" button.  That puts the version of the script which is not compressed into the built-in editor.  Switch the "i" back to an "o", click the "Edit" button and the "compressed" version is put back.
-
-Above perl script does the replacing for you, provided that the debugging version is in the "dbg" directory and the "compressed" version is in the "bin" directory and that both "dbg" and "bin" are in the same directory.
-
-When you use the build system, you do not need to add entries to the lookup-table.  They are automatically added as needed when you run 'make' (see below).
 
 ====A Preprocessor====
 
