@@ -15,17 +15,9 @@
 # along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-
-# usage: replace.pl <filename>
 #
-# replace file A with file B when the first line of file A is a key
-# found in a look-up table; file B is specified by the value of the
-# key
+# addtotable.pl: create entries in the lookup table used with replace.pl
 #
-# Entries in the look-up table are lines.  Each line holds a key-value
-# pair, seperated by a colon and a space: 'key: value'.
-#
-
 
 use strict;
 use warnings;
@@ -33,6 +25,40 @@ use autodie;
 
 use POSIX qw(strftime);
 use File::Basename;
+
+
+use constant TABLE_INDICATOR => "-is-in-lookup-table";
+
+
+# create a check-file to avoid unnecessary lookups
+#
+sub create_checkfile
+  {
+    my ($dir, $uniq, $entry) = @_;
+
+    my $fn = $dir . $uniq . TABLE_INDICATOR;
+
+    open my $fh, ">>", $fn;
+    printf $fh "[%s]: %s is in the lookup table\n", strftime("%Y-%m-%d %H:%M:%S", localtime), $entry;
+    close $fh;
+  }
+
+
+# see if the check-file exists
+#
+sub has_checkfile
+  {
+    my ($dir, $uniq) = @_;
+
+    my $fn = $dir . $uniq . TABLE_INDICATOR;
+
+    if(-e $fn)
+      {
+	return 1;
+      }
+
+    return 0;
+  }
 
 
 # expect two parameters which will be key and value for the entry into
@@ -44,8 +70,29 @@ my ($key, $value) = @ARGV;
 #
 unless(defined($key) && defined($value) && ($key =~ m!^src/.*\.lsl$!) && ($value =~ m!^/.*/bin/.*\.lsl$!))
   {
-    print "usage: addtotable.pl <key> <value>\n\t<key> and <value> must match a regular expression\n";
+    print "usage: addtotable.pl <key> <value>\n\t<key> and <value> must match regular expressions\n";
     exit(1);
+  }
+
+# prepare the key for looking it up in and writing it to the lookup
+# table
+#
+$key =~ s!src/!!;
+$key =~ s/\.lsl$/\.o/;
+
+# prepare the value to write it to the table together with the key
+#
+$value =~ s/\.lsl$/\.o/;
+
+# avoid searching the lookup table when the entry has alread been
+# created --- I like efficiency ...
+#
+my $checkdir = $value;
+$checkdir =~ s!/bin/.*!/dep/!;
+
+if(1 == has_checkfile($checkdir, $key))
+  {
+    exit(0);
   }
 
 
@@ -54,12 +101,6 @@ unless(defined($key) && defined($value) && ($key =~ m!^src/.*\.lsl$!) && ($value
 # THIS MUST BE THE SAME FILE AS IS USED WITH replace.pl
 #
 my $table = dirname(__FILE__) . "/../make/replaceassignments.txt";
-
-# prepare the key for looking it up in and writing it to the lookup
-# table
-#
-$key =~ s!src/!!;
-$key =~ s/\.lsl$/\.o/;
 
 if(-e $table)
   {
@@ -78,6 +119,7 @@ if(-e $table)
 		# nothing further to do because the key is already in the table
 		#
 		close $assign;
+		create_checkfile($checkdir, $key, $key);
 		exit(0);
 	      }
 	  }
@@ -93,15 +135,14 @@ else
     close $fh;
   }
 
-
-# prepare the value to write it to the table together with the key
+# write key and value to the lookup table
 #
-$value =~ s/\.lsl$/\.o/;
-
 open my $assign, ">>", $table;
 printf $assign "\n// [%s]: added %s\n", strftime("%Y-%m-%d %H:%M:%S", localtime), $key;
 print $assign $key . ": " . $value . "\n";
 close $assign;
+
+create_checkfile($checkdir, $key, $key);
 
 # printf "// [%s]: added %s to lookup-table\n", strftime("%Y-%m-%d %H:%M:%S", localtime), $key;
 exit(0);

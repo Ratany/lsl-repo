@@ -265,11 +265,11 @@ To modify the perl script to use your favourite editor, edit it and change "my $
 
 When you have your sl client start the perl script, it is difficult or impossible to see error messages you may get when running the perl script.  If there is an error, it will probably seem as if nothing happens when you click on the "Edit" button.
 
+One way to test it is to make sure that the look-up table does not exist and then to click on the "Edit" button of the built-in script editor in your sl client.  If the look-up table exists, you find the table as "projects/make/replaceassignments.txt".  When your favourite editor starts to let you edit both the file your sl client saved and the (empty) look-up table, it is very likely that it´s working.
 
+The build system fills the look-up table for you.  It adds entries for new scripts as needed when you run 'make'.  It does not delete entries from the table.  To make such entries, the perl script "projects/bin/addtotable.pl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] is used.
 
-The build system fills the look-up table for you.  It adds entries for new scripts as needed when you run 'make'.  It does not delete entries from the table; you´ll have to do that yourself.  To make such entries, the perl script "projects/bin/addtotable.pl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] is used.
-
-The first entry in the table that matches is used.  If you plan to have multiple scripts with the same name, you may need to adjust addtotable.pl and the Makefile (see below).  It´s a good idea to decide about this before filling your table: When you want multiple scripts with the same name some time later, you will have to edit your table.
+The first entry in the table that matches is used.  If you plan to have multiple scripts with the same name, you may need to adjust addtotable.pl, replace.pl and the Makefile (see below).
 
 The build system creates "compressed" versions of the scripts and versions that are not compressed.  The "compressed" versions are named *.o and the not-compressed versions are named *.i.
 
