@@ -263,14 +263,8 @@ To make this work, you need to:
 
 To modify the perl script to use your favourite editor, edit it and change "my $editor = "emacsclient";" --- and perhaps "my $editorparam = "-c";".  There are comments in the script explaining this.
 
-'''You should first try out the perl script to see if it works.'''
-
 When you have your sl client start the perl script, it is difficult or impossible to see error messages you may get when running the perl script.  If there is an error, it will probably seem as if nothing happens when you click on the "Edit" button.
 
-Trying out the script goes like this:
-
-[~/src/lsl-repo/projects] mkdir tryout
-[~/src/lsl-repo/projects] cd tryout/
 
 
 The build system fills the look-up table for you.  It adds entries for new scripts as needed when you run 'make'.  It does not delete entries from the table; you´ll have to do that yourself.  To make such entries, the perl script "projects/bin/addtotable.pl" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] is used.

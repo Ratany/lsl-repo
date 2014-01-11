@@ -75,6 +75,13 @@ unless($ARGV[0] =~ m/.*\.lsl/)
 #
 my $table = dirname(__FILE__) . "/../make/replaceassignments.txt";
 
+# start the editor when the lookup table doesn´t exist
+#
+unless(-e $table)
+  {
+    start_editor($ARGV[0], $table);
+    exit(0);
+  }
 
 # read the first line of the file; unless it matches a pattern like
 # "// =filename.[o|i]", edit the file and the lookup table
