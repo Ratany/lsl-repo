@@ -1,7 +1,5 @@
 ==How to make creating LSL scripts easier==
 
-===About===
-
 This article is about tools you can use to make creating LSL scripts easier.  It tries to explain how to combine and how to use them for this very purpose.
 
 One of these tools is a preprocessor called cpp.  It comes with [http://gcc.gnu.org/ GCC].  Among the tools mentioned in this article, cpp is the tool which can make the biggest difference to how you write your sources and to how they look.
@@ -20,7 +18,7 @@ I´m using Linux, which is freely available in many different distributions.  I�
 
 Documentation is plentiful.  You may find different software that does the same or similar things and may work better for you or not.
 
-===Editing this Article===
+==Editing this Article==
 
 This article is written in my favourite editor.  When I update the article on the wiki, I edit the whole article, delete everything and paste the new version in.  That´s simply the easiest and most efficient way for me.
 
@@ -28,7 +26,7 @@ Unfortunately, this means that your modifications may be lost when I update the 
 
 '''Please use the "discussion" page of this article to post contributions or to suggest changes so they can be added to the article.'''
 
-===Repository===
+==Repository==
 
 It´s probably more fun to be able to try out things yourself while reading this article.  If you want to do so, pull the [https://github.com/Ratany/lsl-repo repository].  You can run 'git clone https://github.com/Ratany/lsl-repo.git' or [https://github.com/Ratany/lsl-repo/archive/master.zip | download] it as an archive.
 
@@ -84,7 +82,7 @@ Of course, you can have several source files in "my-test/src".  For all of them,
 
 If you get an error message when you run 'make', you are probably missing some of the tools the build system uses.  Install the missing tools and try again.
 
-===Tools you need for the build system===
+==Tools you need for the build system==
 
 Required tools:
 
@@ -120,7 +118,7 @@ Optional tools:
 
 You can replace "make/Makefile" with "make/Makefile-no-optional" and try without the optional tools.  You can make "echo" optional, but automatically replacing scripts won´t work unless you can find a replacement for "@echo "// =`basename $@`" > $@" in the Makefile. Since perl is required, you could replace "echo" (and "basename" and "sed") with perl scripts.  You can probaly make further modifications so you won´t need perl, but what do you do without it?
 
-===Editor===
+==Editor==
 
 To create scripts, you do need an editor to write your sources.  All sl clients I´ve seen have one built in, and it´s the worst editor I´ve ever seen.  Fortunately, you don´t need to use it.
 
@@ -152,7 +150,7 @@ Not using the buit-in script editor has several advantages like:
 
 You can use any editor you like.  An editor is essential and one of your most important tools.  When your editor sucks, you cannot be productive.  Use the best editor you can find.
 
-====Emacs====
+===Emacs===
 
 [http://www.gnu.org/software/emacs/ Emacs] is my favourite editor. Give it a try, and don´t expect to learn everything about it within a day.  It´s enough when you can move the cursor around, type something and load and save files.  Over time, you will learn more just by looking up how to do something and trying it.  You will find ''your'' way of doing what you need and adjust emacs to what ''you'' want --- or you don´t and use it as it is.  Lots of documentation is available.
 
@@ -162,25 +160,27 @@ Emacs is worthwhile to learn.  It´s the only editor you need to learn because y
 
 It doesn´t hurt to give it a serious try.
 
-=====Syntax Highlighting=====
+====Syntax Highlighting====
 
 Emacs comes with syntax highlighting for many programming languages. It doesn´t come with syntax highlighting for LSL, but LSL syntax highlighting modes for emacs are available.
+
+[[Image:Cpp-wiki-syntax-higlighting.jpg|thumb|Syntax highlighting in emacs with the lsl-mode from the repo]]
 
 You can use [[Emacs_LSL_Mode]].
 
 A mofied version of lsl-mode is in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] as "emacs/lsl-mode.el".  This version has been modified for use with a file I named "lslstddef.h" ("projects/include/lslstddef.h" in the repository) to give you better syntax highlighting with it.
 
-=====Tags=====
+====Tags====
 
 Emacs supports so-called tags.  Using tags allows you to find the declaration of functions, defines, macros and variables you use in your sources without searching.  It doesn´t matter in which file they are.
 
 The build system creates a so-called tags-file for you.  Emacs can read it automatically. Esc+. (M-.) lets you enter a tag you want to go to and takes you there.
 
-=====Git=====
+====Git====
 
 See [http://www.gnu.org/software/emacs/tour/ this page]:  A number of version control systems are supported, and [http://git-scm.com/ git] is one of them.  Additional packages are available for this --- I haven´t tried any of them yet.
 
-=====Customizing Emacs=====
+====Customizing Emacs====
 
 The [https://github.com/Ratany/lsl-repo git repository that accompanies this article] has a directory "emacs".  It is recommended that you copy this directory to a suitable location like  your home directory.
 
@@ -192,7 +192,7 @@ That´s what the file "emacs" in the "emacs" directory is.  You can move this fi
 
 Without using lsl-mode.el (or lsl-mode.elc), syntax highlighting for your sources when you create LSL scripts won´t be as nice, so you really want to do this.
 
-=====Line Numbers=====
+====Line Numbers====
 
 Line numbers have become an anachronism.  They were used to create what was called "spaghetti code" with statements like "if(A) then goto 100;". Seriously.  There was no other way.  It helped to get you to think straight as a programmer.  Events are horrible when you think straight, and I don´t like them.  They are worse than Makefiles. Seriously.  But there is no other way.
 
@@ -200,15 +200,17 @@ The built-in script editor displays line numbers.  Emacs can do that, too.  Ther
 
 When you need to add line numbers to the contents of a buffer, look  [http://www.emacswiki.org/emacs/NumberLines here].
 
-====Other Editors====
+===Other Editors===
 
 In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
 
 You don´t need to try any other editors.  Your time is better spent on learning emacs or vi.
 
-===Automatically replacing Scripts===
+==Replacing Scripts==
 
 The editor built into sl clients comes with buttons like to save and to reset the script which is being edited.  There is also a button labled "Edit".  As the label of this button suggests, the button is for editing the script.  The built-in editor is not for editing the script, though it´s not impossible to kinda use it for that.
+
+===Manually Replacing Scripts===
 
 [[Image:Cpp-wiki-builtineditor.jpg|thumb|Built-in Editor with "Edit" button]]
 
@@ -229,6 +231,8 @@ At this point, things suddenly aren´t nice anymore: Replacing the script with y
 You could mess around with the built-in editor and try to edit your script further with it, saving the replacing.  That also sucks: The built-in editor is unusable, and you end up with at least two versions of the script.  Since you want the script safely stored on your storage system and not loose your work when your sl client crashes or the like, you end up replacing the script on your storage system with the version you have in the built-in editor every now and then.  When your object has 11 scripts that work together, it eventually becomes a little difficult to keep an overview of what´s going on --- not to mention that you need a huge monitor with a really high resolution (or a magnifying glass with a non-huge monitor with a really high resolution) to fit 11 built-in editor windows in a usable way on your screen to work on your scripts since there is no C-x b with the built-in editor to switch to a different buffer ...
 
 Fortunately, there is a much better and very simple solution: A program which is started by your sl client ''instead'' of your favourite editor can replace the script for you.
+
+===Automatically Replacing Scripts===
 
 A program that replaces the script needs to know which script must be replaced with which file.  To let the program know this, a useful comment is put into the script, and a look-up table is used.  The comment tells the program the name of the script.  The look-up table holds the information which script is to be replaced with which file.  The build system puts the comment into the script and creates entries in the look-up table.  You just click the "Edit" button to replace the script.
 
@@ -278,14 +282,14 @@ The "compressed" version can be pretty unreadable, which can make debugging diff
 
 To see the debugging version of the script in the built-in editor, change the first line of the script in the built-in editor from like "// =example-script.o" to "// =example-script.i" and click on the "Edit" button.  That puts the version of the script which is not compressed into the built-in editor.  Switch the "i" back to an "o", click the "Edit" button and the "compressed" version is put back.
 
-===A Preprocessor: cpp===
+==A Preprocessor: cpp==
 
 The [http://en.wikipedia.org/wiki/Preprocessor Wikipedia article] about preprocessors gives an interesting explanation of what a preprocessor is and provides an overview.  For the purpose of making it easier to create LSL scripts, a preprocessor as is used with [http://en.wikipedia.org/wiki/C_(programming_language) C] (and C++) compilers is a very useful tool.
 
 The particular preprocessor I´m using is called "cpp" and comes with
 [http://gcc.gnu.org/ GCC].
 
-====What a preprocessor does====
+===What a preprocessor does===
 
 A preprocessor enables you:
 
@@ -327,7 +331,7 @@ That doesn´t sound like much, yet these are rather powerful features. Some of t
 
 There are probably lots of advantages that don´t come to mind at the moment.  You can be creative and find uses and advantages I would never think of.
 
-====How cpp works====
+===How cpp works===
 
 Some extensive documentation about cpp can be found [http://gcc.gnu.org/onlinedocs/cpp/ here].
 
@@ -751,7 +755,7 @@ It´s still awful to read.  What did you expect?  The source looks nice and clea
 
 One thing is new in example-1_D: The defines that were used to make the list with the UUIDs of the agents usable are undefined with "#undef".  It´s not necessary to do this, it´s tidy.  As mentioned before, the list has local scope.  That´s the reason I undefined the defines that relate to it.  It ends their "scope" as well.  You can create new defines with the same names outside this scope if you like. They are undefined and out of the way.  Perhaps at some time, you include something into your source that happens to use defines with the same name.  You would get an error message and have to go back to the perhaps old source and figure out where you can undefine them.  It doesn´t hurt to undefine them right away and saves you time later.
 
-====Script memory and performance with cpp====
+===Script memory and performance with cpp===
 
 You may have seen or written scripts that use variables as constants. Look at this example:
 
@@ -870,7 +874,7 @@ Depending on what the function or the macro does, your "if" statements can affec
 
 Imagine how much processing power could be saved if this bug was fixed.
 
-====Inlining Functions====
+===Inlining Functions===
 
 [http://en.wikipedia.org/wiki/Inline_expansion Inlining] functions is possible with cpp.  Last night I looked at some code I´m working on and inlined a function.  With a line in the state_entry event telling me what llGetFreeMemory() returns, it said 30368 before the function was inlined and 31000 after the function was inlined: "Huh? Over 600 bytes saved?!"
 
@@ -1018,7 +1022,7 @@ This example keeps the brackets with the defines.  This is to show that you can 
 
 You can find this example in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in "projects/inline".
 
-====Use Parentheses====
+===Use Parentheses===
 
 When you look at this simple macro
 
@@ -1132,7 +1136,7 @@ That is not ambiguous.  Since "&&" usually takes precedence over "||", it´s dif
 
 Save yourself the hassle and use parentheses.  My LSL scripts tend to have lots of parentheses, a lot of them not strictly needed because they come from macro definitions.  They don´t hurt anything.  Not having them can hurt badly.
 
-====How to use cpp====
+===How to use cpp===
 
 Finally, there is the question of how to use cpp.  Cpp has a lot of command line parameters, and one particularly useful when using cpp for LSL is '-P'.  The manpage of cpp says:
 
@@ -1275,7 +1279,7 @@ So much effort to finally create such a little LSL script?  No --- the effort he
 
 The effort to create an LSL script is no more than copying the "template-directories", saving your source in the "src" directory of the copy and running 'make'.  You got a build system that does everything else for you when you run 'make'.
 
-===Make===
+==Make==
 
 Very nicely said, [http://www.gnu.org/software/make/ Make] "is a tool which controls the generation of executables and other non-source files of a program from the program's source files."
 
@@ -1293,13 +1297,13 @@ This Makefile is symlinked into the template-directories.  There is only one Mak
 
 Should you need to adjust the Makefile because a particular project has special requirements, remove the symlink to the Makefile from the projects´ directory.  Copy make/Makefile into the projects´ directory and then modify the copy.
 
-====How to use Make====
+===How to use Make===
 
 Enter the directory of the project you are working on and run 'make'. That´s all.  The section "Repository" has some details.
 
 You can run make from within emacs: M-x compile.  Emacs will show you the output in a buffer.  If there are error messages, you can move the cursor to the error message and press enter and emacs shows you the line in the file that triggered the error message.  To compile again, you can use 'recompile': M-x recompile.  You can make a key-binding for that with something like '(global-set-key [C-f1] 'recompile)' in your ~/.emacs and recompile your source conveniently from within your favourite editor --- which by now is, of course, emacs --- by simply pressing Ctrl+F1.
 
-====Make "your-script.lsl"====
+===Make "your-script.lsl"===
 
 Assume you want to try out the "your-script.lsl" source from above: Enter the directory for the project ("/projects/your-script/") and run 'make' --- or load the source into emacs and run make from within emacs.  I´ll do it with emacs:
 
@@ -1337,13 +1341,13 @@ To try out the script you just created in sl, you can switch to your sl client a
 
 Now click on the "Edit" button of the built-in script editor.  Provided that you successfully prepared the automatic replacement of your scripts as described above, the compressed version of your script appears in the built-in script editor.  It will be compiled by the sl server and run --- or you will see an error message in the built-in script editor.
 
-===astyle===
+==astyle==
 
 Astyle is a nice tool to format your code so that it´s easier to read.  Since you write your sources so that they are easy to read anyway, you may not want to use it to reformat your sources --- unless some lines are so long that they don´t fit very well on wiki pages maybe.
 
 However, the output of cpp isn´t too readable.  Therefore, the build system uses astyle to reformat it when it generates debugging versions of the scripts (in dbg/*.i).  This is entirely optional.
 
-===sed===
+==sed==
 
 Sed is used by the build system for a number of things.  One of these things is what you might call postprocessing:  Preprocessing your sources can leave artifacts in the output of cpp due to the way macros (see "lslstddef.h") are used.
 
@@ -1351,7 +1355,7 @@ Sed is used to remove these artifacts, i. e. lines like "};" and ";".  A closing
 
 The rules used by sed for this are in a so-called script which you can find as "projects/make/clean-lsl.sed" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article].
 
-===i2o.pl===
+==i2o.pl==
 
 The perl script i2o.pl comes from the [http://opengate.ma8p.com/open9.tar.gz source] of the [http://ma8p.com/~opengate/ Open Stargate Network] stargates.
 
@@ -1361,13 +1365,15 @@ The point of shrinking your scripts is saving memory.  You cannot save (i. e. up
 
 Side effects of shrinking are that sometimes a script appears to need less script memory to run, and shrunken scripts appear to run a little faster.  I haven´t really tested either, and both doesn´t seem to make sense because the scripts are compiled to byte-code anyway.  Test it if you like; it would be interesting to see the results.  I always use the shrunken version unless I need to look at the debugging version, and it works great.
 
-===git===
+==git==
 
 Git isn´t really involved here, other than that the build system and examples described and used in this article --- and the article itself --- is available as a [https://github.com/Ratany/lsl-repo git repository] for your and my convenience.  It´s convenient for you because you can easily download it.
 
 It´s convenient for me because git makes it easy to keep the repository up to date.  If several people would contribute to what is in the repository, it would be convenient for them as well because git makes it easy to put together the work done by many people on the same thing.
 
 It can be convenient --- or useful --- for you because it makes it easy to keep track of changes.  When you create a git repository from or for the sources of a project you are working on, you can not only apply (commit) every change to the repository accompanied by an entry in a log which helps you to figure out what you have done.
+
+When you make a commit, it is a good idea to make a commit for one particular thing or objective, like "fixed the bug with too many numbers".  It is irrelevant how many changes you made or how many files you changed to achieve the objective.  Git is not about what happened to individual files but about what happened to the project. Still you can track every change to every single file and let git show you exactly what has changed.
 
 You can also undo changes by going back to previous commits and experiment with variations (by creating so-called branches).  Git works for this much better than making backups or copies of your sources.  With backups or copies, it doesn´t take long before I can´t remember what a backup or copy was about and what has changed and whether the copy has become obsolete or not.
 
@@ -1378,6 +1384,11 @@ Emacs supports git out of the box, see [http://alexott.net/en/writings/emacs-vcs
 Using CVSs like git used to be awful even when you merely wanted to get a copy:  There were many different ones that used slightly different commands to download a copy of the repository --- and yet different commands when you wanted to update a copy, perhaps a year later, you already had.  You could either spend half an hour or so to figure out how to update your existing copy or download everything again, which might also take half an hour or so.
 
 Git works much better.  It seems that a lot of repositories have been migrated to git.  Don´t let your perhaps frustrating experiences with CVSs keep you from giving git a try.
+
+==References==
+
+The [https://github.com/Ratany/lsl-repo git repository that accompanies this article] contains the sources of reference implementations of devices which are compatible with the [[LSL_Protocol/rfedip|Ratany fine Engineering Device Interface Protocol]].  Please see "projects/rfedip-reference-implementation".
+
 
 ~~~~
 {{LSLC|Tutorials}}
