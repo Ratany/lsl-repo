@@ -20,7 +20,7 @@
 #define LIST                       numbers
 #define iGetNumber(_n)             llList2Integer(LIST, (_n))
 
-#define foreach(_l, _do)           { int _n = Len(_l); LoopDown(_n, _do); }
+#define foreach(_l, _n, _do)       int _n = Len(_l); LoopDown(_n, _do);
 
 #define iMany                      10
 
@@ -34,7 +34,7 @@ list LIST;
 #define multiply_two(n)							\
 	{								\
 		Memsay("multiply_two start");				\
-		foreach(LIST, opf(iGetNumber(n), "times", iGetNumber(_n), "makes", iGetNumber(n) * iGetNumber(_n))); \
+		foreach(LIST, two, opf(iGetNumber(n), "times", iGetNumber(two), "makes", iGetNumber(n) * iGetNumber(two))); \
 		Memsay("multiply_two end");				\
 	}
 
@@ -42,7 +42,7 @@ list LIST;
 #define multiply_one()					\
 	{						\
 		Memsay("multiply_one start");		\
-		foreach(LIST, multiply_two(_n));	\
+		foreach(LIST, one, multiply_two(one));	\
 		Memsay("multiply_one end");		\
 	}
 
@@ -60,7 +60,7 @@ list LIST;
 void multiply_two(const int n)
 {
 	Memsay("multiply_two start");
-	foreach(LIST, opf(iGetNumber(n), "times", iGetNumber(_n), "makes", iGetNumber(n) * iGetNumber(_n)));
+	foreach(LIST, two, opf(iGetNumber(n), "times", iGetNumber(two), "makes", iGetNumber(n) * iGetNumber(two)));
 	Memsay("multiply_two end");
 }
 
@@ -68,7 +68,7 @@ void multiply_two(const int n)
 void multiply_one()
 {
 	Memsay("multiply_one start");
-	foreach(LIST, multiply_two(_n));
+	foreach(LIST, one, multiply_two(one));
 	Memsay("multiply_one end");
 }
 

@@ -879,7 +879,7 @@ Depending on what the function or the macro does, your "if" statements can affec
 
 Imagine how much processing power could be saved if this bug was fixed.
 
-====Inlining functions====
+====Inlining Functions====
 
 [http://en.wikipedia.org/wiki/Inline_expansion Inlining] functions is possible with cpp.  Last night I looked at some code I´m working on and inlined a function.  With a line in the state_entry event telling me what llGetFreeMemory() returns, it said 30368 before the function was inlined and 31000 after the function was inlined: "Huh? Over 600 bytes saved?!"
 
@@ -889,7 +889,7 @@ Do your own detailed testing with "real" sources, i. e. not with something writt
 
 Since potentially saving 1% of memory just by inlining one function is a lot, I decided that this article should have a section about it.  It´s not only about saving memory:  You probably have noticed that functions in LSL scripts eat memory big time.  You may, out of necessity, have developed a bad style that avoids them as much as possible.
 
-Please behold this --- rather artificial --- example:
+Please behold this --- rather artificial and intentionally not optimised --- example:
 
 
 <lsl>
@@ -1023,7 +1023,9 @@ With the functions inlined, the numbers look a bit different:
 
 This example has only three functions, and inlining them saves between 1536 (by state entry) and 1716 (after the script has run) bytes.  These numbers speak for themselves and make me wonder how the numbers posted [[LSL_Script_Memory|here]] come together.
 
-As said before, test with your "real" sources.
+As said before: test with your "real" sources.
+
+You can find this example in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in "projects/inline".
 
 ====Use Parentheses====
 
