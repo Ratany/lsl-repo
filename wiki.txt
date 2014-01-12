@@ -889,6 +889,141 @@ Do your own detailed testing with "real" sources, i. e. not with something writt
 
 Since potentially saving 1% of memory just by inlining one function is a lot, I decided that this article should have a section about it.  It´s not only about saving memory:  You probably have noticed that functions in LSL scripts eat memory big time.  You may, out of necessity, have developed a bad style that avoids them as much as possible.
 
+Please behold this --- rather artificial --- example:
+
+
+<lsl>
+#include <lslstddef.h>
+
+#define Memsay(...)                llOwnerSay(fprintl(llGetFreeMemory(), "bytes free", __VA_ARGS__))
+
+#define LIST                       numbers
+#define iGetNumber(_n)             llList2Integer(LIST, (_n))
+
+#define foreach(_l, _do)           { int _n = Len(_l); LoopDown(_n, _do); }
+
+#define iMany                      10
+
+#define INLINE_FUNCTIONS           1
+
+
+list LIST;
+
+#if INLINE_FUNCTIONS
+
+#define multiply_two(n)							\
+	{								\
+		Memsay("multiply_two start");				\
+		foreach(LIST, opf(iGetNumber(n), "times", iGetNumber(_n), "makes", iGetNumber(n) * iGetNumber(_n))); \
+		Memsay("multiply_two end");				\
+	}
+
+
+#define multiply_one()					\
+	{						\
+		Memsay("multiply_one start");		\
+		foreach(LIST, multiply_two(_n));	\
+		Memsay("multiply_one end");		\
+	}
+
+
+#define handle_touch()							\
+	{								\
+		LIST = [];						\
+		int n = iMany;						\
+		LoopDown(n, Enlist(LIST, (int)llFrand(2000.0)));	\
+		multiply_one();						\
+	}
+
+#else
+
+void multiply_two(const int n)
+{
+	Memsay("multiply_two start");
+	foreach(LIST, opf(iGetNumber(n), "times", iGetNumber(_n), "makes", iGetNumber(n) * iGetNumber(_n)));
+	Memsay("multiply_two end");
+}
+
+
+void multiply_one()
+{
+	Memsay("multiply_one start");
+	foreach(LIST, multiply_two(_n));
+	Memsay("multiply_one end");
+}
+
+
+void handle_touch()
+{
+	LIST = [];
+	int n = iMany;
+	LoopDown(n, Enlist(LIST, (int)llFrand(2000.0)));
+	multiply_one();
+}
+
+#endif
+
+
+default
+{
+	event touch_start(const int t)
+	{
+		Memsay("before multiplying");
+		handle_touch();
+		Memsay("after multiplying");
+		LIST = [];
+		Memsay("list emptied");
+	}
+
+	event state_entry()
+	{
+		Memsay("state entry");
+	}
+}
+</lsl>
+
+
+When you make this with the functions ''not'' inlined, the output is like:
+
+
+<bash>
+[06:21:53]  Object: ( 50 kB ) ~> 55472 bytes free state entry
+[06:21:59]  Object: ( 50 kB ) ~> 55472 bytes free before multiplying
+[06:21:59]  Object: ( 49 kB ) ~> 55112 bytes free multiply_one start
+[06:21:59]  Object: ( 49 kB ) ~> 55112 bytes free multiply_two start
+[...]
+[06:22:00]  Object: ( 49 kB ) ~> 54948 bytes free multiply_two end
+[06:22:00]  Object: ( 49 kB ) ~> 54948 bytes free multiply_two start
+[...]
+[06:22:04]  Object: ( 49 kB ) ~> 54852 bytes free multiply_two end
+[06:22:05]  Object: ( 49 kB ) ~> 54852 bytes free multiply_one end
+[06:22:05]  Object: ( 49 kB ) ~> 54852 bytes free after multiplying
+[06:22:05]  Object: ( 50 kB ) ~> 54852 bytes free list emptied
+</bash>
+
+
+With the functions inlined, the numbers look a bit different:
+
+
+<bash>
+[06:22:34]  Object: ( 51 kB ) ~> 57008 bytes free state entry
+[06:22:38]  Object: ( 51 kB ) ~> 57008 bytes free before multiplying
+[06:22:39]  Object: ( 51 kB ) ~> 56696 bytes free multiply_one start
+[06:22:39]  Object: ( 51 kB ) ~> 56696 bytes free multiply_two start
+[...]
+[06:22:39]  Object: ( 51 kB ) ~> 56568 bytes free multiply_two end
+[06:22:39]  Object: ( 51 kB ) ~> 56568 bytes free multiply_two start
+[...]
+[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free multiply_two end
+[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free multiply_one end
+[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free after multiplying
+[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free list emptied
+</bash>
+
+
+This example has only three functions, and inlining them saves between 1536 (by state entry) and 1716 (after the script has run) bytes.  These numbers speak for themselves and make me wonder how the numbers posted [[LSL_Script_Memory|here]] come together.
+
+As said before, test with your "real" sources.
 
 ====Use Parentheses====
 
