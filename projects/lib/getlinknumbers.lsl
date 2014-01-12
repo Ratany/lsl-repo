@@ -195,7 +195,7 @@ list getlinknumbersbylistnamedappend_attached(list names)
 		}
 	while(--n > 0);
 
-	DEBUGmsg(llList2CSV(strided));
+	DEBUGmsgLIB(llList2CSV(strided));
 	return strided;
 }
 
