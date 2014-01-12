@@ -1,1 +1,12 @@
-wiki.txt
+
+For documentation, please refer to
+https://wiki.secondlife.com/w/index.php?title=How_to_make_writing_LSL_scripts_easier&action=submit
+or the "wiki.txt" contained in this repository.
+
+
+The wiki article is about tools you can use to make creating LSL
+scripts easier.  It tries to explain how to combine and how to use
+them for this very purpose.
+
+The contents of this repository provide a build system and examples
+for creating LSL scripts.

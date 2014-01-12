@@ -1,13 +1,4 @@
-
-
-'''This article is currently being worked on.'''
-
-
 ==How to make creating LSL scripts easier==
-
-
-'''This article is currently being worked on.'''
-
 
 ===About===
 
@@ -812,7 +803,7 @@ You can find this example in the [https://github.com/Ratany/lsl-repo git reposit
 
 It shows that the script needs 8 bytes more memory when you use either a float or an integer variable --- or both! --- instead of defines. That means when you declare a variable, declaring another one doesn´t make a difference, provided that the variables are of the types float and integer.
 
-I give up artifical testing at this point.  Either the test or the results must be flawed.  One thing I wanted to know is whether it makes a difference if you have several lines with a number (like 1 or 1.0) vs. the same several lines with a variable instead of the number.  This test doesn´t show that, perhaps due to optimizations the LSL compiler performs.
+Either the test or the results must be flawed.  One thing I wanted to know is whether it makes a difference if you have several lines with a number (like 1 or 1.0) vs. the same several lines with a variable instead of the number.  This test doesn´t show that, perhaps due to optimizations the LSL compiler performs.
 
 I use defines for constants --- not because it apparently may save 8 bytes, but because it makes sense.  That you can switch between defines and variables for constants makes testing with "real" scripts easy.
 
@@ -885,7 +876,7 @@ Imagine how much processing power could be saved if this bug was fixed.
 
 632 bytes is almost 1% of the total amount of memory a script gets and about 2% of what this script has free.  The function doesn´t return anything and doesn´t take parameters.  It was a part of the code I had put into its own function to avoid convoluted code, and there is only one place the function is called from:  Those are ideal conditions to inline the function.
 
-Do your own detailed testing with "real" sources, i. e. not with something written for the purpose of testing.  [http://en.wikipedia.org/wiki/Garbage_collection_(computer_science) Garbage collection] appears to happen when functions are returned from, and timing issues may be involved.  I wonder if there is garbage collection (triggered) every time a scope is exited.  This means that through inling a function, your script may need more memory during runtime than it otherwise would --- or not.
+As suggested before, do your own detailed testing with "real" sources, i. e. not with something written for the purpose of testing. [http://en.wikipedia.org/wiki/Garbage_collection_(computer_science) Garbage collection] appears to happen when functions are returned from, and timing issues may be involved.  I wonder if there is garbage collection (triggered) every time a scope is exited.  This means that through inling a function, your script may need more memory during runtime than it otherwise would --- or not.
 
 Since potentially saving 1% of memory just by inlining one function is a lot, I decided that this article should have a section about it.  It´s not only about saving memory:  You probably have noticed that functions in LSL scripts eat memory big time.  You may, out of necessity, have developed a bad style that avoids them as much as possible.
 
@@ -900,7 +891,7 @@ Please behold this --- rather artificial and intentionally not optimised --- exa
 #define LIST                       numbers
 #define iGetNumber(_n)             llList2Integer(LIST, (_n))
 
-#define foreach(_l, _do)           { int _n = Len(_l); LoopDown(_n, _do); }
+#define foreach(_l, _n, _do)       int _n = Len(_l); LoopDown(_n, _do);
 
 #define iMany                      10
 
@@ -914,7 +905,7 @@ list LIST;
 #define multiply_two(n)							\
 	{								\
 		Memsay("multiply_two start");				\
-		foreach(LIST, opf(iGetNumber(n), "times", iGetNumber(_n), "makes", iGetNumber(n) * iGetNumber(_n))); \
+		foreach(LIST, two, opf(iGetNumber(n), "times", iGetNumber(two), "makes", iGetNumber(n) * iGetNumber(two))); \
 		Memsay("multiply_two end");				\
 	}
 
@@ -922,7 +913,7 @@ list LIST;
 #define multiply_one()					\
 	{						\
 		Memsay("multiply_one start");		\
-		foreach(LIST, multiply_two(_n));	\
+		foreach(LIST, one, multiply_two(one));	\
 		Memsay("multiply_one end");		\
 	}
 
@@ -940,7 +931,7 @@ list LIST;
 void multiply_two(const int n)
 {
 	Memsay("multiply_two start");
-	foreach(LIST, opf(iGetNumber(n), "times", iGetNumber(_n), "makes", iGetNumber(n) * iGetNumber(_n)));
+	foreach(LIST, two, opf(iGetNumber(n), "times", iGetNumber(two), "makes", iGetNumber(n) * iGetNumber(two)));
 	Memsay("multiply_two end");
 }
 
@@ -948,7 +939,7 @@ void multiply_two(const int n)
 void multiply_one()
 {
 	Memsay("multiply_one start");
-	foreach(LIST, multiply_two(_n));
+	foreach(LIST, one, multiply_two(one));
 	Memsay("multiply_one end");
 }
 
@@ -987,18 +978,15 @@ When you make this with the functions ''not'' inlined, the output is like:
 
 
 <bash>
-[06:21:53]  Object: ( 50 kB ) ~> 55472 bytes free state entry
-[06:21:59]  Object: ( 50 kB ) ~> 55472 bytes free before multiplying
-[06:21:59]  Object: ( 49 kB ) ~> 55112 bytes free multiply_one start
-[06:21:59]  Object: ( 49 kB ) ~> 55112 bytes free multiply_two start
+[07:39:09]  Object: ( 50 kB ) ~> 55472 bytes free state entry
+[07:39:15]  Object: ( 50 kB ) ~> 55472 bytes free before multiplying
+[07:39:15]  Object: ( 49 kB ) ~> 55156 bytes free multiply_one start
+[07:39:16]  Object: ( 49 kB ) ~> 54976 bytes free multiply_two start
 [...]
-[06:22:00]  Object: ( 49 kB ) ~> 54948 bytes free multiply_two end
-[06:22:00]  Object: ( 49 kB ) ~> 54948 bytes free multiply_two start
-[...]
-[06:22:04]  Object: ( 49 kB ) ~> 54852 bytes free multiply_two end
-[06:22:05]  Object: ( 49 kB ) ~> 54852 bytes free multiply_one end
-[06:22:05]  Object: ( 49 kB ) ~> 54852 bytes free after multiplying
-[06:22:05]  Object: ( 50 kB ) ~> 54852 bytes free list emptied
+[07:39:20]  Object: ( 49 kB ) ~> 54802 bytes free multiply_two end
+[07:39:20]  Object: ( 49 kB ) ~> 54802 bytes free after multiplying
+[07:39:20]  Object: ( 49 kB ) ~> 54802 bytes free multiply_one end
+[07:39:20]  Object: ( 50 kB ) ~> 54802 bytes free list emptied
 </bash>
 
 
@@ -1006,24 +994,27 @@ With the functions inlined, the numbers look a bit different:
 
 
 <bash>
-[06:22:34]  Object: ( 51 kB ) ~> 57008 bytes free state entry
-[06:22:38]  Object: ( 51 kB ) ~> 57008 bytes free before multiplying
-[06:22:39]  Object: ( 51 kB ) ~> 56696 bytes free multiply_one start
-[06:22:39]  Object: ( 51 kB ) ~> 56696 bytes free multiply_two start
+[07:39:41]  Object: ( 51 kB ) ~> 57008 bytes free state entry
+[07:39:51]  Object: ( 51 kB ) ~> 57008 bytes free before multiplying
+[07:39:51]  Object: ( 51 kB ) ~> 56696 bytes free multiply_one start
+[07:39:51]  Object: ( 51 kB ) ~> 56696 bytes free multiply_two start
 [...]
-[06:22:39]  Object: ( 51 kB ) ~> 56568 bytes free multiply_two end
-[06:22:39]  Object: ( 51 kB ) ~> 56568 bytes free multiply_two start
-[...]
-[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free multiply_two end
-[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free multiply_one end
-[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free after multiplying
-[06:22:44]  Object: ( 51 kB ) ~> 56568 bytes free list emptied
+[07:39:56]  Object: ( 51 kB ) ~> 56510 bytes free multiply_two end
+[07:39:56]  Object: ( 51 kB ) ~> 56510 bytes free multiply_one end
+[07:39:56]  Object: ( 51 kB ) ~> 56510 bytes free after multiplying
+[07:39:56]  Object: ( 51 kB ) ~> 56510 bytes free list emptied
 </bash>
 
 
-This example has only three functions, and inlining them saves between 1536 (by state entry) and 1716 (after the script has run) bytes.  These numbers speak for themselves and make me wonder how the numbers posted [[LSL_Script_Memory|here]] come together.
+This example has only three functions, and inlining them saves between 1536 (by state entry) and 1708 (after the script has run) bytes.  I don´t understand how these numbers come together when I look at  [[LSL_Script_Memory#Functions|this page]] --- unless declaring a function does "automatically take up a block of memory (512 bytes)".
 
-As said before: test with your "real" sources.
+As said before:  Test with your "real" sources.
+
+'''When inlining functions, you need to make sure that the names of variables do not overlap.'''  Otherwise, you may generate scripts in which your code unexpectedly works with different variables when it is suddenly inlined.
+
+The LSL compiler will not give you error messages about already declared variables when you keep the enclosing brackets ("{}") from the function definition with the define:  The opening bracket creates a new scope; the closing bracket closes the scope.  (Creating a new scope doesn´t appear to use memory by itself.  You could make use of that.)
+
+This example keeps the brackets with the defines.  This is to show that you can convert functions into macros with minimal effort and to keep the code identical for the test.  The brackets from the functions are not needed with the defines.  You should remove them from the defines when you inline functions.  Removing them makes it less likely that overlapping variables go unnoticed.
 
 You can find this example in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article] in "projects/inline".
 
@@ -1370,7 +1361,23 @@ The point of shrinking your scripts is saving memory.  You cannot save (i. e. up
 
 Side effects of shrinking are that sometimes a script appears to need less script memory to run, and shrunken scripts appear to run a little faster.  I haven´t really tested either, and both doesn´t seem to make sense because the scripts are compiled to byte-code anyway.  Test it if you like; it would be interesting to see the results.  I always use the shrunken version unless I need to look at the debugging version, and it works great.
 
+===git===
 
+Git isn´t really involved here, other than that the build system and examples described and used in this article --- and the article itself --- is available as a [https://github.com/Ratany/lsl-repo git repository] for your and my convenience.  It´s convenient for you because you can easily download it.
+
+It´s convenient for me because git makes it easy to keep the repository up to date.  If several people would contribute to what is in the repository, it would be convenient for them as well because git makes it easy to put together the work done by many people on the same thing.
+
+It can be convenient --- or useful --- for you because it makes it easy to keep track of changes.  When you create a git repository from or for the sources of a project you are working on, you can not only apply (commit) every change to the repository accompanied by an entry in a log which helps you to figure out what you have done.
+
+You can also undo changes by going back to previous commits and experiment with variations (by creating so-called branches).  Git works for this much better than making backups or copies of your sources.  With backups or copies, it doesn´t take long before I can´t remember what a backup or copy was about and what has changed and whether the copy has become obsolete or not.
+
+These features can make it worthwile to use git even when you don´t share your sources or don´t have several people working on the same project.  There is lots of documentation about git, and one place you may want to check out is the [https://help.github.com/ help pages] on github.com.
+
+Emacs supports git out of the box, see [http://alexott.net/en/writings/emacs-vcs/EmacsGit.html here] and [http://www.emacswiki.org/emacs/Git there].
+
+Using CVSs like git used to be awful even when you merely wanted to get a copy:  There were many different ones that used slightly different commands to download a copy of the repository --- and yet different commands when you wanted to update a copy, perhaps a year later, you already had.  You could either spend half an hour or so to figure out how to update your existing copy or download everything again, which might also take half an hour or so.
+
+Git works much better.  It seems that a lot of repositories have been migrated to git.  Don´t let your perhaps frustrating experiences with CVSs keep you from giving git a try.
 
 ~~~~
 {{LSLC|Tutorials}}
