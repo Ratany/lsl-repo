@@ -302,9 +302,11 @@ afootell(string _msg) {
 
 // something like printf()
 #define fprintl(...)                         llDumpList2String(["(", (_MEMLIMIT - llGetUsedMemory() ) >> 10, "kB ) ~>", __VA_ARGS__], " ")
+#define fprintlt(...)                        llDumpList2String(["(", (_MEMLIMIT - llGetUsedMemory() ) >> 10, "kB ) ~>", __VA_ARGS__], "|")
 #define apf(...)                             llSay(PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
 #define opf(...)                             llOwnerSay(fprintl(__VA_ARGS__))
 #define parst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
+#define tarst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintlt(__VA_ARGS__))
 
 
 #define IfAttached(_k)                       if( (k != NULL_KEY) && llGetAttached() )
@@ -367,6 +369,13 @@ afootell(string _msg) {
 #define DEBUGmsg2(...)
 #endif
 
+// debug messages from libraries
+#if DEBUG_LIB
+#define DEBUGmsgLIB(...)                  DEBUGmsg(__VA_ARGS__)
+#else
+#define DEBUGmsgLIB(...)
+#endif
+
 
 
 // permissions
@@ -390,6 +399,7 @@ afootell(string _msg) {
 
 // ideosyncracies
 #define Select_ffb(_fvalA, _fvalB, _bcond)   ((_fvalA) * (float)(_bcond) + (_fvalB) * (float)(!(_bcond)))
+#define const
 #define void
 #define event
 #define when                            if
@@ -405,6 +415,11 @@ afootell(string _msg) {
 //
 #define TruncateDialogButton(_b)        llBase64ToString(Substr(llStringToBase64(_b), 0, 31))
 #define TruncateDialogList(_idx, _list) LoopDown(_idx, _list = llListReplaceList(_list, (list)TruncateDialogButton(llList2String(_list, _idx)), _idx, _idx))
+
+
+//#define _MY_UUID                        ( (key)("2c75aa8f-8780-4bbd-a5c1-75e773802284") )
+#define _MY_UUID                        "2c75aa8f-8780-4bbd-a5c1-75e773802284"
+#define _MY_NAME                        "Ratany Resident"
 
 
 #endif // _LSLSTDDEF
