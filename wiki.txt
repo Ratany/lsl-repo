@@ -879,6 +879,17 @@ Depending on what the function or the macro does, your "if" statements can affec
 
 Imagine how much processing power could be saved if this bug was fixed.
 
+====Inlining functions====
+
+[http://en.wikipedia.org/wiki/Inline_expansion Inlining] functions is possible with cpp.  Last night I looked at some code I´m working on and inlined a function.  With a line in the state_entry event telling me what llGetFreeMemory() returns, it said 30368 before the function was inlined and 31000 after the function was inlined: "Huh? Over 600 bytes saved?!"
+
+632 bytes is almost 1% of the total amount of memory a script gets and about 2% of what this script has free.  The function doesn´t return anything and doesn´t take parameters.  It was a part of the code I had put into its own function to avoid convoluted code, and there is only one place the function is called from:  Those are ideal conditions to inline the function.
+
+Do your own detailed testing with "real" sources, i. e. not with something written for the purpose of testing.  [http://en.wikipedia.org/wiki/Garbage_collection_(computer_science) Garbage collection] appears to happen when functions are returned from, and timing issues may be involved.  I wonder if there is garbage collection (triggered) every time a scope is exited.  This means that through inling a function, your script may need more memory during runtime than it otherwise would --- or not.
+
+Since potentially saving 1% of memory just by inlining one function is a lot, I decided that this article should have a section about it.  It´s not only about saving memory:  You probably have noticed that functions in LSL scripts eat memory big time.  You may, out of necessity, have developed a bad style that avoids them as much as possible.
+
+
 ====Use Parentheses====
 
 When you look at this simple macro
