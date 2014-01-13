@@ -1,0 +1,461 @@
+==Ratany fine Engineerings Device Interface Protocol (rfedip)==
+
+The Ratany fine Engineering Device Interface Protocol (short: rfedip) is an extensible protocol for the detection of compliant devices and for the handling of the communication between such devices.
+
+The protocol defines '''how''' devices can be detected and rules for '''how''' the devices can communicate.  It does '''not''' define the very content of such communications, with the exception of a few so-called control messages.
+
+
+The protocol has been created because there doesn´t seem to be any sort of standard to detect devices.  Devices can be leashing posts, furniture, collars, cuffs and chastity belts as well as any other gadget the design of which involves interoperability or some sort of communication with other devices.
+
+Using sensors to scan for devices has turned out to be an insufficient alternative.  The sensor range is inevitably limited, and particular prims --- which may be the actual points of an object to tie a leash to --- of objects cannot be detected with a sensor.
+
+Using existing protocols like the lockmeister protocol also turned out not to be feasible.  A device using the lockmeister protocol only becomes active from an agent sitting on the device or touching the device, and the device does itself not listen for queries to identify itself.
+
+At the time of this writing, open collar items seem to employ some sort of protocol and maybe even some sort of API.  However, these are not documented, and development appears to be in progress such that significant changes might be implemented.
+
+Other protocols may exist that are vendor-specific.  Insofar their designs have not been disclosed, they are unsuited to achieve compatibility and interoperability of devices made by different creators.  A device that lacks compatibility with other devices may have no more than a very limited use for the user of the device, especially when the functionality of the device genuinely requires that the device works with others.
+
+The Ratany fine Engineering Device Interface Protocol is intended to encourage and to help with the creation of devices that are compatible with others.
+
+
+The availability of a useful protocol does not mean that creators of devices will be inclined to use it.  Please consider this article as a draft with the intention to create a useful protocol which hopefully might be used by many creators --- and as a request for comments. Please feel free to use the discussion page of this article to add your suggestions and ideas, or to contact me directly.
+
+==Editing this Article==
+
+This article is written in my favourite editor.  When I update the article on the wiki, I edit the whole article, delete everything and paste the new version in.  That´s simply the easiest and most efficient way for me.
+
+Unfortunately, this means that your modifications may be lost when I update the article and don´t see them.
+
+'''Please use the "discussion" page of this article to post contributions or to suggest changes so they can be added to the article.'''
+
+==Requirements brought upon a protocol==
+
+The protocol should be:
+
+
+* available
+
+* extensible
+
+* independent of the medium which is used to transmit protocol messages
+
+* reliable
+
+* easy to implement/use
+
+* compatible with previous versions of the protocol when new versions are created
+
+
+==Specification==
+
+===In General===
+
+The rfedip protcol uses strings of characters that can be transfered as messages of a type which can be sent by functions like llMessageLinked(), llRegionSayTo(), llRegionSay(), llShout(), llSay(), llWhisper() as well as in the body of an email or via the use of the HTTP protocol.
+
+An rfedip message is a string which is divided into fields by the use of a special character as separator.  The fields of a message are defined as follows, and they appear in the message in the order they are listed here:
+
+
+* sender-UUID: The UUID of the sending device.
+
+* recipient-UUID: The UUID of the device the message is directed to.
+
+* protocol version: A string that specifies the version of the protocol.
+
+* payload: The payload of the protocol.  The payload is generally assumed to consist of a token. The token may be followed by a parameter.  Multiple tokens and parameters may be sent in a single message.  However, a single message should not contain multiple tokens.  Multiple messages should be used to avoid the creation of messages that contain multiple tokens.
+
+
+All devices compliant with the rfedip protocol must have available documentation about all the tokens and, if applicable, the parameters used with the tokens the device supports.  The documentation must include the tokens and parameters the device understands, as well as the tokens and parameters it might use itself to communicate with other rfedip-compliant devices.
+
+This is to ensure that creators and users of rfedip-compliant devices can refer to the documentation of devices created by others and make the devices they are creating compatible with devices created by others, if they so choose.
+
+A device for which such documentation is not freely available cannot be considered as compliant or compatible with the rfedip protocol.
+
+
+===Definitions===
+
+The rfedip protocol itself defines:
+
+
+* a string specifying the protocol version: "RFEDIP-1.0"
+
+* that future versions of the protocol must maintain compatibility with previous versions of the protocol
+
+* a suggestion as to what may be considered as "sufficient version": "RFEDIP" (What is considered as "sufficient version" for a particular device is up to the creator of that device.)
+
+* the special character that must be used to seperate a string of characters into fields in order to form a protocol message: "|"
+
+* a default communications channel, when applicable: -20131224
+
+* supporting email and http as transport media for protocol messages is optional; supporting the default communications channel is mandatory
+
+* a token that designates a request for a device to identify itself: "identify"
+
+* a token that designates a protocol message a device identifies itself with: "identity"
+
+* a token that designates a protocol message signalling that a communication (sequence) has ended, mandatorily followed by the channel in question: "msg_end!"
+
+* a token that designates a protocol message requesting that a particular channel, if applicable, be used for further communication, mandatorily followed by the channel which is to be used as a parameter: "openchan"
+
+* that a particular channel which was opened can be closed when the device that requested opening this channel sends the protocol message that signals that a communication (sequence) has ended
+
+* that a particular channel which was opened on request of a device can unconditionally be closed one hour after the last communication has occurred on that channel
+
+* that identification requests must always be answered (consequently, the default channel must never be closed, even not when a device signals the end of a communication (sequence) for the default channel)
+
+* that messages involving tokens as defined here must be sent on the default channel for they are considered control messages (i. e. messages like identification requests, responses to those, opening channels, signalling the end of a communication (sequence))
+
+* that devices should respond with the protocol message indicating the end of communication for tokens they do not understand to potentially save other devices unnesessary waiting times
+
+
+==Reference Implementation: A Tethering Device==
+
+The tethering device can be queried for the UUIDs of prims to which chains or leashes can be attached.  The token to query the device is "tether".  The device replies with the token "tether point", followed by the UUID of a chaining point.  Each chaining point is reported in a seperate response message, one chaining point per message.  When all chaining points have been reported, this devices sends a RFEDIP_protEND control message.
+
+
+<lsl>
+list getlinknumbersbyname(string name)
+{
+	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber()));
+	list numbers = [];
+	name = llToLower(name);
+
+	if(n > 1)
+	{
+		while(n)
+		{
+			if((~llSubStringIndex(llToLower(llList2String(llGetLinkPrimitiveParams(
+			                                    n, [PRIM_NAME]), 0)), name)))
+			{
+				numbers += n;
+			}
+
+			--n;
+		}
+	}
+	else
+	{
+		if((~llSubStringIndex(llToLower(llGetObjectName()), name)))
+		{
+			numbers += n;
+		}
+	}
+
+	return numbers;
+}
+
+key kThisDevice;
+list lHooks;
+
+default
+{
+	state_entry()
+	{
+		// remember the link numbers of the chain targets
+		//
+		lHooks = getlinknumbersbyname("hook");
+
+		if(!(llGetListLength(lHooks)))
+		{
+			lHooks = (list)llGetLinkNumber();
+		}
+
+		kThisDevice = llGetLinkKey(llGetLinkNumber());
+		llListen(-20131224, "", NULL_KEY, "");
+	}
+
+	changed(integer w)
+	{
+		// maybe do something else here if you need to sit on
+		// this device
+		//
+		if(w & CHANGED_LINK)
+		{
+			kThisDevice = llGetLinkKey(llGetLinkNumber());
+			lHooks = getlinknumbersbyname("hook");
+
+			if(!(llGetListLength(lHooks)))
+			{
+				lHooks = (list)llGetLinkNumber();
+			}
+		}
+	}
+
+	listen(integer channel, string name, key other_device, string _MESSAGE)
+	{
+		if("identify" == _MESSAGE)
+		{
+			// Indistinctively answer queries that want to
+			// detect this device: The answer goes to the
+			// sender (i. e. other_device) and looks like:
+			//
+			// "<sender-uuid>|<recipient-uuid>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
+			//
+			// For the device that receives the answer to
+			// the request to identify, the <sender-uuid>
+			// is the UUID of this device.
+			//
+			llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+			              other_device, "RFEDIP-1.0", "identity"], "|"));
+			return;
+		}
+
+		// From here on, received messages are expected to
+		// look like:
+		//
+		// "<sender-uuid>|<recipient-uuid>|RFEDIP_sVERSION|<token>[|parameter|parameter...]"
+		//
+		// <sender-uuid> is the UUID of the device sending the
+		// message (i. e. other_device); <recipient-uuid> is
+		// the UUID of the recipient, i. e. of this device
+		//
+		// Please do not confuse incoming messages with
+		// outgoing messages!
+
+		// The received message is put into a list for further
+		// processing:
+		//
+		list payload = llParseString2List((_MESSAGE), ["|"], []);
+
+		// Attempt to verify whether the message looks valid:
+		//
+		if(llGetListLength(payload) < 4)
+		{
+			return;
+		}
+
+		// Attempt to make sure that the message is for this
+		// device:
+		//
+		// + ignore messages that appear not to be sent by the
+		//   device they claim to be sent from by verifying
+		//   the sender given in the message with the actual
+		//   sender
+		//
+		// + ignore messages that appear not be destined for
+		//   this device by verifying the recipient given in
+		//   the message with what this device actually is
+		//
+		// + ignore messages that request a different version
+		//   of the protocol by verifying the protocol version
+		//   given in the message --- in this example, a check
+		//   for what is considered a "sufficient version" is
+		//   applied
+		//
+		if((llList2Key(payload, 0) != other_device)
+		   || (llList2Key(payload, 1) != kThisDevice)
+		   || !(~llSubStringIndex(llList2String(payload, 2), "RFEDIP")))
+		{
+			return;
+		}
+
+		// From here on, the capabilities of the device can be
+		// implemented.
+
+		// Here: Report the chain target points and send of of
+		// communication message.
+		//
+		if(llList2String(payload, 3) == "tether")
+		{
+			integer n = llGetListLength(lHooks);
+
+			while(n)
+			{
+				--n;
+				llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+				              other_device, "RFEDIP-1.0", "tether point", llGetLinkKey(llList2Integer(lHooks,
+				                      n))], "|"));
+			}
+		}
+
+		// indicate end of communication when all points have
+		// been reported or when messages have been received
+		// this device doesn´t support
+		//
+		llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+		              other_device, "RFEDIP-1.0", "msg_end!", -20131224], "|"));
+	}
+
+	on_rez(integer p)
+	{
+		// UUID changes when rezzed
+		//
+		kThisDevice = llGetLinkKey(llGetLinkNumber());
+	}
+}
+</lsl>
+
+
+You can find the source for this device in the [https://github.com/Ratany/lsl-repo git repository] and further documentation in this [[How_to_make_writing_LSL_scripts_easier|article]].
+
+
+
+==Reference Implementation: A device using chaining points==
+
+This device can send queries for the UUIDs of prims to which chains can be attached.  The token used for the query is "tether".  This device expects answers to this query to use the token "tether point", followed by the UUID of the point as parameter.  It expects devices that have received a query to indicate that all their UUUIDs have been reported by sending a a RFEDIP_protEND control message, regardless whether any points have been reported or not.
+
+This device can be queried for the UUIDs of prims to which chains can be attached.  The token to query the device is "tether".  The device replies with the token "tether point", followed by the UUID of a chaining point.  Each chaining point is reported in a seperate response message, one chaining point per message.  When all chaining points have been reported, this devices sends a RFEDIP_protEND control message.
+
+When this device has not created chains itself, it does not report its chain target points but sends a RFEDIP_protEND control message instead.
+
+
+The implementation happened to grow quite a bit larger than what I had expected.  What I expected is that it is simple to link a couple chains from an object to a couple points that are somewhere around.  Pfff!
+
+It is simple to link each chain to the point closest to it.  When you do that, the result looks retarded in most cases because the chains may get entangled or go across the object, and several chains may go to the same point.  That was ridiculous and not acceptable.
+
+Humans solve the problem without thinking.  For example, they tie their boats to the tethering points around the berths their boats are in without entangling all the ropes.  They do not attach the ropes in such a way that they go across the boat.  Humans are flexible and sometimes cross over some ropes or have multiple ropes go to the same point when the conditions let this appear to be advisable.  The result never looks retarded because the way it´s done makes sense.
+
+Even children do it right.  I couldn´t figure out how I would do it because I would just do it.  People I asked didn´t know how to do it, either.  The problem is too simple.  This made it surprisingly difficult to create an algorithm which yields results that don´t look retarded for at least most conditions.  It took a lot of experimentation and was fun to create.
+
+What this algorithm does, and how it does it, is irrelevant for the purpose of this article.  I´ll only put the more relevant part into the article.  You can find the whole source in the [https://github.com/Ratany/lsl-repo git repository] and further documentation in this [[How_to_make_writing_LSL_scripts_easier|article]].
+
+
+<lsl>
+default
+{
+	listen(integer channel, string name, key other_device, string _MESSAGE)
+	{
+		//
+		// This first part is the same as with the tethering device.
+		//
+
+		if("identify" == _MESSAGE)
+		{
+			llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+			              other_device, "RFEDIP-1.0", "identity"], "|"));
+			return;
+		}
+
+		list payload = llParseString2List((_MESSAGE), ["|"], []);
+
+		if(llGetListLength(payload) < 4)
+		{
+			return;
+		}
+
+		if((llList2Key(payload, 0) != other_device)
+		   || (llList2Key(payload, 1) != kThisDevice)
+		   || !(~llSubStringIndex(llList2String(payload, 2), "RFEDIP")))
+		{
+			return;
+		}
+
+		string token = llList2String(payload, 3);
+
+		//
+		// The rest is device specific.  Tokens in received
+		// protocol messages trigger various actions to make
+		// the device to its job.
+		//
+
+		if("tether point" == token)
+		{
+			// [...]
+		}
+
+		if("msg_end!" == token)
+		{
+			// when all devices have indicated end of communication,
+			// create the chains
+			//
+			if((!!(status & 2)))
+			{
+				--iDevicesAround;
+				iDevicesAround = (((llAbs((iDevicesAround) >= (0))) * (iDevicesAround)) + ((
+				                      llAbs((iDevicesAround) < (0))) * (0)));
+
+				if(!(iDevicesAround))
+				{
+					mkchains();
+				}
+			}
+
+			return;
+		}
+
+		if("identity" == token)
+		{
+			// when other devices identify themselves, query them for tether points
+			//
+			++iDevicesAround;
+			llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+			              other_device, "RFEDIP-1.0", "tether"], "|"));
+			return;
+		}
+
+		if((!!(status & 4)) && (llList2String(payload, 3) == "tether"))
+		{
+			// answer queries from other devices when this device is chained
+			//
+			integer _n = llGetListLength(lChains);
+
+			while(_n)
+			{
+				_n -= 2;
+				llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+				              other_device, "RFEDIP-1.0", "tether point", llGetLinkKey(llList2Integer(lChains,
+				                      (_n)))], "|"));
+			}
+		}
+
+		llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
+		              other_device, "RFEDIP-1.0", "msg_end!", -20131224], "|"));
+	}
+
+	touch_start(integer t)
+	{
+		// [...]
+		iDevicesAround = 0;
+		// [...]
+
+		// ask other devices to identify
+		//
+		llRegionSay(-20131224, "identify");
+	}
+
+	// [...]
+}
+</lsl>
+
+
+You can find the source for this device in the [https://github.com/Ratany/lsl-repo git repository] and further documentation in this [[How_to_make_writing_LSL_scripts_easier|article]].
+
+The reference implementation is available with some example objects for free on the [https://marketplace.secondlife.com/p/rfedip-reference-implementation/5644685 marketplace].
+
+The code on this wiki page is more recent than the code with the example devices because some optimizations have been applied.
+
+
+==References==
+
+[https://marketplace.secondlife.com/p/rfedip-reference-implementation/5644685 Reference Implementation]
+* [[How_to_make_writing_LSL_scripts_easier|How to make creating LSL scripts easier]] describes how to preprocess your sources with cpp.
+* [https://github.com/Ratany/lsl-repo Git repository] for the [[How_to_make_writing_LSL_scripts_easier|article]] that describes how to preprocess your sources with cpp and contains the reference implementations.
+
+==History==
+
+* 2013-12-27: initial page created
+
+* 2013-12-27: tokens changed to something more easily readable; different indentation used for LSL script
+
+* 2013-12-27: tried to improve the "About" section
+
+* 2013-12-29: added second example
+
+* 2013-12-31: replaced second example with an improved version; added suggestion to send an end-of-comminucation message for tokens not understood
+
+* 2013-12-31: added reference to opengate source; removed unnecessary return statement from first example
+
+* 2014-01-04: added reference implementation
+
+* 2014-01-04: made reference implementation available on the marketplace
+
+* 2014-01-04: the code on this page was slightly optimized
+
+* 2014-01-04: bugfix, sigh ...
+
+* 2014-01-04: use PRIM_POSITION instead of PRIM_POS_LOCAL
+
+* 2014-01-04: yet another bugfix
+
+* 2014-01-13: article rewritten
+
+* todo: create some wiki as a central place to put information about devices and tokens they use; update item with reference implementation on marketplace
