@@ -1309,6 +1309,7 @@ Assume you want to try out the "your-script.lsl" source from above: Enter the di
 
 
 C-x-f ~/src/lsl-repo/projects/your-script/src/your-script.lsl
+
 M-x compile
 
 
@@ -1317,6 +1318,7 @@ Emacs now asks you for the command to use and suggests 'make -k'.  This won´t w
 Emacs will check if it has any files that haven´t been saved yet because you might have forgotten to save your source.  If there are files to save, it will ask you whether to save them or not.  Then emacs will run make and open a new buffer to show you the output of 'make':
 
 
+<bash>
 -*- mode: compilation; default-directory: "~/src/lsl-repo/projects/your-script/" -*-
 Compilation started at Sat Jan 11 15:21:51
 
@@ -1327,6 +1329,7 @@ preprocessing src/your-script.lsl
   8 153 dbg/your-script.i.clean
 
 Compilation finished at Sat Jan 11 15:21:52
+</bash>
 
 
 When you need to process your script again, you can also do this within emacs: M-x recompile.  I have bound the function to C-f1, so I´d just press Ctrl+f1.  For an example of how to do such a keybinding, please see "emacs/emacs" in the [https://github.com/Ratany/lsl-repo git repository that accompanies this article].
