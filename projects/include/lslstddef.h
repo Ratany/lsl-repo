@@ -309,7 +309,7 @@ afootell(string _msg) {
 #define tarst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintlt(__VA_ARGS__))
 
 
-#define IfAttached(_k)                       if( (k != NULL_KEY) && llGetAttached() )
+#define IfAttached(_k)                       if( (_k != NULL_KEY) && llGetAttached() )
 
 // durations
 #define DAYLY                                86400

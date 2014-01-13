@@ -417,18 +417,23 @@ default
 </lsl>
 
 
-You can find the source for this device in the [https://github.com/Ratany/lsl-repo git repository] and further documentation in this [[How_to_make_writing_LSL_scripts_easier|article]].
-
 The reference implementation is available with some example objects for free on the [https://marketplace.secondlife.com/p/rfedip-reference-implementation/5644685 marketplace].
 
-The code on this wiki page is more recent than the code with the example devices because some optimizations have been applied.
+The code on this wiki page and in the repository is more recent than the code with the example devices.
 
+==Documenting rfedip compliant devices you create==
+
+Please use [[LSL_Protocol/rfedip-devices|this page]] to document your devices.
 
 ==References==
 
-[https://marketplace.secondlife.com/p/rfedip-reference-implementation/5644685 Reference Implementation]
+* [https://marketplace.secondlife.com/p/rfedip-reference-implementation/5644685 Reference Implementation]
+
 * [[How_to_make_writing_LSL_scripts_easier|How to make creating LSL scripts easier]] describes how to preprocess your sources with cpp.
+
 * [https://github.com/Ratany/lsl-repo Git repository] for the [[How_to_make_writing_LSL_scripts_easier|article]] that describes how to preprocess your sources with cpp and contains the reference implementations.
+
+* [[LSL_Protocol/rfedip-devices|page to document your devices]]
 
 ==History==
 
@@ -458,4 +463,4 @@ The code on this wiki page is more recent than the code with the example devices
 
 * 2014-01-13: article rewritten
 
-* todo: create some wiki as a central place to put information about devices and tokens they use; update item with reference implementation on marketplace
+* 2014-01-13: added page to document devices

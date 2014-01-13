@@ -18,6 +18,9 @@ I´m using Linux, which is freely available in many different distributions.  I�
 
 Documentation is plentiful.  You may find different software that does the same or similar things and may work better for you or not.
 
+
+Knowledge is fluent and volatile.  Software is power.
+
 ==Editing this Article==
 
 This article is written in my favourite editor.  When I update the article on the wiki, I edit the whole article, delete everything and paste the new version in.  That´s simply the easiest and most efficient way for me.
@@ -118,6 +121,13 @@ Optional tools:
 
 You can replace "make/Makefile" with "make/Makefile-no-optional" and try without the optional tools.  You can make "echo" optional, but automatically replacing scripts won´t work unless you can find a replacement for "@echo "// =`basename $@`" > $@" in the Makefile. Since perl is required, you could replace "echo" (and "basename" and "sed") with perl scripts.  You can probaly make further modifications so you won´t need perl, but what do you do without it?
 
+
+When you´re messing with [http://www.microsoft.com Windoze], you may want to check out [http://cygwin.com/ Cygwin].  When you´re stuck with Apple, maybe [https://github.com/kennethreitz/osx-gcc-installer this repository] helps.
+
+However, under those conditions, you might be better off with a minimal [http://www.debian.org/ Debian] installation in a [http://en.wikipedia.org/wiki/Virtual_machine VM] and installing needed packages from there.  Last time I tried, Debian still let you install a minimal system and didn´t force you to use a GUI version of the installer.  Fedoras´ installer sucks, and with [https://www.archlinux.org/ archlinux], you need to know what you´re doing.
+
+In case you want to upgrade from either Macos or Windoze, Fedora is a good choice.
+
 ==Editor==
 
 To create scripts, you do need an editor to write your sources.  All sl clients I´ve seen have one built in, and it´s the worst editor I´ve ever seen.  Fortunately, you don´t need to use it.
@@ -154,7 +164,7 @@ You can use any editor you like.  An editor is essential and one of your most im
 
 [http://www.gnu.org/software/emacs/ Emacs] is my favourite editor. Give it a try, and don´t expect to learn everything about it within a day.  It´s enough when you can move the cursor around, type something and load and save files.  Over time, you will learn more just by looking up how to do something and trying it.  You will find ''your'' way of doing what you need and adjust emacs to what ''you'' want --- or you don´t and use it as it is.  Lots of documentation is available.
 
-By default, the cursor keys move the cursor.  Ctrl+xf loads a file into a new buffer and Ctrl+xs saves it.  Ctrl+x b lets you switch to another buffer.  These are usually written as C-x-f, C-x-s and C-x-b.
+By default, the cursor keys move the cursor.  Ctrl+xf loads a file into a new buffer and Ctrl+xs saves it.  Ctrl+xb lets you switch to another buffer.  These are usually written as C-x-f, C-x-s and C-x-b.
 
 Emacs is worthwhile to learn.  It´s the only editor you need to learn because you don´t need any others.  It has been around since a long time.  If you had learned it twenty-five years ago, that would have saved you the time wasted with other editors which nowadays may not even exist anymore.
 
@@ -202,9 +212,9 @@ When you need to add line numbers to the contents of a buffer, look  [http://www
 
 ===Other Editors===
 
-In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.
+In case you find that you don´t get along with emacs, you may want to check out this [[LSL_Alternate_Editors|page about editors]].  There is also a page about [[LSL_Alternate_Editors|alternate editors]] and build systems/IDEs.
 
-You don´t need to try any other editors.  Your time is better spent on learning emacs or vi.
+Try [http://en.wikipedia.org/wiki/Vi vi], or vim, instead.  You don´t need to try any other editors.  Your time is better spent on learning emacs or vi.
 
 ==Replacing Scripts==
 
@@ -874,7 +884,7 @@ Depending on what the function or the macro does, your "if" statements can affec
 
 Imagine how much processing power could be saved if this bug was fixed.
 
-===Inlining Functions===
+====Inlining Functions====
 
 [http://en.wikipedia.org/wiki/Inline_expansion Inlining] functions is possible with cpp.  Last night I looked at some code I´m working on and inlined a function.  With a line in the state_entry event telling me what llGetFreeMemory() returns, it said 30368 before the function was inlined and 31000 after the function was inlined: "Huh? Over 600 bytes saved?!"
 
@@ -1390,8 +1400,9 @@ Git works much better.  It seems that a lot of repositories have been migrated t
 
 ==References==
 
-The [https://github.com/Ratany/lsl-repo git repository that accompanies this article] contains the sources of reference implementations of devices which are compatible with the [[LSL_Protocol/rfedip|Ratany fine Engineering Device Interface Protocol]].  Please see "projects/rfedip-reference-implementation".
+* The [https://github.com/Ratany/lsl-repo git repository that accompanies this article] contains the sources of reference implementations of devices which are compatible with the [[LSL_Protocol/rfedip|Ratany fine Engineering Device Interface Protocol]].  Please see "projects/rfedip-reference-implementation".
 
+* [[LSL_Alternate_Editors|Alternate editors]] and build systems/IDEs.
 
 ~~~~
 {{LSLC|Tutorials}}
