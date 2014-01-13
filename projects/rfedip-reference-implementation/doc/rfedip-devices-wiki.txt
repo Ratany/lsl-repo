@@ -1,0 +1,19 @@
+==Rfedip Devices==
+
+This page is intended for creators of [[LSL_Protocol/rfedip|rfedip]] compliant devices to list and document their devices.
+
+When you create a compliant device, you can (should) use this page to tell others about it and to document it.  I suggest to make a section for every device, and that the section may contain subsections as needed.
+
+Please keep in mind that this article is intended to inform creators of devices so that they can create devices which work together with devices created by others.  This article is not intended for documentation the users of the devices may need.
+
+==Tethering Device==
+
+please see [[https://wiki.secondlife.com/wiki/LSL_Protocol/rfedip#Reference_Implementation:_A_Tethering_Device|here]]
+
+~~~~
+
+==Enchaining Device==
+
+please see [[https://wiki.secondlife.com/wiki/LSL_Protocol/rfedip#Reference_Implementation:_A_device_using_chaining_points|here]]
+
+~~~~
