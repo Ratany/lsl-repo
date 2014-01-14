@@ -255,13 +255,19 @@ bool geom_linesegmentscross(vector p1, vector p2, vector p3, vector p4)
 		{
 			if((alphaNumerator < 0.0) || (alphaNumerator > alphaDenominator)) return FALSE;
 		}
-	else if((alphaNumerator > 0.0) || (alphaNumerator < alphaDenominator)) return FALSE;
+	else
+		{
+			if((alphaNumerator > 0.0) || (alphaNumerator < alphaDenominator)) return FALSE;
+		}
 
 	if(betaDenominator > 0.0)
 		{
 			if((betaNumerator < 0.0) || (betaNumerator > betaDenominator)) return FALSE;
 		}
-	else if((betaNumerator > 0.0) || (betaNumerator < betaDenominator)) return FALSE;
+	else
+		{
+			if((betaNumerator > 0.0) || (betaNumerator < betaDenominator)) return FALSE;
+		}
 
 	return TRUE;
 }
