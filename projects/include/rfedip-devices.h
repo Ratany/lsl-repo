@@ -72,6 +72,7 @@
 //
 // RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_FURNITURE + RFEDIP_FLAG_DEVTYPE0_MOVINGPARTS);
 //
+#define RFEDIP_FLAG_DEVTYPE0_UNDETERMINED   0  // the device is of no particular type
 #define RFEDIP_FLAG_DEVTYPE0_FURNITURE      1  // furniture
 #define RFEDIP_FLAG_DEVTYPE0_MOVING         2  // the device can move
 #define RFEDIP_FLAG_DEVTYPE0_VEHICLE        4  // the device is a vehicle
@@ -92,11 +93,11 @@
 
 // convert this back like:
 //
-#define RFEDIP_DeviceIsFurniture(_l)    (llList2Integer(_l, 3) & RFEDIP_FLAG_DEVTYPE0_FURNITURE)
-#define RFEDIP_DeviceIsMoving(_l)       (llList2Integer(_l, 3) & RFEDIP_FLAG_DEVTYPE0_MOVING)
-#define RFEDIP_DeviceIsVehicle(_l)      (llList2Integer(_l, 3) & RFEDIP_FLAG_DEVTYPE0_VEHICLE)
-#define RFEDIP_DeviceIsAttachment(_l)   (llList2Integer(_l, 3) & RFEDIP_FLAG_DEVTYPE0_ATTACHMENT)
-#define RFEDIP_DeviceIsMovingParts(_l)  (llList2Integer(_l, 3) & RFEDIP_FLAG_DEVTYPE0_MOVINGPARTS)
+#define RFEDIP_DeviceIsFurniture(_l)    (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_FURNITURE)
+#define RFEDIP_DeviceIsMoving(_l)       (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_MOVING)
+#define RFEDIP_DeviceIsVehicle(_l)      (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_VEHICLE)
+#define RFEDIP_DeviceIsAttachment(_l)   (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_ATTACHMENT)
+#define RFEDIP_DeviceIsMovingParts(_l)  (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_MOVINGPARTS)
 
 
 // protDEVPROPS0 is used to query devices for their properties
@@ -113,10 +114,11 @@
 
 // define property flags here ... same method as with device types
 //
-#define RFEDIP_FLAG_DEVPROP0_MOVING     1  // the device is currently moving
+#define RFEDIP_FLAG_DEVPROP0_UNDETERMINED    0  // the devices´ properties are undetermined
+#define RFEDIP_FLAG_DEVPROP0_MOVING          1  // the device is currently moving
 
 //
-#define RFEDIP_DeviceDoesMove(_l)       (llList2Integer(_l, 3) & RFEDIP_FLAG_DEVPROP0_MOVING)
+#define RFEDIP_DeviceDoesMove(_l)       (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVPROP0_MOVING)
 
 
 #endif  // _RFEDIP_DEVICES
