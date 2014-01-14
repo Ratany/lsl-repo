@@ -32,11 +32,17 @@
 #define RFEDIP_protEND                            "msg_end!"  // indicate end of data transfer; if a particular channel was opened, this channel can be closed
 #define RFEDIP_protOPEN                           "openchan"  // open a particular channel for further communication, mandatorily has a channel number as parameter
 
-#define RFEDIP_ToSENDER(_l)                       llList2Key(_l, 0)  // return UUID of sender from list _l
-#define RFEDIP_ToRCPT(_l)                         llList2Key(_l, 1)  // return UUID of recipient from list _l
-#define RFEDIP_ToPROTVERSION(_l)                  llList2String(_l, 2) // return string containing the version of the protocol from list _l
-#define RFEDIP_ToFirstTOKEN(_l)                   llList2String(_l, 3)  // return the first token from list _l
-#define RFEDIP_ToFirstPARAM(_l)                   llList2String(_l, 4) // return the first parameter
+#define RFEDIP_idxSENDER                          0
+#define RFEDIP_idxRCPT                            1
+#define RFEDIP_idxPROTVERSION                     2
+#define RFEDIP_idxTOKEN1                          3
+#define RFEDIP_idxPARAM1                          4
+
+#define RFEDIP_ToSENDER(_l)                       llList2Key(_l, RFEDIP_idxSENDER)  // return UUID of sender from list _l
+#define RFEDIP_ToRCPT(_l)                         llList2Key(_l, RFEDIP_idxRCPT)  // return UUID of recipient from list _l
+#define RFEDIP_ToPROTVERSION(_l)                  llList2String(_l, RFEDIP_idxPROTVERSION) // return string containing the version of the protocol from list _l
+#define RFEDIP_ToFirstTOKEN(_l)                   llList2String(_l, RFEDIP_idxTOKEN1)  // return the first token from list _l
+#define RFEDIP_ToFirstPARAM(_l)                   llList2String(_l, RFEDIP_idxPARAM1) // return the first parameter
 #define RFEDIP_ToRESPONSE(_sndr, _rcpt, ...)      llDumpList2String([_sndr, _rcpt, RFEDIP_sVERSION, __VA_ARGS__], RFEDIP_sSEP)  // convert a protocol payload into a protocol message
 #define REFDIP_OPEN(_rcpt, _sndr, _nchan)         llRegionSayTo(_rcpt, RFEDIP_CHANNEL, RFEDIP_ToRESPONSE(_sndr, _rcpt, RFEDIP_protOPEN, _nchan))  // open a particular channel for communication
 #define RFEDIP_END(_rcpt, _sndr, _nchan)          llRegionSayTo(_rcpt, RFEDIP_CHANNEL, RFEDIP_ToRESPONSE(_sndr, _rcpt, RFEDIP_protEND, _nchan))  // indicate end of communication on channel _c
