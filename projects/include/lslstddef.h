@@ -303,6 +303,8 @@ afootell(string _msg) {
 // something like printf()
 #define fprintl(...)                         llDumpList2String(["(", (_MEMLIMIT - llGetUsedMemory() ) >> 10, "kB ) ~>", __VA_ARGS__], " ")
 #define fprintlt(...)                        llDumpList2String(["(", (_MEMLIMIT - llGetUsedMemory() ) >> 10, "kB ) ~>", __VA_ARGS__], "|")
+#define sprintl(...)                         llDumpList2String([__VA_ARGS__], " ");
+#define sprintlt(...)                         llDumpList2String([__VA_ARGS__], "|");
 #define apf(...)                             llSay(PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
 #define opf(...)                             llOwnerSay(fprintl(__VA_ARGS__))
 #define parst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
