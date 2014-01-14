@@ -35,6 +35,14 @@
 // chaining points have been reported, this devices sends a
 // RFEDIP_protEND control message.
 //
+// This device can be queried for what type it is of.  The token to
+// query the device for its type is "qry-devtype0".  The device
+// replies with the token "devtype0-flags".  The parameter to
+// "devtype0-flags" is "0", indicating that this device is of no
+// particular type.
+//
+
+#define DEBUG0 0
 
 
 // some standard definitions
@@ -55,7 +63,7 @@
 // some definitions needed by devices that communicate with this
 // device
 //
-#include <rfedip-generic-chainpoints.h>
+#include <rfedip-devices.h>
 
 
 // the prims of the device that are points to attach chains to are
@@ -189,13 +197,34 @@ default
 		// From here on, the capabilities of the device can be
 		// implemented.
 		//
-		// Here: Report the chain target points and send of of
+
+		// extract the token from the rfedip message ...
+		//
+		string token = RFEDIP_ToFirstTOKEN(payload);
+
+
+		// Report the device type and send end of communication message.
+		//
+		when(protDEVTYPE0_QUERY == token)
+			{
+				// this is some generic device of no particular type
+				//
+				RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_UNDETERMINED);
+				DEBUGmsg0(other_device, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_UNDETERMINED);
+				RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+				return;
+			}
+
+
+		// Report the chain target points and send end of
 		// communication message.
 		//
-		when(RFEDIP_ToFirstTOKEN(payload) == protTETHER)
+		when(token == protTETHER)
 			{
 				int n = Len(HOOKSLIST);
 				LoopDown(n, RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protTETHER_RESPONSE, kHookKey(n)));
+				// RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+				// return;
 			}
 
 		RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
