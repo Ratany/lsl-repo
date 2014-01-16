@@ -1,0 +1,28 @@
+
+
+You sometimes may want to make sources written by others readable:
+
+
+add to ~/.emacs:
+
+(defun my-astyle-buffer ()
+  "pipe all buffer contents through astyle and replace with the
+  output from astyle"
+  (interactive)
+  (shell-command-on-region (point-min) (point-max) "astyle" nil t 'shell-command-default-error-buffer t))
+
+
+~/.astylerc:
+
+--mode=c
+--style=gnu
+--indent=tab
+--break-blocks
+--unpad-paren
+--break-elseifs
+--add-brackets
+--add-one-line-brackets
+--pad-oper
+--mode=c
+--min-conditional-indent=0
+# --max-code-length=150
