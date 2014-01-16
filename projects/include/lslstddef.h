@@ -187,6 +187,10 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define Velocity                             llVecMag(llGetVel() )
 
 #define tif(_now, _then, _duration)          if(_now > _then + _duration)
+
+
+// string macros
+//
 #define Strlen(_string)                      llStringLength(_string)
 #define Substr(_string, _start, _end)        llGetSubString(_string, _start, _end)
 #define Begstr(_string, _end)                llGetSubString(_string, 0, _end)
@@ -194,7 +198,20 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define Strtrunc(_str, _n)                   if(Strlen((_str)) > (_n)) _str = Begstr((_str), (_n) - 1)
 #define Instr(_src, _tst)                    (~llSubStringIndex(_src, _tst) )
 #define Stridx(_src, _tst)                   llSubStringIndex(_src, _tst)
+//
+// replace char in string
 #define StrX(_str, _what, _with)             llDumpList2String(llParseStringKeepNulls(_str, [_what], []), _with)
+//
+// replace some chars in a string to savely convert it to CSV
+#define CSVStrX(_s)                          StrX(StrX(StrX(_s, ",", "."), "<", "{"), ">", "}")
+//
+
+// concatenate strings
+#define concat(_s1, _s2)                     ((_s1) + (_s2))
+#define concats(_s1, _s2)                    ((_s1) + "|" + (_s2))
+
+
+// region, position --> slurl
 #define RPos2Slurl(_r, _v)                   llEscapeURL("http://slurl.com/secondlife/" + _r + "/" + _v.x + "/" + _v.y + "/" + _v.z + "/")
 
 #define AbsVecOffset(_ret, _vec1, _vec2)     _ret.x = llFabs(_vec1.x - _vec2.x); \
@@ -371,9 +388,16 @@ afootell(string _msg) {
 #define DEBUGmsg2(...)
 #endif
 
+// debug messages level 3
+#if DEBUG3
+#define DEBUGmsg3(...)                  DEBUGmsg(__VA_ARGS__)
+#else
+#define DEBUGmsg3(...)
+#endif
+
 // debug messages from libraries
 #if DEBUG_LIB
-#define DEBUGmsgLIB(...)                  DEBUGmsg(__VA_ARGS__)
+#define DEBUGmsgLIB(...)                DEBUGmsg(__VA_ARGS__)
 #else
 #define DEBUGmsgLIB(...)
 #endif
