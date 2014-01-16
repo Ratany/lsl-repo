@@ -10,3 +10,16 @@ them for this very purpose.
 
 The contents of this repository provide a build system and examples
 for creating LSL scripts.
+
+
+Reference implementations of rfedip devices are included.  Please see
+https://wiki.secondlife.com/wiki/LSL_Protocol/rfedip about this.
+
+
+The sources in this repo may be more recent than the sources and
+scripts in the wiki articles.  Files used by the build system, header
+files, library files and files for emacs etc. will be kept up to
+date.  You may want to watch this repo.
+
+If you would like to contribute, it´s probably a good idea to fork
+this repo and to make a poll request.
