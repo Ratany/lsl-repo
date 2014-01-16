@@ -227,8 +227,20 @@ default
 				// return;
 			}
 
-		RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+		unless(RFEDIP_protEND == token)
+			{
+				// when receiving messages not handled by this device,
+				// indicate end of communication to potentially save
+				// other devices unnecessary waiting times
+				//
+				// do not answer with com/end to com/end messages to avoid message loops!
+				//
+				RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+			}
 	}
 
-	event on_rez(int p) { kThisDevice = llGetLinkKey(llGetLinkNumber()); }
+	event on_rez(int p)
+	{
+		kThisDevice = llGetLinkKey(llGetLinkNumber());
+	}
 }
