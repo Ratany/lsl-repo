@@ -106,6 +106,7 @@ The rfedip protocol itself defines:
 
 * that devices should respond with the protocol message indicating the end of communication for tokens they do not understand to potentially save other devices unnesessary waiting times
 
+* that devices must not respond to the protocol message indicating the end of communication because doing so could create message loops
 
 ==Reference Implementation: A Tethering Device==
 
@@ -267,12 +268,16 @@ default
 			}
 		}
 
-		// indicate end of communication when all points have
-		// been reported or when messages have been received
-		// this device doesn´t support
-		//
-		llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
-		              other_device, "RFEDIP-1.0", "msg_end!", -20131224], "|"));
+		if(!(llList2String(payload, 3) == "msg_end!"))
+		{
+			// when receiving messages not handled by this device,
+			// indicate end of communication to potentially save
+			// other devices unnecessary waiting times
+			//
+			// do not answer with com/end to com/end messages to avoid message loops!
+			//
+			llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice, other_device, "RFEDIP-1.0", "msg_end!", -20131224], "|"));
+		}
 	}
 
 	on_rez(integer p)
@@ -382,7 +387,7 @@ default
 			return;
 		}
 
-		if((!!(status & 4)) && (llList2String(payload, 3) == "tether"))
+		if((!!(status & 4)) && ("tether" == token))
 		{
 			// answer queries from other devices when this device is chained
 			//
@@ -397,8 +402,16 @@ default
 			}
 		}
 
-		llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice,
-		              other_device, "RFEDIP-1.0", "msg_end!", -20131224], "|"));
+		if(!("msg_end!" == token))
+		{
+			// when receiving messages not handled by this device,
+			// indicate end of communication to potentially save
+			// other devices unnecessary waiting times
+			//
+			// do not answer with com/end to com/end messages to avoid message loops!
+			//
+			llRegionSayTo(other_device, -20131224, llDumpList2String([kThisDevice, other_device, "RFEDIP-1.0", "msg_end!", -20131224], "|"));
+		}
 	}
 
 	touch_start(integer t)
@@ -464,3 +477,5 @@ Please use [[LSL_Protocol/rfedip-devices|this page]] to document your devices.
 * 2014-01-13: article rewritten
 
 * 2014-01-13: added page to document devices
+
+* 2014-01-16: bugfix: do not reply to com/end messages
