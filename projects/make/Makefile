@@ -25,13 +25,13 @@ doc: doc/%.pdf
 debug: $(DBG)
 
 dbg/%.i: src/%.lsl
-	@echo "preprocessing $<"
+#	@echo "preprocessing $<"
 	@echo "// =`basename $@`" > $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< >> $@
 	@$(ADD) $< $(CURDIR)/bin/`basename $<`
 
 bin/%.o: dbg/%.i
-	@sed -f ../clean-lsl.sed $< > $<.clean
+	@sed -f ../clean-lsl.sed $< | sed 's/; /;\n/g' > $<.clean
 	@wc -cl $<.clean
 	@astyle --style=allman -f < $<.clean > $<
 	@rm $<.clean
@@ -41,15 +41,15 @@ bin/%.o: dbg/%.i
 	@pdflatex -output-directory ./doc $<
 
 TAGS: $(SRC) $(LIB) $(LOC) $(INC)
-	@echo "generating $(TAGS)"
+#	@echo "generating $(TAGS)"
 	@etags $(SRC) $(LIB) $(LOC) $(INC)
 
 dep/%.di: src/%.lsl
-	@echo "generating dependencies: $@"
+#	@echo "generating dependencies: $@"
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -MM $< | sed '/^.*\.o:/s_^_dbg/_' | sed 's/\.o:/\.i:/' > $@
 
 dep/%.d: dep/%.di
-	@echo "generating dependencies: $@"
+#	@echo "generating dependencies: $@"
 	@sed 's_^dbg/_bin/_' $< | sed 's/\.i:/\.o:/' > $@
 
 
