@@ -5,11 +5,22 @@ You sometimes may want to make sources written by others readable:
 
 add to ~/.emacs:
 
+
 (defun my-astyle-buffer ()
   "pipe all buffer contents through astyle and replace with the
   output from astyle"
   (interactive)
   (shell-command-on-region (point-min) (point-max) "astyle" nil t 'shell-command-default-error-buffer t))
+
+
+If you need to vary the line length, make the function ask you:
+
+
+(defun my-astyle-buffer (mcl)
+  "ask for code length and pipe all buffer contents through
+  astyle and replace with the output from astyle"
+  (interactive "nMax code length: ")
+  (shell-command-on-region (point-min) (point-max) (format "astyle --max-code-length=%d" mcl) nil t 'shell-command-default-error-buffer t))
 
 
 ~/.astylerc:
