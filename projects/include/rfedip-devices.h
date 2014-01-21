@@ -78,6 +78,7 @@
 #define RFEDIP_FLAG_DEVTYPE0_VEHICLE        4  // the device is a vehicle
 #define RFEDIP_FLAG_DEVTYPE0_ATTACHMENT     8  // the device is intended to be worn as an attachment
 #define RFEDIP_FLAG_DEVTYPE0_MOVINGPARTS   16  // the device has moving parts, or the part reported can move
+#define RFEDIP_FLAG_DEVTYPE0_STATIONARY    32  // the device is stationary, like a building part, including doors
 //
 // Note: Attachments can be considered as moving because agents
 //       wearing them are usually not stationary.  Attachments do not
@@ -98,6 +99,7 @@
 #define RFEDIP_DeviceIsVehicle(_l)      (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_VEHICLE)
 #define RFEDIP_DeviceIsAttachment(_l)   (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_ATTACHMENT)
 #define RFEDIP_DeviceIsMovingParts(_l)  (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_MOVINGPARTS)
+#define RFEDIP_DeviceIsStationary(_l)   (llList2Integer(_l, RFEDIP_idxPARAM1) & RFEDIP_FLAG_DEVTYPE0_STATIONARY)
 
 
 // protDEVPROPS0 is used to query devices for their properties

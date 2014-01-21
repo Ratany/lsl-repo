@@ -77,10 +77,31 @@
 
 key kThisDevice;                   // the UUID of this device
 
+// Store the uniq identifier of this device in a string rather than
+// calling llGetScriptName() many times --- the string will be
+// initiated in the state_entry(), on_rez() and changed() events.  If
+// your script is subject to frequent renaming, it may be advisable to
+// use a local variable in the listen event instead.
+//
+string sThis_uniq;
+
+// RFEDIP_sTHIS_UNIQ has been defined in rfedip.h, so redefine it.
+// When rfedip.h is included after RFEDIP_sTHIS_UNIQ is defined, it
+// doesn´t need to be undefined first.
+//
+#undef RFEDIP_sTHIS_UNIQ
+#define RFEDIP_sTHIS_UNIQ          sThis_uniq
+
+
 list lHooks;
 #define HOOKSLIST                  lHooks
 
-#define xHooksInit                 HOOKSLIST = getlinknumbersbyname(sCHAINPOINT); unless(Len(HOOKSLIST)) { HOOKSLIST = (list)llGetLinkNumber(); }
+#define virtualHooksInit           HOOKSLIST = getlinknumbersbyname(sCHAINPOINT); unless(Len(HOOKSLIST)) { HOOKSLIST = (list)llGetLinkNumber(); }
+
+
+#define virtualIDinit					       \
+	kThisDevice = llGetLinkKey(llGetLinkNumber());	       \
+	sThis_uniq = llGetScriptName()
 
 
 default
@@ -91,9 +112,12 @@ default
 		// rather than creating the list every time the device
 		// is queried.
 		//
-		xHooksInit;
+		virtualHooksInit;
 
-		kThisDevice = llGetLinkKey(llGetLinkNumber());
+		// Remember the uuid and the uniq identifier of this
+		// device.
+		//
+		virtualIDinit;
 
 		// permanently listen on the protocol channel
 		//
@@ -106,8 +130,8 @@ default
 		//
 		when(w & CHANGED_LINK)
 			{
-				kThisDevice = llGetLinkKey(llGetLinkNumber());
-				xHooksInit;
+				virtualHooksInit;
+				virtualIDinit;
 			}
 	}
 
@@ -119,9 +143,11 @@ default
 		{
 			// The incoming message looks like:
 			//
-			// "identify|<RFEDIP_sTHIS_UNIQ>"
+			// "identify|<sender-Uniq>"
 			//
-			// Default for RFEDIP_sTHIS_UNIQ is llGetScriptName().
+			// Default for the uniq identifier is what
+			// llGetScriptName() returns.  Please see
+			// rfedip.h.
 			//
 			// Indistinctively answer queries that want to
 			// detect this device: The answer goes to the
@@ -130,7 +156,7 @@ default
 			// "<this-device-uuid>|<RFEDIP_sTHIS_UNIQ>|<recipient-uuid>|<recipient-Uniq>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
 			//
 			// For the device that receives the answer to
-			// the request to identify, the <sender-uuid>
+			// the request to identify, <this-device-uuid>
 			// is the UUID of this device.
 			//
 			// With
@@ -240,12 +266,12 @@ default
 		//
 		string token = RFEDIP_ToFirstTOKEN(payload);
 		//
-		// ... and the Uniq of the sender
+		// ... and the uniq identifier of the sender
 		//
 		string uniq = RFEDIP_ToSENDER_UNIQ(payload);
 
-
-		// Report the device type and send end of communication message.
+		// Report the device type and send end of
+		// communication message.
 		//
 		when(protDEVTYPE0_QUERY == token)
 			{
@@ -283,6 +309,9 @@ default
 
 	event on_rez(int p)
 	{
-		kThisDevice = llGetLinkKey(llGetLinkNumber());
+		// Remember the uuid and the uniq identifier of this
+		// device.
+		//
+		virtualIDinit;
 	}
 }

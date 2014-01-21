@@ -227,7 +227,7 @@
 // some definitions from devices that communicate with this
 // device
 //
-#include <rfedip-generic-chainpoints.h>
+#include <rfedip-devices.h>
 
 
 // The standard library (lslstddef.h) provides status handling, which
@@ -240,6 +240,27 @@ int status;
 
 
 key kThisDevice;                        // the UUID of this device
+
+// Store the uniq identifier of this device in a string rather than
+// calling llGetScriptName() many times --- the string will be
+// initiated in the state_entry(), on_rez() and changed() events.  If
+// your script is subject to frequent renaming, it may be advisable to
+// use a local variable in the listen event instead.
+//
+string sThis_uniq;
+
+// RFEDIP_sTHIS_UNIQ has been defined in rfedip.h, so redefine it.
+// When rfedip.h is included after RFEDIP_sTHIS_UNIQ is defined, it
+// doesn´t need to be undefined first.
+//
+#undef RFEDIP_sTHIS_UNIQ
+#define RFEDIP_sTHIS_UNIQ          sThis_uniq
+
+#define virtualIDinit					       \
+	kThisDevice = llGetLinkKey(llGetLinkNumber());	       \
+	sThis_uniq = llGetScriptName()
+
+
 int iDevicesAround;                     // keep track of how many other devices have been found
 #define iSTRIDE_lChains            2    // lChains is a strided list: [link number, uuid of target]
 #define iINDEXOFFSET_lChains       1    // needed to deduct which chain is linked to a given target point
@@ -930,7 +951,7 @@ default
 		LoopChains(SLPPF(iChainLinkNo(_n), [PRIM_TEXT, "", BLACK, 0.0]));
 #endif
 
-		kThisDevice = llGetLinkKey(llGetLinkNumber());
+		virtualIDinit;
 		llListen(RFEDIP_CHANNEL, "", NULL_KEY, "");
 	}
 
@@ -942,13 +963,13 @@ default
 				//
 				hide();
 				yChainsInit;
-				kThisDevice = llGetLinkKey(llGetLinkNumber());
+				virtualIDinit;
 			}
 	}
 
 	event on_rez(int p)
 	{
-		kThisDevice = llGetLinkKey(llGetLinkNumber());
+		virtualIDinit;
 		hide();
 	}
 }

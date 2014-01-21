@@ -445,7 +445,7 @@ Rfedip version 1.1 is currently being tested.  The sources in the repository hav
 Version 1.1 replaces version 1.0.
 
 
-It has turned out that using a UUID to identify a device is insufficient.  The protocol has been extended by inserting another identifier with the UUID.  The default for this additional identifier is what llGetScriptName() returns.
+It has turned out that using a UUID to identify a device is insufficient.  The protocol has been extended by inserting another identifier with the UUID.  The default for this additional identifier is what [[LlGetScriptName|llGetScriptName()]] returns.
 
 Without the additional identifier, problems arise when a prim contains multiple scripts which implement rfedip devices.  Imagine you have a prim with the devices A and B.  The remote device C queries for rfedip devices and discovers A and B.  Device B supports tokens device C works with while device A does not support these tokens.  Device C would receive messages indicating the end of communication from device A for the tokens A does not support.  But C relies on these messages from device B to decide whether requested data has been fully transmitted or not.  Since device C cannot distinguish whether a message was sent by A or by B, C cannot function correctly.  The unexpected messages from A may lead to C missing responses from B.
 
@@ -453,7 +453,254 @@ Introducing a uniq identifier for each device now enables device C to distinguis
 
 Adding the identifier defeats backwards compatibility.  Considering the severe limitations LSL scripts are subjected to, especially memory limitations, future versions of the protocol '''should''' be backwards compatible, but are not required to when compatibility cannot reasonably be maintained.
 
-More documentation will follow.
+==Version 1.1 Reference Implementation: A Tethering Device==
+
+This device is the same as with protocol version 1.0.  The only difference is that it uses protocol version 1.1.  The uniq identifier has been added to the protocol header.  The recipient of a message verifies whether the uniq identifier specified by the sender of the message for the uniq identifier of the recipient is identical to the uniq identifier of the recipient.  The script looks like this:
+
+
+<lsl>
+// =rfedipdev-tether.i
+list getlinknumbersbyname(string name)
+{
+	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber()));
+	list numbers = [];
+	name = llToLower(name);
+
+	if(n > 1)
+	{
+		while(n)
+		{
+			if((~llSubStringIndex(llToLower(llList2String(llGetLinkPrimitiveParams(n, [PRIM_NAME]), 0)), name)))
+			{
+				numbers += n;
+			}
+
+			--n;
+		}
+	}
+	else
+	{
+		if((~llSubStringIndex(llToLower(llGetObjectName()), name)))
+		{
+			numbers += n;
+		}
+	}
+
+	return numbers;
+}
+key kThisDevice;
+list lHooks;
+
+default
+{
+	state_entry()
+	{
+		lHooks = getlinknumbersbyname("hook");
+
+		if(!(llGetListLength(lHooks)))
+		{
+			lHooks = (list)llGetLinkNumber();
+		}
+
+		kThisDevice = llGetLinkKey(llGetLinkNumber());
+		llListen(-20131224, "", NULL_KEY, "");
+	}
+	changed(integer w)
+	{
+		if(w & CHANGED_LINK)
+		{
+			kThisDevice = llGetLinkKey(llGetLinkNumber());
+			lHooks = getlinknumbersbyname("hook");
+
+			if(!(llGetListLength(lHooks)))
+			{
+				lHooks = (list)llGetLinkNumber();
+			}
+		}
+	}
+	listen(integer channel, string name, key other_device, string _MESSAGE)
+	{
+		if((llGetSubString(_MESSAGE, 0, 7) == "identify"))
+		{
+			// The incoming message looks like:
+			//
+			// "identify|<sender-Uniq>"
+			//
+			// Default for the uniq identifier is what
+			// llGetScriptName() returns.  Please see
+			// rfedip.h.
+			//
+			// Indistinctively answer queries that want to
+			// detect this device: The answer goes to the
+			// sender (i. e. other_device) and looks like:
+			//
+			// "<this-device-uuid>|<RFEDIP_sTHIS_UNIQ>|<recipient-uuid>|<recipient-Uniq>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
+			//
+			// For the device that receives the answer to
+			// the request to identify, <this-device-uuid>
+			// is the UUID of this device.
+			//
+			// With
+			//
+			//   RFEDIP_RESPOND(<recipient-uuid>, <recipient-Uniq>, <sender-uuid>, <protocol-payload>);
+			//
+			// an answer is sent to the device from which
+			// this device has received the request to
+			// identify itself:
+			//
+
+			llRegionSayTo(other_device, -20131224,
+				      llDumpList2String([kThisDevice, llGetScriptName(),
+							 other_device,
+							 llList2Key(llParseString2List(_MESSAGE,
+										       ["|"], []),
+								    1), "RFEDIP-1.1", "identity"],
+							"|"));
+			return;
+		}
+
+		// From here on, received messages are expected to
+		// look like:
+		//
+		// "<sender-uuid>|<sender-Uniq>|<recipient-uuid>|<recipient-Uniq>|RFEDIP_sVERSION|<token>[|parameter|parameter...]"
+		//
+		// <sender-uuid> is the UUID of the device sending the
+		// message (i. e. other_device); <recipient-uuid> is
+		// the UUID of the recipient, i. e. of this device
+		//
+		// same goes for <sender-Uniq> and <recipient-Uniq>
+		//
+		// Please do not confuse incoming messages with
+		// outgoing messages!
+		//
+		// Parameters can be tokens.  However, this is not
+		// recommended.  Send multiple messages rather than
+		// multiple tokens in one message.
+		//
+		// The received message is put into a list for further
+		// processing:
+		//
+		list payload = llParseString2List(_MESSAGE, ["|"], []);
+
+		// Attempt to verify whether the message looks valid:
+		//
+		if(llGetListLength(payload) < 6)
+		{
+			return;
+		}
+
+		// Attempt to make sure that the message is for this
+		// device:
+		//
+		// + ignore messages that appear not to be sent by the
+		//   device they claim to be sent from by verifying
+		//   the sender given in the message with the actual
+		//   sender:
+		//
+		// + ignore messages that appear not be destined for
+		//   this device by verifying the recipient given in
+		//   the message with what this device actually is:
+		//
+		// + ignore messages that appear not to be destined for
+		//   this device by verifying the Uniq identifiers
+		//
+		// + ignore messages that request a different version
+		//   of the protocol by verifying the protocol version
+		//   given in the message --- in this example, a check
+		//   for what is considered a "sufficient version" is
+		//   applied:
+		//
+		if((llList2Key(payload, 0) != other_device)
+		   || (llList2Key(payload, 2) != kThisDevice)
+		   || (llList2Key(payload, 3) != llGetScriptName())
+		   || !(~llSubStringIndex(llList2String(payload, 4), "RFEDIP")))
+		{
+			return;
+		}
+
+		// From here on, the capabilities of the device can be
+		// implemented.
+		//
+
+		// extract the token from the rfedip message ...
+		//
+		string token = llList2String(payload, 5);
+		//
+		// ... and the uniq identifier of the sender
+		//
+		string uniq = llList2Key(payload, 1);
+
+		// Report the device type and send end of
+		// communication message.
+		//
+		if("qry-devtype0" == token)
+		{
+			llRegionSayTo(other_device, -20131224,
+				      llDumpList2String([kThisDevice, llGetScriptName(),
+							 other_device, uniq, "RFEDIP-1.1",
+							 "devtype0-flags", 0], "|"));
+			llRegionSayTo(other_device, -20131224,
+				      llDumpList2String([kThisDevice, llGetScriptName(),
+							 other_device, uniq, "RFEDIP-1.1",
+							 "msg_end!", -20131224], "|"));
+			return;
+		}
+
+		// Report the chain target points and send end of
+		// communication message.
+		//
+		if(token == "tether")
+		{
+			integer n = llGetListLength(lHooks);
+
+			while(n)
+			{
+				--n;
+				llRegionSayTo(other_device, -20131224,
+					      llDumpList2String([kThisDevice, llGetScriptName(),
+								 other_device, uniq, "RFEDIP-1.1",
+								 "tether point",
+								 llGetLinkKey(llList2Integer(lHooks,
+											     n))],
+								"|"));
+			}
+		}
+
+		// when receiving messages not handled by this device,
+		// indicate end of communication to potentially save
+		// other devices unnecessary waiting times
+		//
+		// do not answer with com/end to com/end messages to avoid message loops!
+		//
+		if(!("msg_end!" == token))
+		{
+			llRegionSayTo(other_device, -20131224,
+				      llDumpList2String([kThisDevice, llGetScriptName(),
+							 other_device, uniq, "RFEDIP-1.1",
+							 "msg_end!", -20131224], "|"));
+		}
+	}
+	on_rez(integer p)
+	{
+		kThisDevice = llGetLinkKey(llGetLinkNumber());
+	}
+}
+</lsl>
+
+
+The source in the [https://github.com/Ratany/lsl-repo git repository] is different from above script in that the uniq identifier is stored in a string to avoid calling llGetScriptName() many times.
+
+You can use something else than the return of llGetScriptName() to generate a uniq identifier. llGetScriptName() has the advantage that it provides uniqness in combination with the UUID of the prim the script is in:  Multiple scripts in the same prim cannot have identical names.  It is preferable over a hard-coded string because a hard-coded string could lead to ambiguity when two devices in the same prim use the same string.  You could use [[LlGenerateKey|llGenerateKey()]] instead, with the disadvantages that it probably requires more script memory and that a new key is generated with each call.
+
+==Version 1.1 Reference Implementation: A device using chaining points==
+
+The device is the same as with protocol version 1.0.  The only difference is that it uses protocol version 1.1.  You can find the source in the [https://github.com/Ratany/lsl-repo git repository].
+
+==rfedip-devices.h==
+
+A collection of definitions for rfedip devices is provided with rfedip-devices.h in the [https://github.com/Ratany/lsl-repo git repository].  None of the definitions and tokens contained therein are in any way mandatory.  They are not part of the specification of the rfedip protocol.
+
+The file is intended to be used to make the implementation of particular rfedip-compliant devices easier.  When further devices are created and documented, the tokens used by them can be added to rfedip-devices.h and thus become available to all creators of rfedip devices.
 
 ==References==
 
