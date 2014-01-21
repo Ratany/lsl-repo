@@ -442,20 +442,16 @@ Please use [[LSL_Protocol/rfedip-devices|this page]] to document your devices.
 
 Rfedip version 1.1 is currently being tested.  The sources in the repository have already been updated.
 
+Version 1.1 replaces version 1.0.
+
+
 It has turned out that using a UUID to identify a device is insufficient.  The protocol has been extended by inserting another identifier with the UUID.  The default for this additional identifier is what llGetScriptName() returns.
 
-Without the additional identifier, problems arise when a prim contains multiple scripts which implement rfedip devices: Multiple rfedip devices --- i. e. scripts --- in the same prim become indistinguishable from each other.  This can lead to situations in which a device A communicating with another device B may receive answers from yet another device C in the same prim though A doesn´t communicate with C.  Device A may then receive misleading answers from C and become unable to function as expected.
+Without the additional identifier, problems arise when a prim contains multiple scripts which implement rfedip devices.  Imagine you have a prim with the devices A and B.  The remote device C queries for rfedip devices and discovers A and B.  Device B supports tokens device C works with while device A does not support these tokens.  Device C would receive messages indicating the end of communication from device A for the tokens A does not support.  But C relies on these messages from device B to decide whether requested data has been fully transmitted or not.  Since device C cannot distinguish whether a message was sent by A or by B, C cannot function correctly.  The unexpected messages from A may lead to C missing responses from B.
 
-There were two alternatives to avoid this problem:
+Introducing a uniq identifier for each device now enables device C to distinguish between the devices A and B.  Unfortunately, this has required to modify the protocol.  Having only one rfedip device per prim, or using seperate channels for instances when multiple devices are in the same prim, have too many disadvantages.
 
-
-* allow only one device per prim --- not a good solution because a device may consist of a single prim.
-
-
-* require to use a seperate channel for each device for instances when several devices are in the same prim --- not a good solution because it requires more memory, makes devices more complicated, doesn´t allow adding a device to a prim without modifying it to use a seperate channel in case the device doesn´t already support this, limits the number of devices one device can communicate with simultaneously to the number of listeners which can be open simultaneously and causes problems with sending control messages
-
-
-Combing the UUID with a uniq identifier is a better solution. Unfortunately, it has required to modify the protocol, and it defeats backwards compatibility.
+Adding the identifier defeats backwards compatibility.  Considering the severe limitations LSL scripts are subjected to, especially memory limitations, future versions of the protocol '''should''' be backwards compatible, but are not required to when compatibility cannot reasonably be maintained.
 
 More documentation will follow.
 
@@ -500,3 +496,5 @@ More documentation will follow.
 * 2014-01-13: added page to document devices
 
 * 2014-01-16: bugfix: do not reply to com/end messages
+
+* 2014-01-21: protocol version 1.1
