@@ -438,6 +438,27 @@ The code on this wiki page and in the repository is more recent than the code wi
 
 Please use [[LSL_Protocol/rfedip-devices|this page]] to document your devices.
 
+==Version 1.1==
+
+Rfedip version 1.1 is currently being tested.  The sources in the repository have already been updated.
+
+It has turned out that using a UUID to identify a device is insufficient.  The protocol has been extended by inserting another identifier with the UUID.  The default for this additional identifier is what llGetScriptName() returns.
+
+Without the additional identifier, problems arise when a prim contains multiple scripts which implement rfedip devices: Multiple rfedip devices --- i. e. scripts --- in the same prim become indistinguishable from each other.  This can lead to situations in which a device A communicating with another device B may receive answers from yet another device C in the same prim though A doesn´t communicate with C.  Device A may then receive misleading answers from C and become unable to function as expected.
+
+There were two alternatives to avoid this problem:
+
+
+* allow only one device per prim --- not a good solution because a device may consist of a single prim.
+
+
+* require to use a seperate channel for each device for instances when several devices are in the same prim --- not a good solution because it requires more memory, makes devices more complicated, doesn´t allow adding a device to a prim without modifying it to use a seperate channel in case the device doesn´t already support this, limits the number of devices one device can communicate with simultaneously to the number of listeners which can be open simultaneously and causes problems with sending control messages
+
+
+Combing the UUID with a uniq identifier is a better solution. Unfortunately, it has required to modify the protocol, and it defeats backwards compatibility.
+
+More documentation will follow.
+
 ==References==
 
 * [https://marketplace.secondlife.com/p/rfedip-reference-implementation/5644685 Reference Implementation]

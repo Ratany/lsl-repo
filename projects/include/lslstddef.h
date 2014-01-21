@@ -322,10 +322,14 @@ afootell(string _msg) {
 #define fprintlt(...)                        llDumpList2String(["(", (_MEMLIMIT - llGetUsedMemory() ) >> 10, "kB ) ~>", __VA_ARGS__], "|")
 #define sprintl(...)                         llDumpList2String([__VA_ARGS__], " ")
 #define sprintlt(...)                        llDumpList2String([__VA_ARGS__], "|")
+#define stringifylt(_l)                      llDumpList2String(_l, "|")
 #define apf(...)                             llSay(PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
 #define opf(...)                             llOwnerSay(fprintl(__VA_ARGS__))
 #define parst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
 #define tarst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintlt(__VA_ARGS__))
+#define starst(_k, ...)                      llRegionSayTo(_k, PUBLIC_CHANNEL, sprintlt(__VA_ARGS__))
+#define imp(_k, ...)                         llInstantMessage(_k, sprintl(__VA_ARGS__))
+#define impa(_k, ...)                        llInstantMessage(_k, fprintl(__VA_ARGS__))
 
 
 #define IfAttached(_k)                       if( (_k != NULL_KEY) && llGetAttached() )
@@ -352,11 +356,13 @@ afootell(string _msg) {
 #define _STD_PROTMESSAGELEN                  7  // 0 -- 8
 
 
-// timestamps
-#define TS_DATE   llGetSubString(llGetTimestamp(), 0, llSubStringIndex(llGetTimestamp(), "T") - 1)
-#define TS_TIMEL  llGetSubString(llGetTimestamp(), llSubStringIndex(llGetTimestamp(), "T") + 1, llSubStringIndex(llGetTimestamp(), "Z") - 1)
-#define TS_TIMES  llGetSubString(llGetTimestamp(), llSubStringIndex(llGetTimestamp(), "T") + 1, llSubStringIndex(llGetTimestamp(), ".") - 1)
-#define TS_TIMESS llGetSubString(llGetTimestamp(), llSubStringIndex(llGetTimestamp(), "T") + 1, llSubStringIndex(llGetTimestamp(), "T") + 5)
+// timestamps: 2014-01-20T00:28:21.383008Z
+#define _STD_TS_DATE   llGetSubString(llGetTimestamp(), 0, llSubStringIndex(llGetTimestamp(), "T") - 1)
+#define _STD_TS_TIMEL  llGetSubString(llGetTimestamp(), llSubStringIndex(llGetTimestamp(), "T") + 1, llSubStringIndex(llGetTimestamp(), "Z") - 1)
+#define _STD_TS_TIMES  llGetSubString(llGetTimestamp(), llSubStringIndex(llGetTimestamp(), "T") + 1, llSubStringIndex(llGetTimestamp(), ".") - 1)
+#define _STD_TS_TIMESS llGetSubString(llGetTimestamp(), llSubStringIndex(llGetTimestamp(), "T") + 1, llSubStringIndex(llGetTimestamp(), "T") + 5)
+
+#define _STD_TS_FULL                         StrX(StrX(StrX(llGetTimestamp(), "-", "/"), "T", " "), "Z", "")
 
 #if TS_LONG_TIMESTAMPS
 #define TS_TIME TS_TIMEL
@@ -364,8 +370,14 @@ afootell(string _msg) {
 #define TS_TIME TS_TIMES
 #endif
 
+
+#ifdef _STD_DEBUG_USE_TIME
+#define DEBUGmsg(...)                   llOwnerSay(fprintl(_STD_TS_FULL, __VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
+#define ERRORmsg(...)                   llOwnerSay(fprintl(__VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
+#else
 #define DEBUGmsg(...)                   llOwnerSay(fprintl(__VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
 #define ERRORmsg(...)                   DEBUGmsg(__VA_ARGS__)
+#endif
 
 // debug messages
 #if DEBUG0
@@ -434,7 +446,8 @@ afootell(string _msg) {
 #define LoopUp(_idx, _max, _do)         while(_idx < _max) { _do; ++_idx; }
 #define IfMessage(_what)                if(_what == _MESSAGE)
 #define ProtocolID(_s)                  (Begstr(_MESSAGE, _STD_PROTMESSAGELEN) == _s)
-#define ProtocolData(_s)                llParseString2List((_MESSAGE), [_s], [])  // _s is the separator
+#define ProtocolSimpleData              Endstr(_MESSAGE, 8)  // (_STD_PROTMESSAGELEN) + 1
+#define ProtocolData(_s)                llParseString2List(_MESSAGE, [_s], [])  // _s is the separator
 #define continue                        jump
 
 

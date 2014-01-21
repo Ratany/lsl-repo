@@ -770,9 +770,9 @@ default
 	{
 		// identify this device
 		//
-		IfMessage(RFEDIP_protIDENTIFY_QUERY)
+		when(ProtocolID(RFEDIP_protIDENTIFY_QUERY))
 		{
-			RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, RFEDIP_protIDENTIFY);
+			RFEDIP_RESPOND(other_device, RFEDIP_ToSENDER_UNIQ(ProtocolData(RFEDIP_sSEP)), kThisDevice, RFEDIP_CHANNEL, RFEDIP_protIDENTIFY);
 			return;
 		}
 
@@ -780,10 +780,22 @@ default
 		// valid refdip-protocol message
 		//
 		list payload = ProtocolData(RFEDIP_sSEP);
-		if(Len(payload) < RFEDIP_iMINMSGLEN) return;
-		when((RFEDIP_ToSENDER(payload) != other_device) || (RFEDIP_ToRCPT(payload) != kThisDevice) || !Instr(RFEDIP_ToPROTVERSION(payload), RFEDIP_sSUFFICIENT_VERSION)) return;
 
-		// extract the token from the rfedip message ...
+		if(Len(payload) < RFEDIP_iMINMSGLEN)
+			{
+				return;
+			}
+
+		when((RFEDIP_ToSENDER(payload) != other_device) || (RFEDIP_ToRCPT(payload) != kThisDevice) || (RFEDIP_ToRCPT_UNIQ(payload) != RFEDIP_sTHIS_UNIQ) || !Instr(RFEDIP_ToPROTVERSION(payload), RFEDIP_sSUFFICIENT_VERSION))
+			{
+				return;
+			}
+
+		// extract the Uniq of the other device from the rfedip message
+		//
+		string uniq = RFEDIP_ToSENDER_UNIQ(payload);
+
+		// extract the token from the rfedip message
 		//
 		string token = RFEDIP_ToFirstTOKEN(payload);
 
@@ -816,7 +828,10 @@ default
 					// FOURTH: When all answers have been received, make the chains.
 					//         In case an end-message gets lost, the timeout kicks in.
 					//
-					unless(iDevicesAround) mkchains();
+					unless(iDevicesAround)
+					{
+						mkchains();
+					}
 				}
 
 				return;
@@ -827,7 +842,7 @@ default
 				// SECOND: Ask a device that identifies itself for points to attach chains to.
 				//
 				++iDevicesAround;
-				RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protTETHER);
+				RFEDIP_RESPOND(other_device, uniq, kThisDevice, RFEDIP_CHANNEL, protTETHER);
 				return;
 			}
 
@@ -835,7 +850,7 @@ default
 			{
 				// allow others to chain up only when this device is tied
 
-				LoopChains(RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protTETHER_RESPONSE, llGetLinkKey(iChainLinkNo(_n))));
+				LoopChains(RFEDIP_RESPOND(other_device, uniq, kThisDevice, RFEDIP_CHANNEL, protTETHER_RESPONSE, llGetLinkKey(iChainLinkNo(_n))));
 				// RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
 				// return;
 			}
@@ -848,7 +863,7 @@ default
 				//
 				// do not answer with com/end to com/end messages to avoid message loops!
 				//
-				RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+				RFEDIP_END(other_device, uniq, kThisDevice, RFEDIP_CHANNEL);
 			}
 	}
 

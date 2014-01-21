@@ -42,7 +42,7 @@
 // particular type.
 //
 
-#define DEBUG0 0
+#define DEBUG0 0  // debug rfedip
 
 
 // some standard definitions
@@ -113,13 +113,21 @@ default
 
 	event listen(int channel, string name, key other_device, string _MESSAGE)
 	{
-		IfMessage(RFEDIP_protIDENTIFY_QUERY)
+		DEBUGmsg0("-->", other_device, _MESSAGE);
+
+		when(ProtocolID(RFEDIP_protIDENTIFY_QUERY))
 		{
+			// The incoming message looks like:
+			//
+			// "identify|<RFEDIP_sTHIS_UNIQ>"
+			//
+			// Default for RFEDIP_sTHIS_UNIQ is llGetScriptName().
+			//
 			// Indistinctively answer queries that want to
 			// detect this device: The answer goes to the
 			// sender (i. e. other_device) and looks like:
 			//
-			// "<sender-uuid>|<recipient-uuid>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
+			// "<sender-uuid>|<this device Uniq>|<recipient-uuid>|<RFEDIP_sTHIS_UNIQ>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
 			//
 			// For the device that receives the answer to
 			// the request to identify, the <sender-uuid>
@@ -134,19 +142,25 @@ default
 			// identify itself:
 			//
 
+			DEBUGmsg0("--> ID query from", RemoteName(other_device), "(", other_device, ")");
 
-			RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, RFEDIP_protIDENTIFY);
+			RFEDIP_RESPOND(other_device, RFEDIP_ToSENDER_UNIQ(ProtocolData(RFEDIP_sSEP)), kThisDevice, RFEDIP_CHANNEL, RFEDIP_protIDENTIFY);
+
+			DEBUGmsg0("<--", other_device, RFEDIP_CHANNEL, RFEDIP_ToRESPONSE(kThisDevice, other_device, RFEDIP_ToSENDER_UNIQ(ProtocolData(RFEDIP_sSEP)), RFEDIP_protIDENTIFY));
+
 			return;
 		}
 
 		// From here on, received messages are expected to
 		// look like:
 		//
-		// "<sender-uuid>|<recipient-uuid>|RFEDIP_sVERSION|<token>[|parameter|parameter...]"
+		// "<sender-uuid>|<sender-Uniq>|<recipient-uuid>|<recipient-Uniq>|RFEDIP_sVERSION|<token>[|parameter|parameter...]"
 		//
 		// <sender-uuid> is the UUID of the device sending the
 		// message (i. e. other_device); <recipient-uuid> is
 		// the UUID of the recipient, i. e. of this device
+		//
+		// same goes for <sender-Uniq> and <recipient-Uniq>
 		//
 		// Please do not confuse incoming messages with
 		// outgoing messages!
@@ -162,7 +176,10 @@ default
 
 		// Attempt to verify whether the message looks valid:
 		//
-		if(Len(payload) < RFEDIP_iMINMSGLEN) return;
+		if(Len(payload) < RFEDIP_iMINMSGLEN)
+			{
+				return;
+			}
 
 		// Attempt to make sure that the message is for this
 		// device:
@@ -180,6 +197,23 @@ default
 		//
 #define NotDestined   (RFEDIP_ToRCPT(payload) != kThisDevice)
 		//
+		// + ignore messages that appear not to be destined for
+		//   this device by verifying the Uniq identifiers
+		//
+#define UniqMismatch (RFEDIP_ToRCPT_UNIQ(payload) != RFEDIP_sTHIS_UNIQ)
+		DEBUGmsg0("this rcpt-uuid:", RFEDIP_ToRCPT(payload));
+		DEBUGmsg0("this rcpt-Uniq:", RFEDIP_ToRCPT_UNIQ(payload));
+
+		DEBUGmsg0("this this-uuid:", kThisDevice);
+		DEBUGmsg0("this this-Uniq:", RFEDIP_sTHIS_UNIQ);
+
+		DEBUGmsg0("sndr sndr-uuid:", RFEDIP_ToSENDER(payload));
+		DEBUGmsg0("sndr sndr-Uniq:", RFEDIP_ToSENDER_UNIQ(payload));
+		DEBUGmsg0("otrh othr-uuid:", other_device);
+
+		DEBUGmsg0("<--- test-resp:", RFEDIP_ToRESPONSE(kThisDevice, other_device, RFEDIP_ToSENDER_UNIQ(payload), "test"));
+		DEBUGmsg0("incoming msg  :", _MESSAGE);
+		//
 		// + ignore messages that request a different version
 		//   of the protocol by verifying the protocol version
 		//   given in the message --- in this example, a check
@@ -188,10 +222,14 @@ default
 		//
 #define BadVersion    !Instr(RFEDIP_ToPROTVERSION(payload), RFEDIP_sSUFFICIENT_VERSION)
 		//
-		when(InvalidSender || NotDestined || BadVersion) return;
+		when(InvalidSender || NotDestined || UniqMismatch || BadVersion)
+			{
+				return;
+			}
 
 #undef InvalidSender
 #undef NotDestined
+#undef UniqMismatch
 #undef BadVersion
 
 		// From here on, the capabilities of the device can be
@@ -201,6 +239,10 @@ default
 		// extract the token from the rfedip message ...
 		//
 		string token = RFEDIP_ToFirstTOKEN(payload);
+		//
+		// ... and the Uniq of the sender
+		//
+		string uniq = RFEDIP_ToSENDER_UNIQ(payload);
 
 
 		// Report the device type and send end of communication message.
@@ -209,9 +251,9 @@ default
 			{
 				// this is some generic device of no particular type
 				//
-				RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_UNDETERMINED);
-				DEBUGmsg0(other_device, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_UNDETERMINED);
-				RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+				RFEDIP_RESPOND(other_device, uniq, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_UNDETERMINED);
+				DEBUGmsg0(other_device, uniq, kThisDevice, RFEDIP_CHANNEL, protDEVTYPE0_FLAGS, RFEDIP_FLAG_DEVTYPE0_UNDETERMINED);
+				RFEDIP_END(other_device, uniq, kThisDevice, RFEDIP_CHANNEL);
 				return;
 			}
 
@@ -222,7 +264,7 @@ default
 		when(token == protTETHER)
 			{
 				int n = Len(HOOKSLIST);
-				LoopDown(n, RFEDIP_RESPOND(other_device, kThisDevice, RFEDIP_CHANNEL, protTETHER_RESPONSE, kHookKey(n)));
+				LoopDown(n, RFEDIP_RESPOND(other_device, uniq, kThisDevice, RFEDIP_CHANNEL, protTETHER_RESPONSE, kHookKey(n)));
 				// RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
 				// return;
 			}
@@ -235,7 +277,7 @@ default
 				//
 				// do not answer with com/end to com/end messages to avoid message loops!
 				//
-				RFEDIP_END(other_device, kThisDevice, RFEDIP_CHANNEL);
+				RFEDIP_END(other_device, uniq, kThisDevice, RFEDIP_CHANNEL);
 			}
 	}
 
