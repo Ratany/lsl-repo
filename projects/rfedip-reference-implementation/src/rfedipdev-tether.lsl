@@ -127,7 +127,7 @@ default
 			// detect this device: The answer goes to the
 			// sender (i. e. other_device) and looks like:
 			//
-			// "<sender-uuid>|<this device Uniq>|<recipient-uuid>|<RFEDIP_sTHIS_UNIQ>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
+			// "<this-device-uuid>|<RFEDIP_sTHIS_UNIQ>|<recipient-uuid>|<recipient-Uniq>|RFEDIP_sVERSION|RFEDIP_protIDENTIFY"
 			//
 			// For the device that receives the answer to
 			// the request to identify, the <sender-uuid>
@@ -135,7 +135,7 @@ default
 			//
 			// With
 			//
-			//   RFEDIP_RESPOND(<recipient-uuid>, <sender-uuid>, <protocol-payload>);
+			//   RFEDIP_RESPOND(<recipient-uuid>, <recipient-Uniq>, <sender-uuid>, <protocol-payload>);
 			//
 			// an answer is sent to the device from which
 			// this device has received the request to
