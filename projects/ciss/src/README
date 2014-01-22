@@ -13,3 +13,5 @@ Problems/bugs to fix:
   event is also triggered when the permission is denied
 
 + unused variables
+
++ apparently the main script uses "huge" amounts of memory
