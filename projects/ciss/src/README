@@ -1,0 +1,15 @@
+
+Problems/bugs to fix:
+
++ inefficiency of loops using llGetListLength() in loop condition
+
++ handle_message() confuses the UUID of an agent with the UUID of an
+  object when a message is transmitted by whisper
+
++ the sitter script should remove the listener once the UUID of the
+  object that rezzed it has transmitted its UUID
+
++ the main script pretty much ignores that the run_time_permissions()
+  event is also triggered when the permission is denied
+
++ unused variables
