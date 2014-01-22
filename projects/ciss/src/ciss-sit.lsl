@@ -5,30 +5,67 @@
 // Released under the "Simplified BSD License".
 // http://www.opensource.org/licenses/bsd-license.php
 
-// Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-// * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-// * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions
+// are met:
+//
+// * Redistributions of source code must retain the above copyright
+// * notice, this list of conditions and the following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above copyright
+// * notice, this list of conditions and the following disclaimer in
+// * the documentation and/or other materials provided with the
+// * distribution.
 
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+// FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+// COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+// INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+// (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+// HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+// STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+// OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // INTRODUCTION
 
-// The Cuff Integrated Support System allows sex toys to generate chains between their prims and cuffs worn by avatars using them. It consists of two scripts:
-// The "CISS main script", should be dropped into the prim which contains the animation items: usually the root.
-// The "CISS sit script", which you are reading, should be dropped into any prim on which the avatar might sit to use the toy (including the prim containing the main script, if a user might sit on it). If the toy works by rezzing pose-balls (as, for instance, the MLP scripts do), then this script must inside the pose ball pose ball when it is rezzed.
+// The Cuff Integrated Support System allows sex toys to generate
+// chains between their prims and cuffs worn by avatars using them. It
+// consists of two scripts: The "CISS main script", should be dropped
+// into the prim which contains the animation items: usually the
+// root. The "CISS sit script", which you are reading, should be
+// dropped into any prim on which the avatar might sit to use the toy
+// (including the prim containing the main script, if a user might sit
+// on it). If the toy works by rezzing pose-balls (as, for instance,
+// the MLP scripts do), then this script must inside the pose ball
+// pose ball when it is rezzed.
 
 // REVISION HISTORY
 
-// Note: please remember to update the version number in the first line of this script and in the description field.
+// Note: please remember to update the version number in the first
+// line of this script and in the description field.
 
-// 080808 1.3 Shan Bright: Added listen to let the script accept, and send back, the toy's key if it is communicating using chat, to prevent two toys fighting over it.
+// 080808 1.3 Shan Bright: Added listen to let the script accept, and
+//            send back, the toy's key if it is communicating using
+//            chat, to prevent two toys fighting over it.
+//
 // 080802 1.2 Innula Zenovka/Shan Bright: Added revision history.
-// 080801 1.1 Shan Bright: Name changed to CISS (Cuff Integrated Support System) to avoid existing product name, and CHAIN_PARAMETER variable added to SETTINGS section.
-// 080731 1.0 Shan Bright: First release of "CCS" (Cuff Consciousness System).
+//
+// 080801 1.1 Shan Bright: Name changed to CISS (Cuff Integrated
+//            Support System) to avoid existing product name, and
+//            CHAIN_PARAMETER variable added to SETTINGS section.
+//
+// 080731 1.0 Shan Bright: First release of "CCS" (Cuff Consciousness
+//            System).
 
 // PROGRAM
 
-// Declare global variables. (Note that while LSL doesn't provide constants, capitalised variables denote pseudo-constants which will not change value during the operation of the program.)
+// Declare global variables. (Note that while LSL doesn't provide
+// constants, capitalised variables denote pseudo-constants which will
+// not change value during the operation of the program.)
 
 string  CISS_MAIN_SCRIPT    = "CISS main script";
 integer CISS_CHANNEL        = -1991;
@@ -37,64 +74,80 @@ integer use_chat            = FALSE;
 key     toy_key             = NULL_KEY;
 key     sitter              = NULL_KEY;
 
+
 // Send a message to the main script when an avatar sits on this prim.
 
 send_message(string message)
 {
-    if (use_chat)
-        llWhisper(CISS_CHANNEL, message
-            + "," + (string) toy_key
-            + "," + (string) sitter);
-    else
-        llMessageLinked(LINK_SET, 0, message, sitter);
+	if(use_chat)
+		{
+			llWhisper(CISS_CHANNEL, message + "," + (string) toy_key + "," + (string) sitter);
+		}
+	else
+		{
+			llMessageLinked(LINK_SET, 0, message, sitter);
+		}
 }
+
 
 // Handle events.
 
 default
 {
-    // Reset when the object is rezzed.
+	// Reset when the object is rezzed.
 
-    on_rez(integer start_parameter)
-    {
-        llResetScript();
-    }
-    
-    // If this is a single prim which does not contain the main script, it must be a pose ball generated by the toy and must communicate via chat. Otherwise, it should use use link messages, which are more efficient.
+	on_rez(integer start_parameter)
+		{
+			llResetScript();
+		}
 
-    state_entry()
-    {
-        use_chat = (llGetInventoryType(CISS_MAIN_SCRIPT) != INVENTORY_SCRIPT
-            && llGetNumberOfPrims() == 1);
-        if (use_chat)
-            llListen(CISS_CHANNEL, "", NULL_KEY, "");
-    }
-    
-    // Listen for the key of the rezzing toy: "CISS: i rezzed you,(key rezzed)".
+	// If this is a single prim which does not contain the main script, it
+	// must be a pose ball generated by the toy and must communicate via
+	// chat. Otherwise, it should use use link messages, which are more
+	// efficient.
 
-    listen(integer channel, string name, key id, string message)
-    {
-        if (llGetOwnerKey(id) == llGetOwner()
-            && llList2String(llCSV2List(message), 0) == "CISS: i rezzed you"
-            && llList2String(llCSV2List(message), 1) == (string) llGetKey())
-            toy_key = id;
-    }
+	state_entry()
+		{
+			use_chat = (llGetInventoryType(CISS_MAIN_SCRIPT) != INVENTORY_SCRIPT && llGetNumberOfPrims() == 1);
 
-    // Send messages to notify the main script when avatars sit or stand.
+			if(use_chat)
+				{
+					llListen(CISS_CHANNEL, "", NULL_KEY, "");
+				}
+		}
 
-    changed(integer change)
-    {
-        if (change & CHANGED_LINK)
-        {
-            if (llAvatarOnSitTarget() != sitter)
-            {
-                string message = "";
-                if (sitter != NULL_KEY)
-                    send_message("CISS: someone stood");
-                sitter = llAvatarOnSitTarget();
-                if (sitter != NULL_KEY)
-                    send_message("CISS: someone sat");
-            }
-        }
-    }
+	// Listen for the key of the rezzing toy: "CISS: i rezzed you,(key rezzed)".
+
+	listen(integer channel, string name, key id, string message)
+		{
+			if(llGetOwnerKey(id) == llGetOwner() && llList2String(llCSV2List(message), 0) == "CISS: i rezzed you" && llList2String(llCSV2List(message), 1) == (string) llGetKey())
+				{
+					toy_key = id;
+				}
+		}
+
+	// Send messages to notify the main script when avatars sit or stand.
+
+	changed(integer change)
+		{
+			if(change & CHANGED_LINK)
+				{
+					if(llAvatarOnSitTarget() != sitter)
+						{
+							string message = "";
+
+							if(sitter != NULL_KEY)
+								{
+									send_message("CISS: someone stood");
+								}
+
+							sitter = llAvatarOnSitTarget();
+
+							if(sitter != NULL_KEY)
+								{
+									send_message("CISS: someone sat");
+								}
+						}
+				}
+		}
 }
