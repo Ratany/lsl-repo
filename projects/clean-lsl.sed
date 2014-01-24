@@ -1,1 +1,0 @@
-make/clean-lsl.sed
