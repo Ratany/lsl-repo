@@ -92,6 +92,7 @@ $checkdir =~ s!/bin/.*!/dep/!;
 
 if(1 == has_checkfile($checkdir, $key))
   {
+#    print "$key appears to be already in table for there is a checkfile\n";
     exit(0);
   }
 
@@ -114,12 +115,13 @@ if(-e $table)
 	unless( m!^//!)
 	  {
 	    chomp $_;
-	    if( m/$key/)
+	    if( m/^$key/)
 	      {
 		# nothing further to do because the key is already in the table
 		#
 		close $assign;
 		create_checkfile($checkdir, $key, $key);
+#		print "$key is already in table; checkfile created\n";
 		exit(0);
 	      }
 	  }

@@ -117,7 +117,7 @@ while( <$assign> )
     unless( m!^//!)
       {
 	chomp $_;
-	if( m/$line/ || m/$i_line/)
+	if( m/^$line/ || m/^$i_line/)
 	  {
 	    $replacementfile = $';
 	    last;
