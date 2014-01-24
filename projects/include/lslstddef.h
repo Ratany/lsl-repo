@@ -127,6 +127,9 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define RemotePos(_key)                      llList2Vector(llGetObjectDetails(_key, [OBJECT_POS] ), 0)
 #define RemotePrimEqv(_key)                  llList2Integer(llGetObjectDetails(_key, [OBJECT_PRIM_EQUIVALENCE] ), 0)
 #define RemoteRScriptCount(_key)             llList2Integer(llGetObjectDetails(_key, [OBJECT_RUNNING_SCRIPT_COUNT] ), 0)
+#define RemoteServerCost(_key)               llList2Float(llGetObjectDetails(_key, [OBJECT_SERVER_COST]), 0)
+#define RemotePhysCost(_key)                 llList2Float(llGetObjectDetails(_key, [OBJECT_PHYSICS_COST]), 0)
+#define RemoteStreamCost(_key)               llList2Float(llGetObjectDetails(_key, [OBJECT_STREAMING_COST]), 0)
 #define RemoteRoot(_key)                     llList2Key(llGetObjectDetails(_key, [OBJECT_ROOT] ), 0)
 #define RemoteRootPos(_key)                  llList2Vector(llGetObjectDetails(RemoteRoot(_key), [OBJECT_POS] ), 0)
 #define RemoteRootRot(_key)                  llList2Rot(llGetObjectDetails(RemoteRoot(_key), [OBJECT_ROT] ), 0)
@@ -243,27 +246,28 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define PrimsFree(_v)                        (llGetParcelMaxPrims(_v, FALSE) - llGetParcelPrimCount(_v, PARCEL_COUNT_TOTAL, FALSE))
 
 
-#define SoundTPout                           llPlaySound("d7a9a565-a013-2a69-797d-5332baa1a947", 1)
+#define SoundTPout                           llPlaySound("d7a9a565-a013-2a69-797d-5332baa1a947", 1.0)
 
 #ifdef _NO_INLINE_SoundAlert
 string _SoundAlert = "ed124764-705d-d497-167a-182cd9fa2e6c";
-#define SoundAlert                           llPlaySound(_SoundAlert, 1);
+#define SoundAlert                           llPlaySound(_SoundAlert, 1.0);
 #else
-#define SoundAlert                           llPlaySound("ed124764-705d-d497-167a-182cd9fa2e6c", 1)
+#define SoundAlert                           llPlaySound("ed124764-705d-d497-167a-182cd9fa2e6c", 1.0)
 #endif
 
-#define SoundRezzing                         llPlaySound("3c8fc726-1fd6-862d-fa01-16c5b2568db6", 1)
-#define SoundDelete                          llPlaySound("0cb7b00a-4c10-6948-84de-a93c09af2ba9", 1)
-#define SoundTyping                          llPlaySound("5e191c7b-8996-9ced-a177-b2ac32bfea06", 1)
+#define SoundRezzing                         llPlaySound("3c8fc726-1fd6-862d-fa01-16c5b2568db6", 1.0)
+#define SoundDelete                          llPlaySound("0cb7b00a-4c10-6948-84de-a93c09af2ba9", 1.0)
+#define SoundTyping                          llPlaySound("5e191c7b-8996-9ced-a177-b2ac32bfea06", 1.0)
 
 #ifdef _NO_INLINE_SoundInvop
 string _SoundInvop = "ed124764-705d-d497-167a-182cd9fa2e6c";
-#define SoundInvop                           llPlaySound(_SoundInvop, 1);
+#define SoundInvop                           llPlaySound(_SoundInvop, 1.0);
 #else
-#define SoundInvop                           llPlaySound("4174f859-0d3d-c517-c424-72923dc21f65", 1)
+#define SoundInvop                           llPlaySound("4174f859-0d3d-c517-c424-72923dc21f65", 1.0)
 #endif
 
-#define SoundPing                            llPlaySound("971bc958-ea04-194f-a78a-12826264dae4", 1)
+#define SoundPing                            llPlaySound("971bc958-ea04-194f-a78a-12826264dae4", 1.0)
+
 
 /* f4a0660f-5446-dea2-80b7-6482a082803c - sound for object creation */
 /* 0cb7b00a-4c10-6948-84de-a93c09af2ba9 - sound for object deletion */
@@ -346,6 +350,7 @@ afootell(string _msg) {
 #define _STD_MAXDIALOGTITLELEN               511
 #define _STD_RLVCHANNEL                      -1812221819
 #define _STD_LOCKMEISTERCHANNEL              -8888
+#define _STD_LOCKGARBAGECHANNEL              -9119
 //#define _STD_ILLEGALPOS                      <-50000.0, -50000.0, -50000.0>
 #define _STD_MAXINT                          2147483647
 #define _STD_MININT                          −2147483648
@@ -442,8 +447,10 @@ afootell(string _msg) {
 #define event
 #define when                            if
 #define unless(_cond)                   if(!(_cond))
+
 #define LoopDown(_idx, _do)             while(_idx) { --_idx; _do; }
 #define LoopUp(_idx, _max, _do)         while(_idx < _max) { _do; ++_idx; }
+
 #define IfMessage(_what)                if(_what == _MESSAGE)
 #define ProtocolID(_s)                  (Begstr(_MESSAGE, _STD_PROTMESSAGELEN) == _s)
 #define ProtocolSimpleData              Endstr(_MESSAGE, 8)  // (_STD_PROTMESSAGELEN) + 1
