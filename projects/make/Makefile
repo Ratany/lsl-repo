@@ -13,6 +13,8 @@ LOCDIR=./lib
 TAGS=./TAGS
 ITO=../bin/i2o.pl
 ADD=../bin/addtotable.pl
+POP=../bin/postprocess.pl
+
 
 DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
 
@@ -25,17 +27,14 @@ doc: doc/%.pdf
 debug: $(DBG)
 
 dbg/%.i: src/%.lsl
-#	@echo "preprocessing $<"
+#	@echo "processing $<"
 	@echo "// =`basename $@`" > $@
-	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< >> $@
+	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< | $(POP) | astyle --style=allman >> $@
+	@wc -cl $@
 	@$(ADD) $< $(CURDIR)/bin/`basename $<`
 
 bin/%.o: dbg/%.i
-	@sed -f ../clean-lsl.sed $< | sed 's/; /;\n/g' > $<.clean
-	@wc -cl $<.clean
-	@astyle --style=allman -f < $<.clean > $<
-	@rm $<.clean
-	@sed -f ../clean-lsl.sed $< | $(ITO) `basename $<` > $@
+	@cat $< | $(ITO) `basename $<` > $@
 
 %.pdf: %.ltx
 	@pdflatex -output-directory ./doc $<
@@ -55,3 +54,43 @@ dep/%.d: dep/%.di
 
 -include $(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
 -include $(subst .lsl,.di,$(subst src/,dep/,$(SRC)))
+
+
+###########################################################################
+#
+# http://www.gnu.org/software/make/manual/make.html#Automatic-Variables
+#
+# Here is a table of automatic variables:
+#
+# $@
+#    The file name of the target of the rule. If the target is an
+#    archive member, then ‘$@’ is the name of the archive file. In a
+#    pattern rule that has multiple targets (see Introduction to
+#    Pattern Rules), ‘$@’ is the name of whichever target caused the
+#    rule's recipe to be run.
+#
+# $<
+#
+#    The name of the first prerequisite. If the target got its recipe
+#    from an implicit rule, this will be the first prerequisite added
+#    by the implicit rule (see Implicit Rules).
+#
+###########################################################################
+#
+#
+# with ~/.astylerc:
+#
+# 
+# --mode=c
+# --style=gnu
+# --indent=tab
+# --break-blocks
+# --unpad-paren
+# --break-elseifs
+# --add-brackets
+# --add-one-line-brackets
+# --pad-oper
+# --mode=c
+# --min-conditional-indent=0
+#
+###########################################################################

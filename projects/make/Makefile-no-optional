@@ -1,3 +1,7 @@
+
+# this Makefile is currently not functional
+
+
 SRC=$(wildcard src/*.lsl)
 LIB=$(wildcard ../lib/*.lsl)
 LOC=$(wildcard ./lib/*.h)
@@ -16,6 +20,8 @@ ADD=../bin/addtotable.pl
 DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
 
 all: $(DBG) $(OBJ) $(DEPS)
+	@echo "This Makefile is currently not functional!"
+
 
 debug: $(DBG)
 
