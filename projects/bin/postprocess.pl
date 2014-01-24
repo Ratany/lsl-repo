@@ -37,6 +37,9 @@ use Text::ParseWords;
 
 while ( my $line = <> )
   {
+
+#    print "--> $line";
+
     chomp $line;
     $line =~ s/\s+$//;
 
@@ -50,11 +53,12 @@ while ( my $line = <> )
 		  {
 		    $partof =~ s/\s+$//;
 
-		    if($line =~ m/;$/)
+		    if($line =~ m/(;|})$/)
 		      {
-			# only add a semicolon when the line has one, unless there is a
-			# bracket at the end of the line --- this is the reason to remove all
-			# trailing whitespace from the components before doing this
+			# only add a semicolon when the line has one or ends with a bracket,
+			# unless there is a bracket at the end of the line --- this is the
+			# reason to remove all trailing whitespace from the components before
+			# doing this
 			#
 			$partof .= ";" unless($partof =~ m/}$/);
 		      }
