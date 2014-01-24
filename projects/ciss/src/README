@@ -9,9 +9,40 @@ Problems/bugs to fix:
 + the sitter script should remove the listener once the UUID of the
   object that rezzed it has transmitted its UUID
 
-+ the main script pretty much ignores that the run_time_permissions()
-  event is also triggered when the permission is denied
++ the main script ignores that the run_time_permissions() event is
+  triggered when the permission is denied
 
 + unused variables
 
-+ apparently the main script uses "huge" amounts of memory
++ why has the main script in the included example object only 8kB
+  memory left free?
+
++ the script is unaware of inventory changes, like through adding
+  animations
+
++ the main script does not detect the root prim when the prim is not
+  linked
+
++ the main script may run out of memory when in an object that
+  consists of many prims
+
++ potential problems with CSV conversion of strings with comma and
+  pointy brackets are ignored
+
++ finding the key of an animation can silently fail
+
++ using llSensor() in a timer event can yield unexpected results
+
++ using a sensor to detect agents is not a good idea because the range
+  is limited and only the closest 16 agents can be detected
+
++ there´s something else I wanted to check and don´t remember atm
+
+
+Shan Bright claims the script doesn´t have any bugs or issues and
+didn´t even want to see the list.
+
+It seems easier to make a rewrite from scratch than to fix the
+problems.  Perhaps I´ll do that some time.
+
+Other than formatting the script, I haven´t changed anything.

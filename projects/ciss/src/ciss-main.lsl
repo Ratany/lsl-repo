@@ -62,9 +62,9 @@
 // http://www.lslwiki.net/lslwiki/wakka.php?wakka=exchangeLockGuardItem
 
 list    animations                = [
-				     "kneeling", "collarbackloop,iron ring",
-				     "animationB", "leftwrist,prim1,rightwrist,prim2",
-				     "animationC", "leftwrist,prim3,rightwrist,prim4"
+				     "cutie", "collarbackloop,ciss-test",
+				     "dive", "leftwrist,ciss-test,rightwrist,ciss-test",
+				     "doggie", "leftwrist,ciss-test,rightwrist,ciss-test"
 				     ];
 
 // 2. Do you wish to specify any special Lockguard parameters? For a
@@ -146,8 +146,7 @@ start()
 	integer permissions_needed = FALSE;
 	integer animation_index = 0;
 
-	while(animation_index < llGetListLength(animations)
-	      && !permissions_needed)
+	while(animation_index < llGetListLength(animations) && !permissions_needed)
 		{
 			string animation = llList2String(animations, animation_index);
 
@@ -277,16 +276,18 @@ handle_message(string message, key avatar)
 				}
 		}
 	else
-		if(message == "CISS: someone stood")
-			{
-				integer avatar_index = llListFindList(avatars, [avatar]);
+		{
+			if(message == "CISS: someone stood")
+				{
+					integer avatar_index = llListFindList(avatars, [avatar]);
 
-				if(avatar_index >= 0)
-					{
-						change_animation(avatar, llList2Integer(avatars, avatar_index + 1), NO_ANIMATION_INDEX);
-						avatars = llDeleteSubList(avatars, avatar_index, avatar_index + 1);
-					}
-			}
+					if(avatar_index >= 0)
+						{
+							change_animation(avatar, llList2Integer(avatars, avatar_index + 1), NO_ANIMATION_INDEX);
+							avatars = llDeleteSubList(avatars, avatar_index, avatar_index + 1);
+						}
+				}
+		}
 
 	// The timer should be running while anyone is using the toy.
 
@@ -420,84 +421,84 @@ default
 {
 	// Reset when the object is rezzed.
 
-	on_rez(integer start_parameter)
-		{
-			llResetScript();
-		}
+	event on_rez(integer start_parameter)
+	{
+		llResetScript();
+	}
 
-	state_entry()
-		{
-			start();
-		}
+	event state_entry()
+	{
+		start();
+	}
 
 	// On getting permission to animate, use it to find the animation keys.
 
-	run_time_permissions(integer permissions)
-		{
-			find_keys(permissions & PERMISSION_TRIGGER_ANIMATION);
-		}
+	event run_time_permissions(integer permissions)
+	{
+		find_keys(permissions & PERMISSION_TRIGGER_ANIMATION);
+	}
 
 	// Tell the "CSS sit script" in any object rezzed to communicate with *this* toy.
 
-	object_rez(key id)
-		{
-			llSleep(0.5);
-			llWhisper(CISS_CHANNEL, "CISS: i rezzed you," + (string) id);
-		}
+	event object_rez(key id)
+	{
+		llSleep(0.5);
+		llWhisper(CISS_CHANNEL, "CISS: i rezzed you," + (string) id);
+	}
 
 	// "CISS sit script" communicates by link message if it can, and chat otherwise.
 
-	link_message(integer sender, integer number, string message, key id)
-		{
-			if(llGetSubString(message, 0, 4) == "CISS:")
-				{
-					handle_message(message, id);
-				}
-		}
+	event link_message(integer sender, integer number, string message, key id)
+	{
+		if(llGetSubString(message, 0, 4) == "CISS:")
+			{
+				handle_message(message, id);
+			}
+	}
 
-	listen(integer channel, string name, key id, string message)
-		{
-			if(llGetOwnerKey(id) == llGetOwner() && llGetSubString(message, 0, 4) == "CISS:")
-				{
-					key sender_rezzed_by = (key)llList2String(llCSV2List(message), 1);
-					key sitter = (key)llList2String(llCSV2List(message), 2);
-					message = llList2String(llCSV2List(message), 0);
+	event listen(integer channel, string name, key id, string message)
+	{
+		if(llGetOwnerKey(id) == llGetOwner() && llGetSubString(message, 0, 4) == "CISS:")
+			{
+				key sender_rezzed_by = (key)llList2String(llCSV2List(message), 1);
+				key sitter = (key)llList2String(llCSV2List(message), 2);
+				message = llList2String(llCSV2List(message), 0);
 
-					if(sender_rezzed_by == llGetKey())
-						{
-							handle_message(message, sitter);
-						}
-				}
-		}
+				if(sender_rezzed_by == llGetKey())
+					{
+						handle_message(message, sitter);
+					}
+			}
+	}
 
 	// Keep updating the chains, periodically making sure the avatars are still there.
 
-	timer()
-		{
-			update_chains();
+	event timer()
+	{
+		update_chains();
 
-			if(++updates_since_scan >= UPDATES_PER_SCAN)
-				{
-					llSensor("", NULL_KEY, AGENT, SCAN_RANGE, PI);
-					updates_since_scan = 0;
-				}
-		}
+		if(++updates_since_scan >= UPDATES_PER_SCAN)
+			{
+				llSensor("", NULL_KEY, AGENT, SCAN_RANGE, PI);
+				updates_since_scan = 0;
+			}
+	}
 
 	// No one is near the toy: remove all chains and kill the timer.
 
-	no_sensor()
-		{
-			integer avatar_index = 0;
+	event no_sensor()
+	{
+		integer avatar_index = 0;
 
-			while(avatar_index < llGetListLength(avatars))
-				{
-					change_animation(llList2Key(avatars, avatar_index),
-							 llList2Integer(avatars, avatar_index + 1),
-							 NO_ANIMATION_INDEX);
-					avatar_index += 2;
-				}
+		while(avatar_index < llGetListLength(avatars))
+			{
+				change_animation(llList2Key(avatars, avatar_index),
+						 llList2Integer(avatars, avatar_index + 1),
+						 NO_ANIMATION_INDEX);
+				avatar_index += 2;
+			}
 
-			timer_running = FALSE;
-			llSetTimerEvent(0.0);
-		}
+		timer_running = FALSE;
+		llSetTimerEvent(0.0);
+	}
 }
