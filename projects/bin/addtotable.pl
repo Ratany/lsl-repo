@@ -36,6 +36,7 @@ sub create_checkfile
   {
     my ($dir, $uniq, $entry) = @_;
 
+    $uniq =~ s!.*/!!;
     my $fn = $dir . $uniq . TABLE_INDICATOR;
 
     open my $fh, ">>", $fn;
@@ -50,6 +51,7 @@ sub has_checkfile
   {
     my ($dir, $uniq) = @_;
 
+    $uniq =~ s!.*/!!;
     my $fn = $dir . $uniq . TABLE_INDICATOR;
 
     if(-e $fn)
@@ -68,9 +70,11 @@ my ($key, $value) = @ARGV;
 
 # check whether they look ok or not
 #
-unless(defined($key) && defined($value) && ($key =~ m!^src/.*\.lsl$!) && ($value =~ m!^/.*/bin/.*\.lsl$!))
+unless(defined($key) && defined($value) && ($key =~ m!src/.*\.lsl$!) && ($value =~ m!/.*/bin/.*\.lsl$!))
   {
     print "usage: addtotable.pl <key> <value>\n\t<key> and <value> must match regular expressions\n";
+    print "\t<key>  : $key\n" if(defined($key));
+    print "\t<value>: $value\n" if(defined($value));
     exit(1);
   }
 

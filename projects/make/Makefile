@@ -15,6 +15,10 @@ ITO=../bin/i2o.pl
 ADD=../bin/addtotable.pl
 POP=../bin/postprocess.pl
 
+# gives the name of the project directory, $(CURDIR) is the full path
+#
+DIR=`basename $(CURDIR)`
+
 
 DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
 
@@ -28,13 +32,14 @@ debug: $(DBG)
 
 dbg/%.i: src/%.lsl
 #	@echo "processing $<"
-	@echo "// =`basename $@`" > $@
+	@echo "// =$(DIR)/$(@F)" > $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< | $(POP) | astyle --style=allman >> $@
 	@wc -cl $@
-	@$(ADD) $< $(CURDIR)/bin/`basename $<`
+	@$(ADD) $(DIR)/$< $(CURDIR)/bin/`basename $<`
 
 bin/%.o: dbg/%.i
-	@cat $< | $(ITO) `basename $<` > $@
+#	@cat $< | $(ITO) `basename $<` > $@
+	@cat $< | $(ITO) $(DIR)/$(@F) > $@
 
 %.pdf: %.ltx
 	@pdflatex -output-directory ./doc $<
