@@ -33,7 +33,8 @@ debug: $(DBG)
 dbg/%.i: src/%.lsl
 #	@echo "processing $<"
 	@echo "// =$(DIR)/$(@F)" > $@
-	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P -DTIME=`date +0x%H%M%S` -DDATE=`date +0x%Y%m%d` $< | $(POP) | astyle --style=allman >> $@
+	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
+#	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< > ~/tmp/scrach.lsl
 	@wc -cl $@
 	@$(ADD) $(DIR)/$< $(CURDIR)/bin/`basename $<`
 
