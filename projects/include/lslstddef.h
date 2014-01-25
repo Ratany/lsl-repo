@@ -450,6 +450,7 @@ afootell(string _msg) {
 
 #define LoopDown(_idx, _do)             while(_idx) { --_idx; _do; }
 #define LoopUp(_idx, _max, _do)         while(_idx < _max) { _do; ++_idx; }
+#define foreach(_l, _do)                { int $_ = Len(_l); while($_) { --$_; _do; } }
 
 #define IfMessage(_what)                if(_what == _MESSAGE)
 #define ProtocolID(_s)                  (Begstr(_MESSAGE, _STD_PROTMESSAGELEN) == _s)
