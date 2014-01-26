@@ -39,6 +39,7 @@
 #define RFEDIP_idxPROTVERSION                     4
 #define RFEDIP_idxTOKEN1                          5
 #define RFEDIP_idxPARAM1                          6
+#define RFEDIP_idxPARAM2                          7
 
 
 // provide a default string to use as the uniq identifier of the sender
@@ -79,6 +80,11 @@
 // get the first parameter
 //
 #define RFEDIP_ToFirstPARAM(_l)                                       llList2String(_l, RFEDIP_idxPARAM1)
+
+// get the second parameter
+//
+#define RFEDIP_ToSecondPARAM(_l)                                     llList2String(_l, RFEDIP_idxPARAM2)
+
 
 
 // convert a protocol payload into a protocol message --- _sndr is this device
