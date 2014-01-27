@@ -35,10 +35,10 @@ use Text::ParseWords;
 #
 
 
-while ( my $line = <> )
+LINE: while ( my $line = <> )
   {
 
-    # print "-l> $line\n";
+    # print "-l< $line\n";
 
     chomp $line;
     $line =~ s/\s+$//;
@@ -53,7 +53,15 @@ while ( my $line = <> )
 		  {
 		    $partof =~ s/\s+$//;
 
-		    # print "-p> $partof\n";
+		    # print "-p< $partof\n";
+
+		    # leave for() loops untouched because they break up badly
+		    #
+		    if($partof =~ m/for\s*\(/)
+		      {
+			print $line . "\n";
+			next LINE;
+		      }
 
 		    if($line =~ m/(;|})$/)
 		      {
