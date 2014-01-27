@@ -696,6 +696,36 @@ You can use something else than the return of llGetScriptName() to generate a un
 
 The device is the same as with protocol version 1.0.  The only difference is that it uses protocol version 1.1.  You can find the source in the [https://github.com/Ratany/lsl-repo git repository].
 
+==Version 1.2==
+
+Version 1.2 features the minor addtion of an "OK" message.  The token is "rfedipOK" and can be used to indicate that an operation requested through a protocol message has been performed, or to otherwise positively acknowledge a message.
+
+This is '''not''' a control message because it doesn´t make much sense to send an acknowledgement for something on the default channel while the communication otherwise goes over a dedicated channel.
+
+The macro "RFEDIP_OK" to send the "OK" message has been added to rfedip.h.
+
+For clarification:
+
+The message indicating the end of communication is to indicate the end of communication as described previously.  When data is transmitted in a series of messages --- or in a single message --- the com/end message should be sent to indicate that no further transmissions are to be expected for the current response.
+
+The com/end message is also to be sent when the device does not understand a token it has received in a protocol message.  Sending the com/end message in such instances clearly indicates that no transmission is to be expected for the current response.  Insofar an operation has been requested, replying with the com/end message to the request indicates that the operation has not been performed --- or, for example, that a feature is not available.
+
+A com/end message must not be replied to with a com/end message because doing so likely creates a message loop.
+
+You can think of the "OK" message as the opposite of the com/end message --- and you must not think of the com/end message as the opposite of the "OK" message.
+
+For example, if I created a device that can be queried about having a feature X, the device might answer with an "OK" message to the query if the device does have feature X.  If the device didn´t have feature X, it could answer with a com/end message.  Generally, a com/end message means something like "no" while the "OK" message means something like "yes".
+
+It is up to the particular device how to use these messages and up to the creator of the device to document the device in such a way that compatible devices can be created by others.
+
+==Version Numbering==
+
+Version numbers are composed of a leading string "RFEDIP-", followed by an integer representing the major version number and an integer representing the minor version number.  The two integers are seperated by a dot (".").
+
+This means that version "RFEDIP-1.115" is a higher version number than "RFEDIP-1.5".
+
+Two macros to obtain the major and minor version numbers from a protocol message converted to a list have been added to rfedip.h.  The macros are called "RFEDIP_iVersionMajor" and "RFEDIP_iVersionMinor".  They evaluate to integers with the respective version numbers.
+
 ==rfedip-devices.h==
 
 A collection of definitions for rfedip devices is provided with rfedip-devices.h in the [https://github.com/Ratany/lsl-repo git repository].  None of the definitions and tokens contained therein are in any way mandatory.  They are not part of the specification of the rfedip protocol.
