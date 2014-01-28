@@ -50,7 +50,6 @@ unless(-e $filename)
 my $thislicense = LICENSEFILE . "-" . basename($filename);
 $thislicense =~ s/\..*$//;
 
-print "thisl: $thislicense\n";
 
 my $uselicense = LICENSEFILE;
 
