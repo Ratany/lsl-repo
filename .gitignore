@@ -7,3 +7,4 @@ replaceassignments.txt
 *.d
 *.di
 *-is-in-lookup-table
+lib/autoversion.h

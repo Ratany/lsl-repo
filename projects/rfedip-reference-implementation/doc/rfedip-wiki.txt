@@ -704,19 +704,18 @@ This is '''not''' a control message because it doesn´t make much sense to send 
 
 The macro "RFEDIP_OK" to send the "OK" message has been added to rfedip.h.
 
+
 For clarification:
 
-The message indicating the end of communication is to indicate the end of communication as described previously.  When data is transmitted in a series of messages --- or in a single message --- the com/end message should be sent to indicate that no further transmissions are to be expected for the current response.
+The message indicating the end of communication is to indicate the end of communication as described previously.  When data is transmitted in a series of messages --- or in a single message --- the com/end message should be sent to indicate that no further transmissions are to be expected as part of the current response.
 
-The com/end message is also to be sent when the device does not understand a token it has received in a protocol message.  Sending the com/end message in such instances clearly indicates that no transmission is to be expected for the current response.  Insofar an operation has been requested, replying with the com/end message to the request indicates that the operation has not been performed --- or, for example, that a feature is not available.
+The com/end message is also to be sent when the device does not understand a token it has received in a protocol message.  Sending the com/end message in such instances clearly indicates that no further transmission is to be expected as part the current response.  Insofar an operation has been requested, replying with the com/end message to the request indicates that the operation has '''not''' been performed --- or, for example, that a feature is not available.
 
-A com/end message must not be replied to with a com/end message because doing so likely creates a message loop.
+A com/end message must not be replied to with a com/end message because doing so likely creates a message loop.  A response to a request for identification must not be followed by a com/end message because the response is never part of a series of messages.  It is sufficient that a device identifies itself, hence an "OK" message must not be used to indicate that the device has identified itself, either.
 
-You can think of the "OK" message as the opposite of the com/end message --- and you must not think of the com/end message as the opposite of the "OK" message.
+Other than that, how the "OK" message is used depends on the particular device.  For example, a piece of furniture that asks an attachment to create a chain may want to receive an acknowledgement that the chain has been created, so the attachment would send an "OK" message as a response when the chain has been created.  When the chain has not been created, the attachment would send a com/end message instead.  Unless the furniture receives a com/end message, it could re-send the request to create a chain.
 
-For example, if I created a device that can be queried about having a feature X, the device might answer with an "OK" message to the query if the device does have feature X.  If the device didn´t have feature X, it could answer with a com/end message.  Generally, a com/end message means something like "no" while the "OK" message means something like "yes".
-
-It is up to the particular device how to use these messages and up to the creator of the device to document the device in such a way that compatible devices can be created by others.
+As always, document the devices you create accordingly.
 
 ==Version Numbering==
 
@@ -775,3 +774,5 @@ The file is intended to be used to make the implementation of particular rfedip-
 * 2014-01-16: bugfix: do not reply to com/end messages
 
 * 2014-01-21: protocol version 1.1
+
+* 2014-01-27: protocol version 1.2

@@ -19,8 +19,15 @@ POP=../bin/postprocess.pl
 #
 DIR=`basename $(CURDIR)`
 
+# automatic versioning
+#
+# creates lib/autoversion.h
+#
+GETVERSION=../bin/getversion.pl
+
 
 DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
+
 
 all: $(DBG) $(OBJ) $(DOC) $(TAGS) $(DEPS)
 # $(HTML)
@@ -32,6 +39,7 @@ debug: $(DBG)
 
 dbg/%.i: src/%.lsl
 #	@echo "processing $<"
+	@$(GETVERSION) $(DIR)
 	@echo "// =$(DIR)/$(@F)" > $@
 	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
 #	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< > ~/tmp/scrach.lsl
