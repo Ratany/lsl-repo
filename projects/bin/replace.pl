@@ -83,22 +83,32 @@ unless(-e $table)
     exit(0);
   }
 
-# read the first line of the file; unless it matches a pattern like
-# "// =filename.[o|i]", edit the file and the lookup table
+# search the file for a pattern like "// =filename.[o|i]"
 #
+my $line;
+
 open my $script, "<", $ARGV[0];
-my $line = <$script>;
-close $script;
-chomp $line;
-$line =~ s!// =!!;
-unless(($line =~ m/.*\.o/) || ($line =~ m/.*\.i/))
+LINE: while($line = <$script>)
   {
-    start_editor($ARGV[0], $table);
-    exit(0);
+    chomp $line;
+    if($line =~ m!^// =!)
+      {
+	$line =~ s!^// =!!;
+	unless(($line =~ m/^\S+\.o/) || ($line =~ m/^\S+\.i/))
+	  {
+	    start_editor($ARGV[0], $table);
+	    exit(0);
+	  }
+	else
+	  {
+	    last LINE;
+	  }
+      }
   }
+close $script;
 
 
-# look up the key in the lookup table
+# the pattern has been found: look up the key in the lookup table
 #
 # the key is looked up for *.o and *.i so that only one entry per
 # script is needed in the lookup table to cover both *.i and *.o,
