@@ -25,6 +25,10 @@ DIR=`basename $(CURDIR)`
 #
 GETVERSION=../bin/getversion.pl
 
+# automatically add licenses
+#
+ADDLICENSE=../bin/addlicense.pl
+
 
 DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
 
@@ -45,10 +49,12 @@ dbg/%.i: src/%.lsl
 #	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< > ~/tmp/scrach.lsl
 	@wc -cl $@
 	@$(ADD) $(DIR)/$< $(CURDIR)/bin/`basename $<`
+	@$(ADDLICENSE) $@
 
 bin/%.o: dbg/%.i
 #	@cat $< | $(ITO) `basename $<` > $@
 	@cat $< | $(ITO) $(DIR)/$(@F) > $@
+	@$(ADDLICENSE) $@
 
 %.pdf: %.ltx
 	@pdflatex -output-directory ./doc $<
