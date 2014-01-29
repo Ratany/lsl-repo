@@ -46,7 +46,13 @@ dbg/%.i: src/%.lsl
 	@$(GETVERSION) $(DIR)
 	@echo "// =$(DIR)/$(@F)" > $@
 	@cpp -nostdinc -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
-#	@cpp -nostdinc -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< > ~/tmp/scrach.lsl
+#
+# uncomment the following to get output that retains the comments, to a file ~/tmp/scrach.lsl
+# Do not keep comments in the *.i file because the comments will remain in the resulting *.o file!
+#
+#	@cpp -nostdinc -C -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman > ~/tmp/scrach.lsl
+#
+#
 	@wc -cl $@
 	@$(ADD) $(DIR)/$< $(CURDIR)/bin/`basename $<`
 	@$(ADDLICENSE) $@

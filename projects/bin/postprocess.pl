@@ -40,6 +40,14 @@ LINE: while ( my $line = <> )
 
     # print "-l< $line\n";
 
+    # print comments as they are
+    #
+    if($line =~ m!^\s*//!)
+      {
+	print $line;
+	next LINE;
+      }
+
     chomp $line;
     $line =~ s/\s+$//;
 
@@ -53,7 +61,17 @@ LINE: while ( my $line = <> )
 		  {
 		    $partof =~ s/\s+$//;
 
-		    # print "-p< $partof\n";
+		    # print "-p< '$partof'\n";
+
+		    # previous line needs a semicolon because there was a comment
+		    #
+		    # ugly but seems to work and is simple --- just format your comments
+		    # nicely if you need this feature
+		    #
+		    if(($partof =~ m!^\s+/\*!) || $partof =~ m!^\s+//!)
+		      {
+			print ";\n";
+		      }
 
 		    # leave for() loops untouched because they break up badly
 		    #
