@@ -45,8 +45,8 @@ dbg/%.i: src/%.lsl
 #	@echo "processing $<"
 	@$(GETVERSION) $(DIR)
 	@echo "// =$(DIR)/$(@F)" > $@
-	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
-#	@cpp -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< > ~/tmp/scrach.lsl
+	@cpp -nostdinc -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
+#	@cpp -nostdinc -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< > ~/tmp/scrach.lsl
 	@wc -cl $@
 	@$(ADD) $(DIR)/$< $(CURDIR)/bin/`basename $<`
 	@$(ADDLICENSE) $@
