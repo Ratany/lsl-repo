@@ -18,24 +18,28 @@
 
 // return a list of link numbers of prims with string as name unless empty
 list getlinknumbersbyname(string name) {
-	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber() )  );
+	integer n = llGetObjectPrimCount(llGetKey());
 	list numbers = [];
 
 	name = llToLower(name);
 
-	if(n > 1) {
-		while(n) {
-			if(Instr(llToLower(llList2String(GLPP(n, [PRIM_NAME] ), 0) ), name) ) {
-				numbers += n;
+	if(n > 1)
+		{
+			while(n) {
+				if(Instr(llToLower(llGetLinkName(n), name)))
+					{
+						numbers += n;
+					}
+				--n;
 			}
-			--n;
 		}
-	}
-	else {
-		if(Instr(llToLower(llGetObjectName() ), name) ) {
-			numbers += n;
+	else
+		{
+			if(Instr(llToLower(llGetObjectName() ), name) )
+				{
+					numbers += n;
+				}
 		}
-	}
 	return numbers;
 }
 
@@ -54,7 +58,7 @@ list getlinknumbersbyname_attached(string name)
 
 	while(n >= 1)
 		{
-			if(Instr(llToLower(llList2String(GLPP(n, [PRIM_NAME] ), 0) ), name) )
+			if(Instr(llToLower(llGetLinkName(n), name)))
 				{
 					numbers += n;
 				}
@@ -72,8 +76,9 @@ list getlinknumbersbyname_attached(string name)
 
 #ifdef _USE_getassignedlinknumbersbyname
 
-list getassignedlinknumbersbyname(string name, string desc) {
-	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber() )  );
+list getassignedlinknumbersbyname(string name, string desc)
+{
+	integer n = llGetObjectPrimCount(llGetKey());
 	list numbers = [];
 
 	name = llToLower(name);
@@ -81,8 +86,7 @@ list getassignedlinknumbersbyname(string name, string desc) {
 
 	if(n > 1) {
 		while(n) {
-			if(Instr(llToLower(llList2String(GLPP(n, [PRIM_NAME] ), 0) ), name)
-			   && Instr(llToLower(llList2String(GLPP(n, [PRIM_DESC] ), 0) ), desc) )
+			if(Instr(llToLower(llGetLinkName(n)), name) && Instr(llToLower(llList2String(GLPP(n, [PRIM_DESC] ), 0) ), desc) )
 				{
 					numbers += n;
 				}
@@ -90,8 +94,7 @@ list getassignedlinknumbersbyname(string name, string desc) {
 		}
 	}
 	else {
-		if(Instr(llToLower(llGetObjectName() ), name)
-		   && Instr(llToLower(llGetObjectDesc() ), desc) )
+		if(Instr(llToLower(llGetObjectName() ), name) && Instr(llToLower(llGetObjectDesc() ), desc) )
 			{
 				numbers += n;
 			}
@@ -106,22 +109,29 @@ list getassignedlinknumbersbyname(string name, string desc) {
 
 // return the number of the link of the prim with string as name unless -1
 
-int getsinglelinknumberbyname(string name) {
+int getsinglelinknumberbyname(string name)
+{
 	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber() )  );
 	name = llToLower(name);
-	if(n > 1) {
-		do {
-			if(Instr(llToLower(llList2String(GLPP(n, [PRIM_NAME] ), 0) ), name) ) {
-				return n;
-			}
-			--n;
-		} while(n);
-	}
-	else {
-		if(Instr(llToLower(llList2String(GLPP(LINK_THIS, [PRIM_NAME] ), 0) ), name) ) {
-			return llGetLinkNumber();
+	if(n > 1)
+		{
+			do
+				{
+					if(Instr(llToLower(llGetLinkName(n)), name))
+						{
+							return n;
+						}
+					--n;
+				}
+			while(n);
 		}
-	}
+	else
+		{
+			if(Instr(llToLower(llGetObjectName()), name))
+				{
+					return llGetLinkNumber();
+				}
+		}
 	return -1;
 }
 
@@ -132,16 +142,19 @@ int getsinglelinknumberbyname(string name) {
 
 // return the number of the link of the prim with string as name unless -1
 
-int getsinglelinknumberbyname_attached(string name) {
+int getsinglelinknumberbyname_attached(string name)
+{
 	integer n = llGetNumberOfPrims();
 	name = llToLower(name);
-	do {
-		if(Instr(llToLower(llList2String(GLPP(n, [PRIM_NAME] ), 0) ), name) )
-			{
-				return n;
-			}
-		--n;
-	} while(n > 0);
+	do
+		{
+			if(Instr(llToLower(llGetLinkName(n)), name))
+				{
+					return n;
+				}
+			--n;
+		}
+	while(n > 0);
 
 	return -1;
 }
@@ -155,21 +168,22 @@ int getsinglelinknumberbyname_attached(string name) {
 
 list getlinknumbersbylistnamed_attached(list names)
 {
-//	int n = Len(names);
-//	LoopDown(n, names = llListReplaceList(names, llToLower(llList2String(names, n)), n, n));
+	//	int n = Len(names);
+	//	LoopDown(n, names = llListReplaceList(names, llToLower(llList2String(names, n)), n, n));
 
         list strided = [];
 
 	integer n = llGetNumberOfPrims();
 	do
 		{
-                        string thisname = llList2String(GLPP(n, [PRIM_NAME] ), 0);
+                        string thisname = llGetLinkName(n);
 			if(Onlst(names, thisname))
 				{
                                         strided += [thisname, n];
 				}
 			--n;
-		} while(n > 0);
+		}
+	while(n > 0);
 
 	return strided;
 }
@@ -183,15 +197,19 @@ list getlinknumbersbylistnamed_attached(list names)
 
 list getlinknumbersbylistnamedappend_attached(list names)
 {
-//	int n = Len(names);
-//	LoopDown(n, names = llListReplaceList(names, llToLower(llList2String(names, n)), n, n));
+	//	int n = Len(names);
+	//	LoopDown(n, names = llListReplaceList(names, llToLower(llList2String(names, n)), n, n));
 
         list strided = [];
 
 	integer n = llGetNumberOfPrims();
 	do
 		{
-			if(~llListFindList(names, GLPP(n, [PRIM_NAME]))) Enlist(strided, llList2String(GLPP(n, [PRIM_NAME] ), 0), n, _GETLINKNUMBERSBYLISTNAMEDAPPEND_ATTACHED_APPENDIX);
+                        string thisname = llGetLinkName(n);
+			if(~llListFindList(names, thisname))
+				{
+					Enlist(strided, thisname, n, _GETLINKNUMBERSBYLISTNAMEDAPPEND_ATTACHED_APPENDIX);
+				}
 		}
 	while(--n > 0);
 
@@ -210,15 +228,19 @@ list getlinknumbersbylistnamedappend_attached(list names)
 //
 list getlinknumbersbylistnamedappend_attached_notnamed(list names)
 {
-//	int n = Len(names);
-//	LoopDown(n, names = llListReplaceList(names, llToLower(llList2String(names, n)), n, n));
+	//	int n = Len(names);
+	//	LoopDown(n, names = llListReplaceList(names, llToLower(llList2String(names, n)), n, n));
 
         list strided = [];
 
 	integer n = llGetNumberOfPrims();
 	do
 		{
-			if(~llListFindList(names, GLPP(n, [PRIM_NAME]))) Enlist(strided, n, _GETLINKNUMBERSBYLISTNAMEDAPPEND_ATTACHED_NOTNAMED_APPENDIX);
+                        string thisname = llGetLinkName(n);
+			if(~llListFindList(names, thisname))
+				{
+					Enlist(strided, n, _GETLINKNUMBERSBYLISTNAMEDAPPEND_ATTACHED_NOTNAMED_APPENDIX);
+				}
 		}
 	while(--n > 0);
 
@@ -232,23 +254,30 @@ list getlinknumbersbylistnamedappend_attached_notnamed(list names)
 
 // return a list of link numbers of prims that have a name on the list of names given
 
-list getlinknumbersbylist(list names) {
-	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber() )  );
+list getlinknumbersbylist(list names)
+{
+	integer n = llGetObjectPrimCount(llGetKey());
 	list l = [];
 
-	if(n > 1) {
-		do {
-			if(Onlst(names, llToLower(llList2String(GLPP(n, [PRIM_NAME] ), 0) )  )	 ) {
-				l += n;
-			}
-			--n;
-		} while(n);
-	}
-	else {
-		if(Onlst(names, llToLower(llList2String(GLPP(LINK_THIS, [PRIM_NAME] ), 0) )  )	 ) {
-			l += n;
+	if(n > 1)
+		{
+			do
+				{
+					if(Onlst(names, llToLower(llGetLinkName(n))))
+						{
+							l += n;
+						}
+					--n;
+				}
+			while(n);
 		}
-	}
+	else
+		{
+			if(Onlst(names, llToLower(llGetObjectName())))
+				{
+					l += n;
+				}
+		}
 	return l;
 }
 
@@ -259,18 +288,23 @@ list getlinknumbersbylist(list names) {
 
 // return the link number k is sitting on unless -1
 
-int isstillsittingon(key k) {
-	if(k) {
-		int n = llGetNumberOfPrims();
-		if(n > 1) {
-			while(n) {
-				if(llGetLinkKey(n) == k) {
-					return n;
+int isstillsittingon(key k)
+{
+	if(k)
+		{
+			int n = llGetNumberOfPrims();
+			if(n > 1)
+				{
+					while(n)
+						{
+							if(llGetLinkKey(n) == k)
+								{
+									return n;
+								}
+							--n;
+						}
 				}
-				--n;
-			}
 		}
-	}
 	// if nobody sits, there's only one prim
 	return -1;
 }
@@ -281,17 +315,22 @@ int isstillsittingon(key k) {
 #ifdef _USE_whoissitting
 
 // return a list of avas sitting on the linkset unless empty
-list whoissitting() {
+list whoissitting()
+{
 	list agents = [];
 	int n = llGetNumberOfPrims();
-	if(n > 1) {
-		while(n) {
-			if(llGetAgentSize(llGetLinkKey(n) ) != ZERO_VECTOR) {
-				agents += llGetLinkKey(n);
-			}
-			--n;
+	if(n > 1)
+		{
+			while(n)
+				{
+					key lk = llGetLinkKey(n);
+					if(llGetAgentSize(lk) != ZERO_VECTOR)
+						{
+							agents += [lk];
+						}
+					--n;
+				}
 		}
-	}
 	return agents;
 }
 
@@ -304,7 +343,7 @@ list whoissitting() {
 
 float getlargestscale()
 {
-	integer n = llGetObjectPrimCount(llGetLinkKey(llGetLinkNumber() )  );
+	integer n = llGetObjectPrimCount(llGetKey());
 	vector largest = ZERO_VECTOR;
 	if(n > 1)
 		{
@@ -315,7 +354,8 @@ float getlargestscale()
 					largest.y = FMax(largest.y, this.y);
 					largest.z = FMax(largest.z, this.z);
 					--n;
-				} while(n > 0);
+				}
+			while(n > 0);
 		}
 	else
 		{
