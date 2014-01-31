@@ -26,7 +26,7 @@ list getlinknumbersbyname(string name) {
 	if(n > 1)
 		{
 			while(n) {
-				if(Instr(llToLower(llGetLinkName(n), name)))
+				if(Instr(llToLower(llGetLinkName(n)), name))
 					{
 						numbers += n;
 					}
@@ -35,7 +35,7 @@ list getlinknumbersbyname(string name) {
 		}
 	else
 		{
-			if(Instr(llToLower(llGetObjectName() ), name) )
+			if(Instr(llToLower(llGetObjectName()), name) )
 				{
 					numbers += n;
 				}
@@ -58,13 +58,13 @@ list getlinknumbersbyname_attached(string name)
 
 	while(n >= 1)
 		{
-			if(Instr(llToLower(llGetLinkName(n), name)))
+			if(Instr(llToLower(llGetLinkName(n)), name))
 				{
 					numbers += n;
 				}
 			--n;
 		}
-	if(Instr(llToLower(llGetObjectName() ), name) && NotOnlst(numbers, n))
+	if(Instr(llToLower(llGetObjectName()), name) && NotOnlst(numbers, n))
 		{
 			numbers += n;
 		}
@@ -86,7 +86,7 @@ list getassignedlinknumbersbyname(string name, string desc)
 
 	if(n > 1) {
 		while(n) {
-			if(Instr(llToLower(llGetLinkName(n)), name) && Instr(llToLower(llList2String(GLPP(n, [PRIM_DESC] ), 0) ), desc) )
+			if(Instr(llToLower(llGetLinkName(n)), name) && Instr(llToLower(llList2String(GLPP(n, [PRIM_DESC] ), 0)), desc))
 				{
 					numbers += n;
 				}
@@ -94,7 +94,7 @@ list getassignedlinknumbersbyname(string name, string desc)
 		}
 	}
 	else {
-		if(Instr(llToLower(llGetObjectName() ), name) && Instr(llToLower(llGetObjectDesc() ), desc) )
+		if(Instr(llToLower(llGetObjectName()), name) && Instr(llToLower(llGetObjectDesc()), desc))
 			{
 				numbers += n;
 			}

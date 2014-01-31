@@ -1,0 +1,98 @@
+
+
+template-directories
+
+
+This directory contains directories and files required by the build
+system.  Do not modify anything in this directory unless you know what
+you´re doing.
+
+
+For every new project, make a complete copy of the
+template-directories:
+
+
+cp -axv template-directories new-project
+
+
+All files relevant for your project can (should) be contained in this
+directory (new-project).
+
+Overview:
+
+
+.
+|-- avn
+|-- bin
+|-- dbg
+|-- dep
+|-- doc
+|-- lib
+|-- Makefile -> ../make/Makefile
+|-- README
+`-- src
+
+
+avn: The build system creates header files that define the symbol
+     'VERSION'. It puts the headers into the avn directory.  You can
+     include these headers into your sources with '#include
+     <avn/name.h>', "name.h" being the name of a particular script in
+     the source directory.  For every file in the source directory, a
+     header is created in the avn directory.
+
+
+     The version number is created as follows:
+
+     + If file ./version-name exists, read the version from the first
+       line of the file.
+
+     + else
+       If file ./version exists, read the version from the first line
+       of the file
+
+     + else
+       If the project directory appears to be a git repository,
+       attempt to use git to create a version.
+
+     + else
+       The version is undefined.
+
+
+bin: The LSL scripts to use.  These are shrunken versions of the
+     scripts which tend to use less script memory than non-shrunken
+     versions.
+
+
+dbg: Debugging versions of the LSL scripts.
+
+
+dep: Automatically created files used by the build system to figure
+     out dependencies.
+
+
+doc: You can put your project documentation into this directory.
+
+
+lib: This is a directory for project-specific headers and library
+     files.  Files in this directory can be included with '#include
+     <filename>'.  Automatically created headers are kept separate in
+     the avn directory.
+
+
+Makefile: By default, all projects use the same Makefile, located in
+	  the ../make directory.  This is a symlink.  If the project
+	  requires an adjusted Makefile, remove the symlink and copy
+	  the Makefile from the ../make directory to adjust the copy.
+
+
+README: this file
+
+
+src: The directory to put your sources into, like 'script.lsl'.
+
+
+A license (or another file) can be automatically prepended to the
+generated LSL scripts.  Create a file ./license or ./license-name in
+this directory, similar to the automatic versioning:  ./license will
+be prepended to all generated LSL scripts; ./license-name will be
+prepended to dbg/name.i and bin/name.o.

@@ -20,71 +20,106 @@ use strict;
 use warnings;
 use autodie;
 
+use POSIX qw(strftime);
+use File::Basename;
 
-use constant OUTFILE => "lib/autoversion.h";
+
+#use constant OUTFILE => "/autoversion-";
+use constant OUTFILE => "/";
 use constant MANUALV => "version";
 
 
-my $project = "undetermined-";
+my ($project, $script, $outdir) = @ARGV;
+
+unless(defined($project) && defined($script) && defined($outdir))
+  {
+    print "usage: getversion.pl <project-directory> <script[.i]> <output-directory>\n";
+    exit(1);
+  }
+
+unless(-d $outdir)
+  {
+    print "directory $outdir not found\n";
+    exit(1)
+  }
+
+# Figure out which file to use:
+#
+# Either use MANUALV or a particular file for the script that is
+# processed if the particular file exists.
+#
+$script = basename($script);
+$script =~ s/\..*$//;
+my $thisversion = MANUALV . "-" . $script;
 
 
-# either read the version from the first line of a manually created
-# file, or create it from the git revision if this seems to be a repo
+unless(-e $thisversion)
+  {
+    # script specific file does not exist, try default
+    #
+    $thisversion = MANUALV;
+  }
+
+# read version either from file or from git, file takes precendence
 #
 my $version = "";
 
-if(-e MANUALV)
+if(-e $thisversion)
    {
-     open my $fh, "<", MANUALV;
+     open my $fh, "<", $thisversion;
      $version = <$fh>;
      close $fh;
+
+     unless(defined($version))
+       {
+	 # the file was empty
+	 #
+	 $version = "";
+       }
+     else
+       {
+	 chomp $version;
+       }
 
      $project = "";
    }
 else
   {
-    # the project directory can be specified as parameter to be added to
-    # the version
+    # neither default, nor script specific file exist,
+    # try git
     #
-    if(defined($ARGV[0]))
-       {
-	 $project = $ARGV[0] . "-";
-       }
-
-    if(-e ".gitignore")
+    if(-d ".git")
       {
 	$version = `git rev-list --max-count=1 HEAD`;
+	chomp $version;
+
+	# add compile time since not every time make is run, all
+	# changes have been commited
+	#
+	$version .= " " . strftime("%Y-%m-%d %H:%M:%S", localtime);
       }
+
+    $project .= "-";
   }
 
 
-# the version is either undetermined or not
-#
+open my $fh, ">", $outdir . OUTFILE . $script . ".h";
+
+print $fh "#ifndef _VERSION_$script\n#define _VERSION_$script\n\n";
+
 unless($version eq "")
   {
-    chomp $version;
-    $version = "#define VERSION \"$project" . "$version\"\n";
+    print $fh "#define VERSION \"" . $project . $version . "\"\n";
   }
 else
   {
-    $version = "#define VERSION \"$project" . "undetermined\"\n";
+    # the version is undefined
+    #
+    print $fh "#undef VERSION" . "\n";
   }
 
-open my $fh, ">", OUTFILE;
-print $fh $version;
+print $fh "\n#endif  // _VERSION_$script\n";
+
 close $fh;
-
-
-if(($version =~ m/undetermined/) || ($project =~ m/undetermined/))
-   {
-     print "Something is not fully determined. You can either create\n";
-     print "the file \"" . MANUALV . "\" in the project directory\n";
-     print "to use the first line of the file as version, or you can\n";
-     print "have the version automatically created when the project\n";
-     print "directory is a git repository.  When you run this script\n";
-     print "with a command line argument, the first argument given will\n";
-     print "be used as the first part of the version, unless the version\n";
-     print "is given in the file \"" . MANUALV . "\".\n";
-   }
 
 exit(0);

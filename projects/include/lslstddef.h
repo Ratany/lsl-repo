@@ -122,7 +122,12 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 
 #define RemoteDesc(_key)                     llList2String(llGetObjectDetails(_key, [OBJECT_DESC] ), 0)
 #define RemoteIsAttached(_key)               llList2Integer(llGetObjectDetails(_key, [OBJECT_ATTACHED_POINT]))
-#define RemoteName(_key)                     llList2String(llGetObjectDetails(_key, [OBJECT_NAME] ), 0)
+
+// There is a difference between llKey2Name() and llGetObjectDetails().
+//
+#define RemoteNameOD(_key)                   llList2String(llGetObjectDetails(_key, [OBJECT_NAME] ), 0)
+#define RemoteName(_key)                     llName2Key(_key)
+
 #define RemotePhantom(_key)                  (llList2Integer(llGetObjectDetails(_key, [OBJECT_PHANTOM] ), 0) == TRUE)
 #define RemotePos(_key)                      llList2Vector(llGetObjectDetails(_key, [OBJECT_POS] ), 0)
 #define RemotePrimEqv(_key)                  llList2Integer(llGetObjectDetails(_key, [OBJECT_PRIM_EQUIVALENCE] ), 0)
@@ -197,7 +202,7 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define Strlen(_string)                      llStringLength(_string)
 #define Substr(_string, _start, _end)        llGetSubString(_string, _start, _end)
 #define Begstr(_string, _end)                llGetSubString(_string, 0, _end)
-#define Endstr(_string, _start)              llGetSubString(_string, _start, Strlen(_string) - 1)
+#define Endstr(_string, _start)              llGetSubString(_string, _start, -1)
 #define Strtrunc(_str, _n)                   if(Strlen((_str)) > (_n)) _str = Begstr((_str), (_n) - 1)
 #define Instr(_src, _tst)                    (~llSubStringIndex(_src, _tst) )
 #define Stridx(_src, _tst)                   llSubStringIndex(_src, _tst)
@@ -419,6 +424,16 @@ afootell(string _msg) {
 #define DEBUGmsgLIB(...)
 #endif
 
+
+#ifdef DEBUG_tellmem
+#define DEBUG_TellMemory(_msg)						\
+	DEBUGmsg(_msg);							\
+	afootell("free: " + (string)llGetFreeMemory() + " of " + (string)llGetMemoryLimit()); \
+	afootell("used: " + (string)llGetUsedMemory());			\
+	afootell("gacl: " + (string)(llGetMemoryLimit() - llGetFreeMemory() - llGetUsedMemory()))
+#else
+#define DEBUG_TellMemory(...)
+#endif
 
 
 // permissions

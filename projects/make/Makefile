@@ -3,6 +3,7 @@ LIB=$(wildcard ../lib/*.lsl)
 LOC=$(wildcard ./lib/*.h)
 INC=$(wildcard ../include/*.h)
 DBG=$(subst .lsl,.i,$(subst src/,dbg/,$(SRC)))
+AUTOVERSION=$(subst .lsl,.h,$(subst src/,avn/,$(SRC)))
 OBJ=$(subst .lsl,.o,$(subst src/,bin/,$(SRC)))
 #HTML=$(subst .txt,.html,$(wildcard doc/*.txt))
 DOC=$(subst .ltx,.pdf,$(wildcard doc/*.ltx))
@@ -19,21 +20,22 @@ POP=../bin/postprocess.pl
 #
 DIR=`basename $(CURDIR)`
 
+
 # automatic versioning
 #
-# creates lib/autoversion.h
-#
 GETVERSION=../bin/getversion.pl
+VER=$(wildcard version*)
 
 # automatically add licenses
 #
 ADDLICENSE=../bin/addlicense.pl
+LIC=$(wildcard license*)
 
 
 DEPS=$(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
 
 
-all: $(DBG) $(OBJ) $(DOC) $(TAGS) $(DEPS)
+all: $(DEPS) $(AUTOVERSION) $(DBG) $(OBJ) $(DOC) $(TAGS)
 # $(HTML)
 
 doc: doc/%.pdf
@@ -41,21 +43,22 @@ doc: doc/%.pdf
 
 debug: $(DBG)
 
-dbg/%.i: src/%.lsl
+dbg/%.i: src/%.lsl $(LIC) $(VER)
 #	@echo "processing $<"
-	@$(GETVERSION) $(DIR)
 	@echo "// =$(DIR)/$(@F)" > $@
-	@cpp -nostdinc -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
+	@cpp -nostdinc -I. -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
 #
-# uncomment the following to get output that retains the comments, to a file ~/tmp/scrach.lsl
+# uncomment the following to get output that retains the comments, to a file ~/tmp/scrach-*.i.lsl
 # Do not keep comments in the *.i file because the comments will remain in the resulting *.o file!
 #
-#	@cpp -nostdinc -C -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman > ~/tmp/scrach.lsl
+#	@cpp -nostdinc -C -Iavn -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman > ~/tmp/scrach-$@.lsl
 #
 #
 	@wc -cl $@
 	@$(ADD) $(DIR)/$< $(CURDIR)/bin/`basename $<`
 	@$(ADDLICENSE) $@
+
+
 
 bin/%.o: dbg/%.i
 #	@cat $< | $(ITO) `basename $<` > $@
@@ -76,6 +79,12 @@ dep/%.di: src/%.lsl
 dep/%.d: dep/%.di
 #	@echo "generating dependencies: $@"
 	@sed 's_^dbg/_bin/_' $< | sed 's/\.i:/\.o:/' > $@
+
+
+# self-modifying code, yay!
+#
+avn/%.h: src/%.lsl $(VER)
+	$(GETVERSION) $(DIR) $@ $(@D)
 
 
 -include $(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
