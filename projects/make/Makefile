@@ -48,10 +48,12 @@ dbg/%.i: src/%.lsl $(LIC) $(VER)
 	@echo "// =$(DIR)/$(@F)" > $@
 	@cpp -nostdinc -I. -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
 #
-# uncomment the following to get output that retains the comments, to a file ~/tmp/scrach-*.i.lsl
+# uncomment the following to get output that retains the comments
 # Do not keep comments in the *.i file because the comments will remain in the resulting *.o file!
 #
-#	@cpp -nostdinc -C -Iavn -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman > ~/tmp/scrach-$@.lsl
+# kinda retarded to put this into the avn directory ...
+#
+	@cpp -nostdinc -C -I. -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman > avn/scrach-$(@F).l
 #
 #
 	@wc -cl $@
@@ -84,7 +86,7 @@ dep/%.d: dep/%.di
 # self-modifying code, yay!
 #
 avn/%.h: src/%.lsl $(VER)
-	$(GETVERSION) $(DIR) $@ $(@D)
+	@$(GETVERSION) $(DIR) $@ $(@D)
 
 
 -include $(subst .lsl,.d,$(subst src/,dep/,$(SRC)))
