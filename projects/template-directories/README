@@ -57,6 +57,10 @@ avn: The build system creates header files that define the symbol
      + else
        The version is undefined.
 
+       A debugging version of the script which retains all comments
+       from the source files is created in the avn directory.  This
+       isn´t the ideal place to put it, but it doesn´t hurt ...
+
 
 bin: The LSL scripts to use.  These are shrunken versions of the
      scripts which tend to use less script memory than non-shrunken
