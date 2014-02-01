@@ -1,0 +1,25 @@
+// [2014-01-11 12:10:52]: lookup-table created
+
+// [2014-01-11 12:10:52]: added example-1.o
+example-1.o: /home/lee/src/lsl-repo/projects/example-1/bin/example-1.o
+
+// [2014-01-11 15:21:52]: added your-script.o
+your-script.o: /home/lee/src/lsl-repo/projects/your-script/bin/your-script.o
+
+// [2014-01-11 19:39:13]: added components.o
+components.o: /home/lee/src/lsl-repo/projects/components/bin/components.o
+
+// [2014-01-12 15:40:15]: added inline.o
+inline.o: /home/lee/src/lsl-repo/projects/inline/bin/inline.o
+
+// [2014-01-12 19:09:55]: added rfedipdev-enchain.o
+rfedipdev-enchain.o: /home/lee/src/lsl-repo/projects/rfedip-reference-implementation/bin/rfedipdev-enchain.o
+
+// [2014-01-12 19:09:55]: added rfedipdev-tether.o
+rfedipdev-tether.o: /home/lee/src/lsl-repo/projects/rfedip-reference-implementation/bin/rfedipdev-tether.o
+
+// [2014-01-22 11:52:23]: added ciss-sit.o
+ciss-sit.o: /home/lee/src/lsl-repo/projects/ciss/bin/ciss-sit.o
+
+// [2014-01-22 11:52:23]: added ciss-main.o
+ciss-main.o: /home/lee/src/lsl-repo/projects/ciss/bin/ciss-main.o
