@@ -105,7 +105,7 @@ else
 
 open my $fh, ">", $outdir . OUTFILE . $script . ".h";
 
-print $fh "#ifndef _VERSION_$script\n#define _VERSION_$script\n\n";
+print $fh "#ifndef _VERSION\n#define _VERSION\n\n";
 
 unless($version eq "")
   {
@@ -118,7 +118,7 @@ else
     print $fh "#undef VERSION" . "\n";
   }
 
-print $fh "\n#endif  // _VERSION_$script\n";
+print $fh "\n#endif  // _VERSION\n";
 
 close $fh;
 
