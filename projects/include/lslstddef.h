@@ -117,7 +117,7 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 // Ownerchk() is deprecated, use SameOwner()
 #define SameOwner(_key)                      Ownerchk(_key)
 
-#define AgentIsHere(_k)                      (llGetAgentSize(_k) != ZERO_VECTOR)
+#define AgentIsHere(_k)                      (llGetAgentSize(_k))
 #define ObjectMaybeNotAround(_k)             (llKey2Name(_k) == "")
 
 #define RemoteDesc(_key)                     llList2String(llGetObjectDetails(_key, [OBJECT_DESC] ), 0)
@@ -125,23 +125,23 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 
 // There is a difference between llKey2Name() and llGetObjectDetails().
 //
+#define RemoteName(_key)                     llKey2Name(_key)
 #define RemoteNameOD(_key)                   llList2String(llGetObjectDetails(_key, [OBJECT_NAME] ), 0)
-#define RemoteName(_key)                     llName2Key(_key)
-
 #define RemotePhantom(_key)                  (llList2Integer(llGetObjectDetails(_key, [OBJECT_PHANTOM] ), 0) == TRUE)
+#define RemotePhysCost(_key)                 llList2Float(llGetObjectDetails(_key, [OBJECT_PHYSICS_COST]), 0)
 #define RemotePos(_key)                      llList2Vector(llGetObjectDetails(_key, [OBJECT_POS] ), 0)
 #define RemotePrimEqv(_key)                  llList2Integer(llGetObjectDetails(_key, [OBJECT_PRIM_EQUIVALENCE] ), 0)
 #define RemoteRScriptCount(_key)             llList2Integer(llGetObjectDetails(_key, [OBJECT_RUNNING_SCRIPT_COUNT] ), 0)
-#define RemoteServerCost(_key)               llList2Float(llGetObjectDetails(_key, [OBJECT_SERVER_COST]), 0)
-#define RemotePhysCost(_key)                 llList2Float(llGetObjectDetails(_key, [OBJECT_PHYSICS_COST]), 0)
-#define RemoteStreamCost(_key)               llList2Float(llGetObjectDetails(_key, [OBJECT_STREAMING_COST]), 0)
 #define RemoteRoot(_key)                     llList2Key(llGetObjectDetails(_key, [OBJECT_ROOT] ), 0)
 #define RemoteRootPos(_key)                  llList2Vector(llGetObjectDetails(RemoteRoot(_key), [OBJECT_POS] ), 0)
 #define RemoteRootRot(_key)                  llList2Rot(llGetObjectDetails(RemoteRoot(_key), [OBJECT_ROT] ), 0)
 #define RemoteRot(_key)                      llList2Rot(llGetObjectDetails(_key, [OBJECT_ROT] ), 0)
 #define RemoteScriptTime(_key)               ( (float)llRound(llList2Float(llGetObjectDetails(_key, [OBJECT_SCRIPT_TIME] ), 0) * 1000000.0) / 100.0)
+#define RemoteServerCost(_key)               llList2Float(llGetObjectDetails(_key, [OBJECT_SERVER_COST]), 0)
+#define RemoteStreamCost(_key)               llList2Float(llGetObjectDetails(_key, [OBJECT_STREAMING_COST]), 0)
 #define RemoteTScriptCount(_key)             llList2Integer(llGetObjectDetails(_key, [OBJECT_TOTAL_SCRIPT_COUNT] ), 0)
 #define RemoteVelocity(_key)                 llVecMag(llList2Vector(llGetObjectDetails(_key, [OBJECT_VELOCITY] ), 0) )
+
 //#define RemoteIsHere(_key)                   (!!Len(llGetObjectDetails(_key, [OBJECT_PHYSICS] ) )  )
 
 #define SameParcel(_k1, _k2)                 (llList2Key(llGetParcelDetails(RemotePos(_k1), [PARCEL_DETAILS_ID] ), 0) == llList2Key(llGetParcelDetails(RemotePos(_k2), [PARCEL_DETAILS_ID] ), 0) )
@@ -380,13 +380,22 @@ afootell(string _msg) {
 #define TS_TIME TS_TIMES
 #endif
 
-
+#ifdef _STD_DEBUG_PUBLIC
+#ifdef _STD_DEBUG_USE_TIME
+#define DEBUGmsg(...)                   llSay(PUBLIC_CHANNEL, fprintl(_STD_TS_FULL, __VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
+#define ERRORmsg(...)                   llSay(PUBLIC_CHANNEL, fprintl("err:", __VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
+#else
+#define DEBUGmsg(...)                   llSay(PUBLIC_CHANNEL, fprintl(__VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
+#define ERRORmsg(...)                   DEBUGmsg("err:", __VA_ARGS__)
+#endif
+#else
 #ifdef _STD_DEBUG_USE_TIME
 #define DEBUGmsg(...)                   llOwnerSay(fprintl(_STD_TS_FULL, __VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
-#define ERRORmsg(...)                   llOwnerSay(fprintl(__VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
+#define ERRORmsg(...)                   llOwnerSay(fprintl("err:", __VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
 #else
 #define DEBUGmsg(...)                   llOwnerSay(fprintl(__VA_ARGS__, "{", __FILE__, ":", __LINE__, "}"))
-#define ERRORmsg(...)                   DEBUGmsg(__VA_ARGS__)
+#define ERRORmsg(...)                   DEBUGmsg("err:", __VA_ARGS__)
+#endif
 #endif
 
 // debug messages
