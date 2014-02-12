@@ -117,7 +117,7 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 // Ownerchk() is deprecated, use SameOwner()
 #define SameOwner(_key)                      Ownerchk(_key)
 
-#define AgentIsHere(_k)                      (llGetAgentSize(_k))
+#define AgentIsHere(_k)                      (llGetAgentSize(_k) != ZERO_VECTOR)
 #define ObjectMaybeNotAround(_k)             (llKey2Name(_k) == "")
 
 #define RemoteDesc(_key)                     llList2String(llGetObjectDetails(_key, [OBJECT_DESC] ), 0)
@@ -475,6 +475,8 @@ afootell(string _msg) {
 #define LoopDown(_idx, _do)             while(_idx) { --_idx; _do; }
 #define LoopUp(_idx, _max, _do)         while(_idx < _max) { _do; ++_idx; }
 #define foreach(_l, _do)                { int $_ = Len(_l); while($_) { --$_; _do; } }
+
+#define until(_cond)                    while(!(_cond))
 
 #define IfMessage(_what)                if(_what == _MESSAGE)
 #define ProtocolID(_s)                  (Begstr(_MESSAGE, _STD_PROTMESSAGELEN) == _s)
