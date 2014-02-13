@@ -43,7 +43,7 @@ doc: doc/%.pdf
 
 debug: $(DBG)
 
-dbg/%.i: src/%.lsl $(LIC) $(VER)
+dbg/%.i: src/%.lsl $(LIC) $(VER) $(AUTOVERSION)
 #	@echo "processing $<"
 	@echo "// =$(DIR)/$(@F)" > $@
 	@cpp -nostdinc -I. -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
@@ -85,7 +85,7 @@ dep/%.d: dep/%.di
 
 # self-modifying code, yay!
 #
-avn/%.h: src/%.lsl $(VER)
+avn/%.h: src/%.lsl $(VER) $(LIB) $(LOC) $(INC)
 	@$(GETVERSION) $(DIR) $@ $(@D)
 
 
