@@ -142,7 +142,7 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define RemoteTScriptCount(_key)             llList2Integer(llGetObjectDetails(_key, [OBJECT_TOTAL_SCRIPT_COUNT] ), 0)
 #define RemoteVelocity(_key)                 llVecMag(llList2Vector(llGetObjectDetails(_key, [OBJECT_VELOCITY] ), 0) )
 
-//#define RemoteIsHere(_key)                   (!!Len(llGetObjectDetails(_key, [OBJECT_PHYSICS] ) )  )
+#define RemoteIsHere(_key)                   (!!Len(llGetObjectDetails(_key, [OBJECT_POS])))
 
 #define SameParcel(_k1, _k2)                 (llList2Key(llGetParcelDetails(RemotePos(_k1), [PARCEL_DETAILS_ID] ), 0) == llList2Key(llGetParcelDetails(RemotePos(_k2), [PARCEL_DETAILS_ID] ), 0) )
 #define VSameParcel(_v, _k2)                 (llList2Key(llGetParcelDetails(_v, [PARCEL_DETAILS_ID] ), 0) == llList2Key(llGetParcelDetails(RemotePos(_k2), [PARCEL_DETAILS_ID] ), 0) )
