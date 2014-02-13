@@ -43,7 +43,7 @@ doc: doc/%.pdf
 
 debug: $(DBG)
 
-dbg/%.i: src/%.lsl $(LIC) $(VER) $(AUTOVERSION)
+dbg/%.i: src/%.lsl $(LIC) $(VER) avn/%.h
 #	@echo "processing $<"
 	@echo "// =$(DIR)/$(@F)" > $@
 	@cpp -nostdinc -I. -I$(LIBDIR) -I$(LOCDIR) -I$(INCDIR) -P $< | $(POP) | astyle --style=allman >> $@
