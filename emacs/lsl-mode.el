@@ -76,7 +76,7 @@
   :group 'lsl-font-lock)
 
 (defcustom lsl-macros
-  '("afootell" "aftell" "afwis" "AgentIsHere" "apf" "arst" "BbxCenterPos" "BbxCornerPos" "BbxCorners" "BbxFrontBotLeftCorner" "BbxFrontBotRightCorner" "BbxFrontTopLeftCorner" "BbxFrontTopRightCorner" "BbxRearBotLeftCorner" "BbxRearBotRightCorner" "BbxRearTopLeftCorner" "BbxRearTopRightCorner" "BbxScale" "Begstr" "ClrStatus" "CompStatus" "concat" "concats" "continue" "CSVStrX" "DEBUGmsg" "DEBUGmsg0" "DEBUGmsg1" "DEBUGmsg2" "DEBUGmsg3" "DEBUGmsgLIB" "Dist2Line" "Endstr" "Enlist" "ERRORmsg" "event" "foreach" "fprintl" "fprintlt" "GetMenuChannel" "GetPrimText" "GLPP" "HasInventory" "HasStatus" "IfAttached" "IfEnlist" "IfElseEnlist" "IfMessage" "IfNotEnlist" "IfNStatus" "IfNStatusDo" "IfStatus" "IfStatusDo" "imp" "impa" "InFrontX" "InFrontXThisRoot" "InFrontXVecR" "InFrontXVecRr" "InFrontY" "InFrontYVecRr" "InFrontZ" "Instr" "InvIsCopy4Owner" "LoopDown" "LoopUp" "MultVec" "MultVec2" "NoPin" "NotInventory" "NotOnlst" "NotStatus" "ObjIsCopy4Owner" "ObjectMaybeNotAround" "Onlst" "opf" "parst" "PrimPercentUsed" "PrimsFree" "PrimsFree" "ProtocolData" "ProtocolID" "ProtocolSimpleData" "RemoteDesc" "RemoteGroup" "RemoteIsAttached" "RemoteName" "RemoteOwner" "RemoteOwnerName" "RemotePhantom" "RemotePhysCost" "RemotePos" "RemotePrimEqv" "RemoteRScriptCount" "RemoteRoot" "RemoteRootPos" "RemoteRootRot" "RemoteRot" "RemoteScriptTime" "RemoteServerCost" "RemoteStreamCost" "RemoteTScriptCount" "RemoteVelocity" "RPos2Slurl" "SameOwner" "SameParcel" "SetStatus" "SLPPF" "SoundAlert" "SoundDelete" "SoundInvop" "SoundPing" "SoundRezzing" "SoundTyping" "sprintl" "sprintlt" "starst" "Stridx" "stringifylt" "Strlen" "Strtrunc" "StrX" "Substr" "tarst" "TruncateDialogButton" "TruncateDialogList" "LstIdx" "Len" "FMin" "FMax" "FVecMax" "FVecMin" "MFree" "Max" "Min" "PosOffset" "Signof" "tif" "unless" "UnStatus" "until" "VecBetween" "VecFabsSum" "VecMult" "VecRound" "VecSubFAbs" "VecSum" "VecWithin" "Velocity" "VSameParcel" "VVSameParcel" "when"
+  '("afootell" "aftell" "afwis" "AgentIsHere" "apf" "arst" "BbxCenterPos" "BbxCornerPos" "BbxCorners" "BbxFrontBotLeftCorner" "BbxFrontBotRightCorner" "BbxFrontTopLeftCorner" "BbxFrontTopRightCorner" "BbxRearBotLeftCorner" "BbxRearBotRightCorner" "BbxRearTopLeftCorner" "BbxRearTopRightCorner" "BbxScale" "Begstr" "ClrStatus" "CompStatus" "concat" "concats" "continue" "CSVStrX" "DEBUGmsg" "DEBUGmsg0" "DEBUGmsg1" "DEBUGmsg2" "DEBUGmsg3" "DEBUGmsgLIB" "Dist2Line" "Endstr" "Enlist" "ERRORmsg" "event" "foreach" "fprintl" "fprintlt" "GetMenuChannel" "GetPrimText" "GLPP" "HasInventory" "HasStatus" "IfAttached" "IfEnlist" "IfElseEnlist" "IfMessage" "IfNotEnlist" "IfNStatus" "IfNStatusDo" "IfStatus" "IfStatusDo" "imp" "impa" "InFrontX" "InFrontXThisRoot" "InFrontXVecR" "InFrontXVecRr" "InFrontY" "InFrontYVecRr" "InFrontZ" "Instr" "InvIsCopy4Owner" "LoopDown" "LoopUp" "MultVec" "MultVec2" "NoPin" "NotInventory" "NotOnlst" "NotStatus" "ObjIsCopy4Owner" "ObjectMaybeNotAround" "Onlst" "opf" "parst" "PrimPercentUsed" "PrimsFree" "PrimsFree" "ProtocolData" "ProtocolID" "ProtocolSimpleData" "RemoteDesc" "RemoteGroup" "RemoteIsAttached" "RemoteName" "RemoteOwner" "RemoteOwnerName" "RemotePhantom" "RemotePhysCost" "RemotePos" "RemotePrimEqv" "RemoteRScriptCount" "RemoteRoot" "RemoteRootPos" "RemoteRootRot" "RemoteRot" "RemoteScriptTime" "RemoteServerCost" "RemoteStreamCost" "RemoteTScriptCount" "RemoteVelocity" "RPos2Slurl" "SameOwner" "boolSameOwnerOrGroup" "SameParcel" "SetStatus" "SLPPF" "SoundAlert" "SoundDelete" "SoundInvop" "SoundPing" "SoundRezzing" "SoundTyping" "sprintl" "sprintlt" "starst" "Stridx" "stringifylt" "Strlen" "Strtrunc" "StrX" "Substr" "tarst" "TruncateDialogButton" "TruncateDialogList" "LstIdx" "Len" "FMin" "FMax" "FVecMax" "FVecMin" "MFree" "Max" "Min" "PosOffset" "Signof" "tif" "unless" "UnStatus" "until" "VecBetween" "VecFabsSum" "VecMult" "VecRound" "VecSubFAbs" "VecSum" "VecWithin" "Velocity" "VSameParcel" "VVSameParcel" "when"
     )
   "cpp macros"
   :type 'list
@@ -153,6 +153,96 @@
 (setq lsl-event-regexp nil)
 (setq lsl-variable-name-regexp nil)
 ;;
+
+
+;;
+;; very much based on the GPL version of xlsl-mode:
+;;
+;; functions to look up stuff on the wiki
+;;
+;;
+
+(defcustom lsl-reference-url "http://lslwiki.net/lslwiki/wakka.php?wakka="
+  "URL for LSL reference website.
+The value is used by `lsl-lookup-lsl-ref'.
+The value should be one of:
+“http://lslwiki.net/lslwiki/wakka.php?wakka=”
+“http://wiki.secondlife.com/wiki/”"
+  :type '(string)
+  :group 'lsl-mode)
+
+
+(defcustom lsl-reference-url2 "http://wiki.secondlife.com/wiki/"
+  "URL for LSL reference website.
+The value is used by `lsl-lookup-lsl-ref2'.
+The value can be any of:
+“http://wiki.secondlife.com/wiki/”
+“http://en.wikipedia.org/wiki/”
+“http://www.google.com/search?q=”"
+  :type '(string)
+  :group 'lsl-mode)
+
+
+(defun lsl-lookup-lsl-site (site-url)
+  "Attempt to look up the word at point on a web page.
+site-url is an url string.
+This is a internal function.
+This function is called by lsl-lookup-lsl-ref and lsl-lookup-lsl-ref2.
+It uses the lsl-browse-url function to start the web browser."
+  (let (pos1 pos2 bds meat myurl)
+    (if (and transient-mark-mode mark-active)
+        (setq pos1 (region-beginning)
+              pos2 (region-end))
+      (progn
+        (setq bds (bounds-of-thing-at-point 'symbol))
+        (setq pos1 (car bds) pos2 (cdr bds))))
+
+    (setq meat
+          (if (and pos1 pos2 )
+              (buffer-substring-no-properties pos1 pos2)
+            nil ))
+
+    (if meat
+        (progn
+          (setq meat (replace-regexp-in-string " " "%20" meat))
+          (setq myurl (concat site-url meat))
+          (lsl-browse-url myurl))
+      (progn (ding) (message "No word under cursor to lookup.")))))
+
+
+(defun lsl-lookup-lsl-ref ()
+  "Look up current word in LSL ref site in a browser.
+If there is a text selection (a phrase), lookup that phrase.
+Set variable lsl-reference-url if you want to change the url used.
+
+See also `lsl-lookup-lsl-ref2'."
+  (interactive)
+  (lsl-lookup-lsl-site lsl-reference-url))
+
+
+(defun lsl-lookup-lsl-ref2 ()
+  "Look up current word in LSL ref site in a browser.
+If there is a text selection (a phrase), lookup that phrase.
+Set variable lsl-reference-url2 if you want to change the url used.
+
+See also `lsl-lookup-lsl-ref'."
+  (interactive)
+  (lsl-lookup-lsl-site lsl-reference-url2))
+
+
+(defun lsl-browse-url (url)
+  "This is a wrapper function for lsl-lookup-lsl-site.  It uses
+the built-in web browser for the lookups to display the web page
+in a different window."
+  (interactive)
+  (pop-to-buffer "*eww*")
+  (eww url))
+
+
+(defvar lsl-mode-map nil "keymap for lsl-mode")
+
+(setq lsl-mode-map (make-sparse-keymap))
+(define-key lsl-mode-map (kbd "C-c h") 'lsl-lookup-lsl-ref2)
 
 
 (define-derived-mode lsl-mode c-mode "LSL"
