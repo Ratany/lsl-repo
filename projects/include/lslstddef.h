@@ -111,11 +111,14 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define RemoteOwnerName(_key)                llKey2Name(RemoteOwner(_key) )
 #define RemoteGroup(_key)                    llList2Key(llGetObjectDetails(_key, [OBJECT_GROUP] ), 0)
 
-#define Ownerchk(_key)                       ( (RemoteOwner(_key) == llGetOwner() ) \
-                                               || ( (RemoteOwner(_key) == NULL_KEY) \
-                                               && (RemoteGroup(_key) == llGetOwner() )  )   )
+// was Ownerchk()
+//
+#define boolSameOwnerOrGroup(_key)           ((RemoteOwner(_key) == llGetOwner()) \
+					      || ((RemoteOwner(_key) == NULL_KEY) \
+						  && (RemoteGroup(_key) == llGetOwner())))
+
 // Ownerchk() is deprecated, use SameOwner()
-#define SameOwner(_key)                      Ownerchk(_key)
+#define SameOwner(_key)                      (!(RemoteOwner(_key) != llGetOwner()))
 
 #define AgentIsHere(_k)                      (llGetAgentSize(_k) != ZERO_VECTOR)
 #define ObjectMaybeNotAround(_k)             (llKey2Name(_k) == "")
@@ -161,8 +164,8 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
                                         _v2 = llList2Vector(llGetBoundingBox(_k), 1) * RemoteRot(_k) \
                                               + RemotePos(_k)
 // hmm
-#define BbxScale(_k)                    ( (llList2Vector(llGetBoundingBox(_k), 1) \
-                                           - llList2Vector(llGetBoundingBox(_k), 0) ) * 0.5)
+#define BbxScale(_k)                    ((llList2Vector(llGetBoundingBox(_k), 1) \
+                                           - llList2Vector(llGetBoundingBox(_k), 0)) * 0.5)
 
 #define BbxCenterPos(_k)                 (llGetRootPosition() + (llList2Vector(llGetBoundingBox(_k), 0) + llList2Vector(llGetBoundingBox(_k), 1)) * 0.5)
 
@@ -375,9 +378,9 @@ afootell(string _msg) {
 #define _STD_TS_FULL                         StrX(StrX(StrX(llGetTimestamp(), "-", "/"), "T", " "), "Z", "")
 
 #if TS_LONG_TIMESTAMPS
-#define TS_TIME TS_TIMEL
+#define _STD_TS_TIME _STD_TS_TIMEL
 #else
-#define TS_TIME TS_TIMES
+#define _STD_TS_TIME _STD_TS_TIMES
 #endif
 
 #ifdef _STD_DEBUG_PUBLIC
