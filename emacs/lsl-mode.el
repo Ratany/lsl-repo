@@ -37,13 +37,13 @@
 ;;
 
 (defcustom lsl-keywords
-  '("for" "if" "else" "break" "while" "do" "return" "state" "default")
+  '("default" "do" "else" "for" "if" "jump" "return" "state" "while")
   "LSL keywords."
   :type 'list
   :group 'lsl-font-lock)
 
 (defcustom lsl-types
-  '("integer" "float" "string" "key" "list" "vector" "rotation")
+  '("float" "integer" "key" "list" "quaternion" "rotation" "string" "vector")
   "LSL types."
   :type 'list
   :group 'lsl-font-lock)
