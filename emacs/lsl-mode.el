@@ -239,10 +239,24 @@ in a different window."
   (eww url))
 
 
+;;
+;; astyle buffer ...
+;;
+
+(defun lsl-astyle-buffer (mcl)
+  "ask for code length and pipe all buffer contents through
+  astyle and replace with the output from astyle, then
+  whitespace-cleanup"
+  (interactive "nMax code length: ")
+  (shell-command-on-region (point-min) (point-max) (format "astyle --max-code-length=%d" mcl) nil t 'shell-command-default-error-buffer t)
+  (whitespace-cleanup))
+
+
 (defvar lsl-mode-map nil "keymap for lsl-mode")
 
 (setq lsl-mode-map (make-sparse-keymap))
 (define-key lsl-mode-map (kbd "C-c h") 'lsl-lookup-lsl-ref2)
+(define-key lsl-mode-map (kbd "C-c a") 'lsl-astyle-buffer)
 
 
 (define-derived-mode lsl-mode c-mode "LSL"

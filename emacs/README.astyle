@@ -1,5 +1,10 @@
 
 
+NOTE: This function is now part of lsl-mode.el, bound to C-c a by
+default.
+
+
+
 You sometimes may want to make sources written by others readable:
 
 
