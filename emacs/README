@@ -1,0 +1,94 @@
+
+lsl-mode.el has received some changes and additions.  It is now
+supposed to be used with auto-complete-mode, which in turn is supposed
+to be used with yasnippet.
+
+You should have both auto-complete-mode[2] and yasnippet[1] installed,
+preferably from their respective repos because some versions may not
+work together.  In my setup, I have linked their respecive directories
+under ~/emacs/auto-complete and ~/emacs/yasnippet.  If you use
+different directories, you need to adjust auto-lsl-mode.el.
+
+You can use lsl-mode.el without auto-complete-mode and yasnippet; they
+are not required.  In that case, you can comment out everything that
+refers to them in auto-lsl-mode.el and in lsl-mode.el.
+
+Yasnippets for lsl are not yet (as of 2014-03-09) provided in the
+repo.  I´m working on them.
+
+The hi-lock-mode is part of emacs, so you probably have that anyway.
+It is simply expected to be available.  You can comment it out as well
+if you need to.
+
+You should byte-compile both lsl-mode.el and auto-lsl-mode.el.  In
+your ~/.emacs, make sure that auto-lsl-mode is loaded, like:
+
+
+(load "~/emacs/auto-lsl-mode")
+
+
+That´s all because auto-lsl-mode.el loads lsl-mode --- auto-lsl-mode
+is NOT a mode.  The file will probably be renamed once I can think of
+a better name because the name is misleading.
+
+In case you don´t want/need the wrapper, you can load lsl-mode
+directly:
+
+
+(load "~/emacs/lsl-mode")
+
+
+Key bindings are:
+
+
+(define-key lsl-mode-map (kbd "C-c h") 'lsl-lookup-lsl-ref2)
+(define-key lsl-mode-map (kbd "C-c a") 'lsl-astyle-buffer)
+
+;; highlight-symbol-at-point is by default bound to C-x w .
+;; when hi-lock-mode is enabled
+;;
+(define-key lsl-mode-map (kbd "C-x w c") 'lsl-hi-lock-constant)
+(define-key lsl-mode-map (kbd "C-x w f") 'lsl-hi-lock-functionlike)
+
+;; put indenting on F6
+;;
+(define-key lsl-mode-map (kbd "<f6>") 'lsl-indent-defun)
+
+
+When you make modifications to lsl-mode.el, byte-compile it again and
+M-x my-reload-lsl.  my-reload-lsl is a function to sanely reload
+lsl-mode.  (This function is the main reason to have auto-lsl-mode.el
+since putting it into lsl-mode.el itself probably won´t work because
+the function would disappear when lsl-mode is unloaded ...)  If you
+don´t want to modify lsl-mode.el, you don´t need to reload it.
+
+You may also want to check out lsl-modeset-all-buffers.  It enables
+lsl-mode for all buffers that visit files the names of which match
+".*\.lsl$".
+
+Generally, lsl-mode should be enabled automatically.  However,
+desktop-save-mode apparently remembers the modes of buffers and
+sometimes seems to mess with it.  M-x lsl-mode is preferred unless you
+have to do it for many buffers, in which case 'M-x
+lsl-modeset-all-buffers' will save you the work.
+
+lsl-mode puts a defadvice to hi-lock-set-file-patterns provided by
+hi-lock-mode, see lsl-mode.el.
+
+Buffers with lsl-mode have hi-lock-mode NOT ask whether the
+highlighting-patterns should be applied or not.  They are applied
+without asking, and an informative message is printed.
+
+You may want to customize faces: 'M-x customize-group
+font-lock-faces'.  lsl-mode uses those; some more may be specified by
+lsl-mode itself eventually.
+
+
+2014-03-09
+
+
+[1]: see http://www.emacswiki.org/emacs/Yasnippet and
+     https://github.com/capitaomorte/yasnippet
+
+[2]: see http://www.emacswiki.org/emacs/AutoComplete and
+     https://github.com/auto-complete/auto-complete

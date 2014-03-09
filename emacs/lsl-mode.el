@@ -6,14 +6,6 @@
 ;; fit. As usual, no warrantees are available, neither expressed nor
 ;; implied. You use this software at your own risk.
 
-;; To load this into emacs, add the following lines to your .emacs:
-;
-; (add-to-list 'load-path "/path/to/directory/containing/this/file")
-; (autoload 'lsl-mode "lsl-mode" "Load LSL mode." t)
-; (add-to-list 'auto-mode-alist '("\\.lsl$" . lsl-mode))
-;
-;; You should then be able to load up LSL files and get the pretty
-;; colors and indentation.
 
 ;; This is derived from C-mode, since LSL is so similar. There'll
 ;; probably be a couple gotchas as a result. I haven't tested this
@@ -35,6 +27,15 @@
 ;;
 ;; Ratany Resident, 2014-01-12
 ;;
+;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; I have made a few addtions, and changes are listed in the changelog
+;; in the repo (https://github.com/Ratany/lsl-repo).
+;; All changes I made are licensed under GPL.
+;;   Ratany Resident, 2014-03-09
+;;
+
 
 (defcustom lsl-keywords
   '("default" "do" "else" "for" "if" "jump" "return" "state" "while")
@@ -76,7 +77,7 @@
   :group 'lsl-font-lock)
 
 (defcustom lsl-macros
-  '("afootell" "aftell" "afwis" "AgentIsHere" "apf" "arst" "BbxCenterPos" "BbxCornerPos" "BbxCorners" "BbxFrontBotLeftCorner" "BbxFrontBotRightCorner" "BbxFrontTopLeftCorner" "BbxFrontTopRightCorner" "BbxRearBotLeftCorner" "BbxRearBotRightCorner" "BbxRearTopLeftCorner" "BbxRearTopRightCorner" "BbxScale" "Begstr" "ClrStatus" "CompStatus" "concat" "concats" "continue" "CSVStrX" "DEBUGmsg" "DEBUGmsg0" "DEBUGmsg1" "DEBUGmsg2" "DEBUGmsg3" "DEBUGmsgLIB" "Dist2Line" "Endstr" "Enlist" "ERRORmsg" "event" "foreach" "fprintl" "fprintlt" "GetMenuChannel" "GetPrimText" "GLPP" "HasInventory" "HasStatus" "IfAttached" "IfEnlist" "IfElseEnlist" "IfMessage" "IfNotEnlist" "IfNStatus" "IfNStatusDo" "IfStatus" "IfStatusDo" "imp" "impa" "InFrontX" "InFrontXThisRoot" "InFrontXVecR" "InFrontXVecRr" "InFrontY" "InFrontYVecRr" "InFrontZ" "Instr" "InvIsCopy4Owner" "LoopDown" "LoopUp" "MultVec" "MultVec2" "NoPin" "NotInventory" "NotOnlst" "NotStatus" "ObjIsCopy4Owner" "ObjectMaybeNotAround" "Onlst" "opf" "parst" "PrimPercentUsed" "PrimsFree" "PrimsFree" "ProtocolData" "ProtocolID" "ProtocolSimpleData" "RemoteDesc" "RemoteGroup" "RemoteIsAttached" "RemoteName" "RemoteOwner" "RemoteOwnerName" "RemotePhantom" "RemotePhysCost" "RemotePos" "RemotePrimEqv" "RemoteRScriptCount" "RemoteRoot" "RemoteRootPos" "RemoteRootRot" "RemoteRot" "RemoteScriptTime" "RemoteServerCost" "RemoteStreamCost" "RemoteTScriptCount" "RemoteVelocity" "RPos2Slurl" "SameOwner" "boolSameOwnerOrGroup" "SameParcel" "SetStatus" "SLPPF" "SoundAlert" "SoundDelete" "SoundInvop" "SoundPing" "SoundRezzing" "SoundTyping" "sprintl" "sprintlt" "starst" "Stridx" "stringifylt" "Strlen" "Strtrunc" "StrX" "Substr" "tarst" "TruncateDialogButton" "TruncateDialogList" "LstIdx" "Len" "FMin" "FMax" "FVecMax" "FVecMin" "MFree" "Max" "Min" "PosOffset" "Signof" "tif" "unless" "UnStatus" "until" "VecBetween" "VecFabsSum" "VecMult" "VecRound" "VecSubFAbs" "VecSum" "VecWithin" "Velocity" "VSameParcel" "VVSameParcel" "when"
+  '("afootell" "aftell" "afwis" "AgentIsHere" "apf" "arst" "BbxCenterPos" "BbxCornerPos" "BbxCorners" "BbxFrontBotLeftCorner" "BbxFrontBotRightCorner" "BbxFrontTopLeftCorner" "BbxFrontTopRightCorner" "BbxRearBotLeftCorner" "BbxRearBotRightCorner" "BbxRearTopLeftCorner" "BbxRearTopRightCorner" "BbxScale" "Begstr" "ClrStatus" "CompStatus" "concat" "concats" "continue" "CSVStrX" "DEBUGmsg" "DEBUGmsg0" "DEBUGmsg1" "DEBUGmsg2" "DEBUGmsg3" "DEBUGmsgLIB" "Dist2Line" "Endstr" "Enlist" "ERRORmsg" "event" "foreach" "fprintl" "fprintlt" "GetMenuChannel" "GetPrimText" "GLPP" "guard" "HasInventory" "HasStatus" "IfAttached" "IfEnlist" "IfElseEnlist" "IfMessage" "IfNotEnlist" "IfNStatus" "IfNStatusDo" "IfStatus" "IfStatusDo" "imp" "impa" "InFrontX" "InFrontXThisRoot" "InFrontXVecR" "InFrontXVecRr" "InFrontY" "InFrontYVecRr" "InFrontZ" "Instr" "InvIsCopy4Owner" "LoopDown" "LoopUp" "MultVec" "MultVec2" "NoPin" "NotInventory" "NotOnlst" "NotStatus" "ObjIsCopy4Owner" "ObjectMaybeNotAround" "Onlst" "opf" "parst" "PrimPercentUsed" "PrimsFree" "PrimsFree" "ProtocolData" "ProtocolID" "ProtocolSimpleData" "RemoteDesc" "RemoteGroup" "RemoteIsAttached" "RemoteName" "RemoteOwner" "RemoteOwnerName" "RemotePhantom" "RemotePhysCost" "RemotePos" "RemotePrimEqv" "RemoteRScriptCount" "RemoteRoot" "RemoteRootPos" "RemoteRootRot" "RemoteRot" "RemoteScriptTime" "RemoteServerCost" "RemoteStreamCost" "RemoteTScriptCount" "RemoteVelocity" "retif" "RPos2Slurl" "SameOwner" "boolSameOwnerOrGroup" "SameParcel" "SetStatus" "SLPPF" "SoundAlert" "SoundDelete" "SoundInvop" "SoundPing" "SoundRezzing" "SoundTyping" "sprintl" "sprintlt" "starst" "Stridx" "stringify" "stringifylt" "Strlen" "Strtrunc" "StrX" "Substr" "tarst" "TruncateDialogButton" "TruncateDialogList" "LstIdx" "Len" "FMin" "FMax" "FVecMax" "FVecMin" "MFree" "Max" "Min" "PosOffset" "Signof" "tif" "unless" "UnStatus" "until" "VecBetween" "VecFabsSum" "VecMult" "VecRound" "VecSubFAbs" "VecSum" "VecWithin" "Velocity" "VSameParcel" "VVSameParcel" "when" "wpf"
     )
   "cpp macros"
   :type 'list
@@ -242,7 +243,6 @@ in a different window."
 ;;
 ;; astyle buffer ...
 ;;
-
 (defun lsl-astyle-buffer (mcl)
   "ask for code length and pipe all buffer contents through
   astyle and replace with the output from astyle, then
@@ -252,18 +252,205 @@ in a different window."
   (whitespace-cleanup))
 
 
+;; for hi-lock-mode:
+;;
+;; The hi-lock-mode uses its own list of default faces for
+;; highlighting.  Since these defaults are not exactly great in this
+;; context, it seems better to have wrapper functions for
+;; highlight-regexp to add interactive highlighting that uses a
+;; particular face.  Some faces my be specified here.
+;;
+;; Using a wrapper also allows to put the newly-added highlighting at
+;; the top of the file automatically.
+;;
+;; Look into hi-lock.el.gz for details.
+;;
+(defun lsl-hi-lock-remove ()
+  "Remove hi-lock-mode patterns from the beginning of the buffer.
+
+You may want to customize hi-lock-file-patterns-range when you
+have many patterns."
+  (interactive)
+  (let ((startpos nil)
+	(target-regexp (concat "\\<" hi-lock-file-patterns-prefix ":")))
+    (save-excursion
+      (save-restriction
+	(widen)
+	(goto-char (point-min))
+	(re-search-forward target-regexp
+			   (+ (point) hi-lock-file-patterns-range) t)
+	(beginning-of-line)
+	(setq startpos (point))
+	(while (and (re-search-forward target-regexp (+ (point) 100) t)
+		    (not (looking-at "\\s-*end")))
+	  (end-of-line)
+	  (condition-case nil
+	      (delete-region startpos (point))
+	    (error (message "Invalid pattern list expression at %d" (line-number-at-pos)))))))))
+
+
+(defun lsl-hi-lock-add (whichface)
+  "Add the symbol at point to the patterns highlighted through
+hi-lock-mode; then write the current patterns to the beginning of
+the file.
+
+The argument whichface specifies which face to use for the
+highlighting.
+
+You may want to customize hi-lock-file-patterns-range when you
+have many patterns."
+  (lsl-hi-lock-remove)
+  (let* ((regexp (hi-lock-regexp-okay (find-tag-default-as-symbol-regexp))))
+    (hi-lock-set-pattern regexp whichface))
+  (save-excursion
+    (goto-char (point-min))
+    (hi-lock-write-interactive-patterns)
+    (beginning-of-line)
+    (kill-line)))
+
+
+(defun lsl-hi-lock-constant ()
+  "add a hi-lock-mode pattern to highlight something that is a
+constant"
+  (interactive)
+  (lsl-hi-lock-add font-lock-comment-delimiter-face))
+
+
+(defun lsl-hi-lock-functionlike ()
+  "add a hi-lock-mode pattern to highlight something that is like
+a function"
+  (interactive)
+  (lsl-hi-lock-add font-lock-warning-face))
+
+
+(defun lsl-modeset-all-buffers ()
+  "For all buffers visiting files with names ending in .lsl, enable lsl-mode.
+
+When changes are made to lsl-mode, it can be advisable to reload
+the mode.  When lsl-mode is unloaded, it´s also disabled for all
+buffers and needs to be re-enabled once the mode has been
+reloaded.
+
+This function goes through all buffers and enables lsl-mode for
+each buffer, depending on the name of the file the buffer is
+visiting.  When lsl-mode is already enabled for such a buffer,
+the buffers´ mode remains unchanged."
+  (interactive)
+  (dolist (buffer (buffer-list))
+    (let ((filenameofbuffer (buffer-file-name buffer)))
+      (unless (eq nil filenameofbuffer)
+	(if (string-match ".*\.lsl$" filenameofbuffer)
+	    (with-current-buffer buffer (set-auto-mode-0 'lsl-mode t)))))))
+
+
+(defun lsl-hi-lock-message (unused)
+  "return non-nil to allow setting hi-lock-mode without asking"
+  (message "hi-lock patterns apply for buffer %s" (buffer-name)))
+
+
+(defadvice hi-lock-set-file-patterns (after lsl-hi-lock-set-file-patterns-advice activate)
+  "Advise \\[hi-lock-set-file-patterns] to set
+`hi-lock-interactive-patterns´ to the highlighting-patterns read
+from the buffer.  This lets the `lsl-hi-lock-*´ functions work as
+intended.
+
+
+In detail:
+
+When visiting a file, \\[hi-lock-find-patterns] extracts the
+highlighting-patterns from the buffer and calls
+\\[hi-lock-set-file-patterns] which puts them into the variable
+`hi-lock-file-patterns´.
+
+When the patterns are prepended to the buffer,
+\\[hi-lock-write-interactive-patterns] takes them from the
+variable `hi-lock-interactive-patterns´.  This variable is added
+to through user actions.
+
+To keep the highlighting-patterns prepended to the buffer up to
+date, the `lsl-hi-lock-*´ functions remove them and use
+\\[hi-lock-write-interactive-patterns] to put them back.  This
+effectively removes all highlighting-patterns which have been
+read from the buffer and leaves only those patterns which have
+been added through user actions recently, i. e. since the file
+has been visited.  Obviously, this is undesirable because the
+already existing patterns are lost.
+
+With \\[lsl-hi-lock-set-file-patterns-advice], the
+highlighting-patterns found in the buffer are put into
+`hi-lock-interactive-patterns´ when \\[hi-lock-set-file-patterns]
+is called.  This ensures that they don´t get lost."
+(setq hi-lock-interactive-patterns (ad-get-arg 0)))
+
+
+;; (defun lsl-hi-lock-set-file-patterns (patterns)
+;;   "Replace file patterns list with PATTERNS and refontify.
+
+;; This is a modified version of \\[hi-lock-set-file-patterns] from
+;; hi-lock.el: When reading highlighting patterns from a buffer,
+;; \\[hi-lock-set-file-patterns] does not assign them to
+;; `hi-lock-interactive-patterns´.  To be able to prepend newly
+;; created patterns as well as those patterns read from the buffer
+;; with the `lsl-hi-lock-*´ functions, this function sets
+;; `hi-lock-interactive-patterns´ to the patterns read from the
+;; buffer."
+;;   (when (or hi-lock-file-patterns patterns)
+;;     (font-lock-remove-keywords nil hi-lock-file-patterns)
+;;     (setq hi-lock-file-patterns patterns)
+;;     (setq hi-lock-interactive-patterns patterns)
+;;     (font-lock-add-keywords nil hi-lock-file-patterns t)
+;;     (font-lock-fontify-buffer)))
+
+
+;; simplify indenting
+;;
+(defun lsl-indent-defun ()
+  "indent the function point is currently within"
+  (interactive)
+  (save-excursion (mark-defun)
+		  (indent-region (point) (mark))))
+
+
+(defun lsl-mode-auto-enable ()
+  "automatically enable lsl-mode for some files when visiting,
+unless already enabled"
+  (unless (assoc-default "\\.lsl$" auto-mode-alist)
+    (add-to-list 'auto-mode-alist '("\\.lsl$" . lsl-mode))))
+
+
+;;
+;; keymap for lsl-mode
+;;
+
 (defvar lsl-mode-map nil "keymap for lsl-mode")
 
 (setq lsl-mode-map (make-sparse-keymap))
 (define-key lsl-mode-map (kbd "C-c h") 'lsl-lookup-lsl-ref2)
 (define-key lsl-mode-map (kbd "C-c a") 'lsl-astyle-buffer)
 
+;; highlight-symbol-at-point is by default bound to C-x w .
+;; when hi-lock-mode is enabled
+;;
+(define-key lsl-mode-map (kbd "C-x w c") 'lsl-hi-lock-constant)
+(define-key lsl-mode-map (kbd "C-x w f") 'lsl-hi-lock-functionlike)
 
-(define-derived-mode lsl-mode c-mode "LSL"
-;;(define-derived-mode lsl-mode c++-mode "LSL"
+;; put indenting on F6
+;;
+(define-key lsl-mode-map (kbd "<f6>") 'lsl-indent-defun)
+
+
+;; c-mode and c++-mode apparently use basically the same code.  The
+;; most noticable difference is that M-x comment-region uses //
+;; comments intead of block comments.
+;;
+;; (define-derived-mode lsl-mode c-mode "LSL"
+(define-derived-mode lsl-mode c++-mode "LSL"
   "Major mode for editing LSL.
 \\{lsl-mode-map}"
   (setq font-lock-defaults '((lsl-font-lock-keywords) nil nil))
-  (auto-complete-mode))
+  (auto-complete-mode)
+  (hi-lock-mode)
+  (setq hi-lock-file-patterns-range 65536)
+  (setq hi-lock-file-patterns-policy 'lsl-hi-lock-message))
 
 (provide 'lsl-mode)
