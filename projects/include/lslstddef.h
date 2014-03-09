@@ -335,7 +335,9 @@ afootell(string _msg) {
 #define sprintl(...)                         llDumpList2String([__VA_ARGS__], " ")
 #define sprintlt(...)                        llDumpList2String([__VA_ARGS__], "|")
 #define stringifylt(_l)                      llDumpList2String(_l, "|")
+#define stringify(_sep, _l)                  llDumpList2String(_l, #_sep)
 #define apf(...)                             llSay(PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
+#define wpf(...)                             llWhisper(PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
 #define opf(...)                             llOwnerSay(fprintl(__VA_ARGS__))
 #define parst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintl(__VA_ARGS__))
 #define tarst(_k, ...)                       llRegionSayTo(_k, PUBLIC_CHANNEL, fprintlt(__VA_ARGS__))
@@ -486,6 +488,14 @@ afootell(string _msg) {
 #define ProtocolSimpleData              Endstr(_MESSAGE, 8)  // (_STD_PROTMESSAGELEN) + 1
 #define ProtocolData(_s)                llParseString2List(_MESSAGE, [_s], [])  // _s is the separator
 #define continue                        jump
+
+// for if() statements that return from something
+//
+#define retif                           if
+
+// an explicit guard statement
+//
+#define guard(_cond)                    if(_cond) { return; }
 
 
 //
