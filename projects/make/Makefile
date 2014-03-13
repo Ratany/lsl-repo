@@ -1,6 +1,7 @@
 SRC=$(wildcard src/*.lsl)
 LIB=$(wildcard ../lib/*.lsl)
 LOC=$(wildcard ./lib/*.h)
+LOC+=$(wildcard ./lib/*.lsl)
 INC=$(wildcard ../include/*.h)
 DBG=$(subst .lsl,.i,$(subst src/,dbg/,$(SRC)))
 AUTOVERSION=$(subst .lsl,.h,$(subst src/,avn/,$(SRC)))
@@ -72,7 +73,7 @@ bin/%.o: dbg/%.i
 
 TAGS: $(SRC) $(LIB) $(LOC) $(INC)
 #	@echo "generating $(TAGS)"
-	@etags $(SRC) $(LIB) $(LOC) $(INC)
+	@etags --language=c $(SRC) $(LIB) $(LOC) $(INC)
 
 dep/%.di: src/%.lsl
 #	@echo "generating dependencies: $@"
