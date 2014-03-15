@@ -96,64 +96,38 @@
 
 ;; (defvar lsl-builtin-regexp "\\<ll[A-Z][a-zA-Z]+\\>")
 (defvar lsl-builtin-regexp (regexp-opt lsl-functions 'words))
+(defvar lsl-constant-regexp (regexp-opt lsl-constants 'words))
+(defvar lsl-cpp-regexp (regexp-opt lsl-cpp 'words))
+(defvar lsl-event-regexp (regexp-opt lsl-events 'words))
+(defvar lsl-faketypes-regexp (regexp-opt lsl-faketypes 'words))
 (defvar lsl-keywords-regexp (regexp-opt lsl-keywords 'words))
+(defvar lsl-macros-regexp (regexp-opt lsl-macros 'words))
 (defvar lsl-type-regexp (regexp-opt lsl-types 'words))
 
-(defvar lsl-faketypes-regexp (regexp-opt lsl-faketypes 'words))
-
-(defvar lsl-constant-regexp (regexp-opt lsl-constants 'words))
-(defvar lsl-event-regexp (regexp-opt lsl-events 'words))
-
-
-(defvar lsl-cpp-regexp (regexp-opt lsl-cpp 'words))
-(defvar lsl-macros-regexp (regexp-opt lsl-macros 'words))
-
-
-(setq lsl-font-lock-keywords
+(defvar lsl-font-lock-keywords
   `(,lsl-keywords-regexp
     (,lsl-type-regexp . font-lock-type-face)
-
-;; <modifications for lslstddef.h>
-;;
     (,lsl-faketypes-regexp . font-lock-type-face)
     (,lsl-cpp-regexp . font-lock-preprocessor-face)
     (,lsl-macros-regexp . font-lock-warning-face)
-;;
-;; </modifications for lslstddef.h>
-
 ;;    ("\\(\\<\\S +\\>\\)\\s *(" 1 font-lock-function-name-face t)
     (,lsl-event-regexp 0 font-lock-builtin-face t)
     (,lsl-builtin-regexp 0 font-lock-builtin-face t)
     (,(concat lsl-type-regexp "\\W+\\(\\<\\w+\\>\\)") 2 font-lock-variable-name-face)
-
-;; <modifications for lslstddef.h>
-;;
     (,(concat lsl-faketypes-regexp "\\W+\\(\\<\\w+\\>\\)") 2 font-lock-variable-name-face)
-;;
-;; </modifications for lslstddef.h>
-
     (,lsl-constant-regexp . font-lock-constant-face)
-))
+    )
+  "Syntax-highlighting regexps for lsl-mode.")
 
 
-;; <modifications for lslstddef.h>
-;;
-(setq lsl-cpp nil)
-(setq lsl-macros nil)
-(setq lsl-cpp-regexp nil)
-(setq lsl-macros-regexp nil)
-;;
-;; </modifications for lslstddef.h>
-(setq lsl-functions nil)
-
-;; not sure if this is great:
 (setq lsl-builtin-regexp nil)
-(setq lsl-keywords-regexp nil)
-(setq lsl-type-regexp nil)
 (setq lsl-constant-regexp nil)
+(setq lsl-cpp-regexp nil)
 (setq lsl-event-regexp nil)
-(setq lsl-variable-name-regexp nil)
-;;
+(setq lsl-faketypes-regexp nil)
+(setq lsl-keywords-regexp nil)
+(setq lsl-macros-regexp nil)
+(setq lsl-type-regexp nil)
 
 
 ;;
@@ -162,6 +136,7 @@
 ;; functions to look up stuff on the wiki
 ;;
 ;;
+
 
 (defcustom lsl-reference-url "http://lslwiki.net/lslwiki/wakka.php?wakka="
   "URL for LSL reference website.
@@ -182,6 +157,14 @@ The value can be any of:
 “http://www.google.com/search?q=”"
   :type '(string)
   :group 'lsl-mode)
+
+
+(defun lsl-browse-url (url)
+  "This is a wrapper function for lsl-lookup-lsl-site.  It uses
+the built-in web browser for the lookups to display the web page
+in a different window."
+  (pop-to-buffer "*eww*")
+  (eww url))
 
 
 (defun lsl-lookup-lsl-site (site-url)
@@ -231,96 +214,270 @@ See also `lsl-lookup-lsl-ref'."
   (lsl-lookup-lsl-site lsl-reference-url2))
 
 
-(defun lsl-browse-url (url)
-  "This is a wrapper function for lsl-lookup-lsl-site.  It uses
-the built-in web browser for the lookups to display the web page
-in a different window."
+;;
+;; above are functions to look up stuff on the wiki
+;;
+
+;; hi-lock-mode integration
+;;
+;; Much thanks goes to Michael Heerdegen <michael_heerdegen@web.de>
+;; for all his help!
+;;
+;; load the mode to avoid warnings when compiling
+;;
+(require 'hi-lock)
+
+
+(defvar-local lsl-hi-lock-patterns-file nil
+  "Remember the name of the file to read hi-lock
+  highlighting-patterns for this buffer from."
+;; use as buffer or dir local variable
+)
+
+
+(defcustom lsl-hi-lock-file-name-specifier "lsl-hi-lock-patterns-file"
+  "Expression used to find the name of a file to read hi-lock
+highlighting-patterns from.
+
+The default is set such that a line specifying the file variable
+`lsl-hi-lock-patterns-file' can be found.
+
+This can be a regular expression.  See
+`lsl-hi-lock-get-patterns-file-name' for how `lsl-mode' uses this
+expression."
+  :type '(string)
+  :group 'lsl-mode)
+
+
+(defcustom lsl-hi-lock-patterns-end-marker "hi-lock-patterns-end"
+  "Expression used to mark the end of hi-lock
+highlighting-patterns in a buffer.  This can be a regular
+expression.
+
+The expression that will be searched for is the return value of
+`hi-lock-make-reasonable-end-marker'.  It is appended to the
+buffer, in a new line, by `hi-lock-write-patterns-file'.
+
+`lsl-get-patterns-from-file' uses it to figure out when to stop
+reading the buffer."
+  :type '(string)
+  :group 'lsl-mode)
+
+
+(defun lsl-hi-lock-get-patterns-file-name ()
+  "When `lsl-hi-lock-patterns-file' is not `nil',
+attempt to set it from `lsl-hi-lock-file-name-specifier' by
+searching the current buffer.
+
+The search is limited to between `point-min' and (+ (point-min)
+1024)."
   (interactive)
-  (pop-to-buffer "*eww*")
-  (eww url))
-
-
-;;
-;; astyle buffer ...
-;;
-(defun lsl-astyle-buffer (mcl)
-  "ask for code length and pipe all buffer contents through
-  astyle and replace with the output from astyle, then
-  whitespace-cleanup"
-  (interactive "nMax code length: ")
-  (shell-command-on-region (point-min) (point-max) (format "astyle --max-code-length=%d" mcl) nil t 'shell-command-default-error-buffer t)
-  (whitespace-cleanup))
-
-
-;; for hi-lock-mode:
-;;
-;; The hi-lock-mode uses its own list of default faces for
-;; highlighting.  Since these defaults are not exactly great in this
-;; context, it seems better to have wrapper functions for
-;; highlight-regexp to add interactive highlighting that uses a
-;; particular face.  Some faces my be specified here.
-;;
-;; Using a wrapper also allows to put the newly-added highlighting at
-;; the top of the file automatically.
-;;
-;; Look into hi-lock.el.gz for details.
-;;
-(defun lsl-hi-lock-remove ()
-  "Remove hi-lock-mode patterns from the beginning of the buffer.
-
-You may want to customize hi-lock-file-patterns-range when you
-have many patterns."
-  (interactive)
-  (let ((startpos nil)
-	(target-regexp (concat "\\<" hi-lock-file-patterns-prefix ":")))
+  (unless lsl-hi-lock-patterns-file
     (save-excursion
       (save-restriction
 	(widen)
 	(goto-char (point-min))
-	(re-search-forward target-regexp
-			   (+ (point) hi-lock-file-patterns-range) t)
-	(beginning-of-line)
-	(setq startpos (point))
-	(while (and (re-search-forward target-regexp (+ (point) 100) t)
-		    (not (looking-at "\\s-*end")))
-	  (end-of-line)
-	  (condition-case nil
-	      (delete-region startpos (point))
-	    (error (message "Invalid pattern list expression at %d" (line-number-at-pos)))))))))
+	(let ((file-name-specifier
+	       (concat "^" comment-start "\\(-\\*- \\)*" lsl-hi-lock-file-name-specifier ": ")))
+	  (when (re-search-forward file-name-specifier (+ (point) 1024) t)
+	    (when (looking-at "\\\"") (forward-char))
+	    (setq lsl-hi-lock-patterns-file (thing-at-point 'filename t))))))))
+
+
+(defun hi-lock-make-reasonable-end-marker (for-writing)
+  "Return a regex which is a reasonable end-marker to indicate
+ where hi-lock highlighting-patterns inserted into a buffer end.
+ Reasonable particularly means that the marker shall be usable
+ even when `comment-start' is `nil'.
+
+When the argument 'for-writing' is `nil', return a regex which
+matches the end-marker used in the patterns´ buffer.
+
+Otherwise, the returned marker is suited to be appended to a
+buffer."
+  (if for-writing
+      ;; when for writing
+      (if (not comment-start)
+	  ;; assume global default as default for comment-start
+	  (concat "# " lsl-hi-lock-patterns-end-marker)
+	(concat comment-start lsl-hi-lock-patterns-end-marker))
+    ;; when not for writing
+    (let ((useful-starter (concat "^" comment-start "\\_<")))
+      (unless comment-start
+	(setq useful-starter "^...?\\_<"))
+      (concat useful-starter lsl-hi-lock-patterns-end-marker "\\_>"))))
+
+
+(defun lsl-get-patterns-from-file (file)
+  "Read hi-lock-mode highlighting-patterns from a file and return
+the patterns read."
+  (with-current-buffer
+      (find-file-noselect file)
+    (goto-char (point-min))
+    (message "searching: %s" (hi-lock-make-reasonable-end-marker nil))
+    (let ((marker-pos (re-search-forward (hi-lock-make-reasonable-end-marker nil) (point-max) t)))
+      (when marker-pos
+	(goto-char marker-pos)
+	(forward-line -1)
+	(end-of-line)
+	(setq marker-pos (point))
+	(goto-char (point-min))
+	(message "reading hi-lock patterns from %s (characters %d..%d)"
+		 (buffer-name)
+		 (point-min) marker-pos)
+	(let ((patterns nil))
+	  (while (< (point) marker-pos)
+	    (setq patterns (append (read (current-buffer)) patterns)))
+	  (setq patterns patterns))))))
+
+
+(defun lsl-mode-apply-hi-lock-patterns ()
+  "Use hi-lock-mode highlighting-patterns from another file.
+
+Which file to read the patterns from is specified through
+´lsl-hi-lock-file-name-specifier'.  To specify a file, put a line
+like
+
+
+// lsl-hi-lock-filename: ../some-file.fontify
+
+
+into the buffer you want to use the file with.  The file will be
+visited in another buffer, and additional patterns are written to
+the other buffer and saved to the file when this file is saved."
+  (lsl-hi-lock-get-patterns-file-name)
+  (when lsl-hi-lock-patterns-file
+    (set-auto-mode-0 'hi-lock-mode t)
+    (let ((patterns (lsl-get-patterns-from-file lsl-hi-lock-patterns-file)))
+      (if (not patterns)
+	  (message "found no patterns to apply to %s in %s"
+		   (buffer-name)
+		   lsl-hi-lock-patterns-file)
+	(hi-lock-set-file-patterns patterns)
+	(message "%d patterns applied from file %s"
+		 (length patterns)
+		 lsl-hi-lock-patterns-file))))
+  ;; also apply patterns in the current buffer itself
+  (hi-lock-find-patterns))
+
+
+(defun hi-lock-write-patterns-file ()
+  "Use this instead of `hi-lock-write-interactive-patterns'."
+  (interactive)
+  (lsl-hi-lock-get-patterns-file-name)
+  (when lsl-hi-lock-patterns-file
+    (let ((all-patterns
+	   (delete-dups (append
+			 ;; put most recently added into first line of buffer
+			 hi-lock-interactive-patterns
+			 (lsl-get-patterns-from-file lsl-hi-lock-patterns-file)))))
+      (with-current-buffer
+	  (find-file-noselect lsl-hi-lock-patterns-file)
+	(erase-buffer)
+	(mapc
+	 (lambda (this)
+	   (insert (format "(%s)\n" (prin1-to-string this))))
+	 all-patterns)
+	(insert (hi-lock-make-reasonable-end-marker t) "\n")
+	(save-buffer)))))
+
+
+(defun lsl-hi-lock-revert-patterns ()
+  "Unset all hi-lock highlighting-patterns for the current buffer
+and apply patterns from the buffers´ patterns file.  Do nothing
+when no file for storing the patterns is specified for the
+current buffer."
+  (interactive)
+  (lsl-hi-lock-get-patterns-file-name)
+  (if (not lsl-hi-lock-patterns-file)
+      (error "No buffer with patterns to revert to has been set")
+    (when hi-lock-interactive-patterns
+      (mapc
+       (lambda (this)
+	 (hi-lock-unface-buffer (car this)))
+       hi-lock-interactive-patterns)
+      (setq hi-lock-interactive-patterns nil))
+    (lsl-mode-apply-hi-lock-patterns)))
+
+
+(defun lsl-mode-mode ()
+  "Do something when lsl-mode is to be enabled."
+  (lsl-mode-apply-hi-lock-patterns))
+
+
+;; define faces (to be used with hi-lock-mode)
+;;
+
+(defgroup lsl-faces nil
+  "Faces for lsl-mode."
+  :group 'lsl-font-lock
+  :group 'faces)
+
+
+(defface lsl-global-variable
+  '(
+    (t (:foreground "Magenta")))
+  "Face to highlight global variables."
+  :group 'lsl-faces)
+
+
+(defface lsl-functionlike
+  '(
+    (t (:foreground "LightGreen")))
+  "Face to highlight something that is like a function.
+
+This face is intended for highlighting #defines that are being
+used like functions."
+  :group 'lsl-faces)
+
+
+(defface lsl-constant
+  '(
+    (t (:foreground "brown4")))
+  "Face to highlight something that is a constant."
+  :group 'lsl-faces)
+
+
+;;
+;; lsl-mode specifc functions to use hi-lock-mode
+;;
+
+(defun lsl-hi-lock-message (unused)
+  "return non-nil to allow setting hi-lock-mode without asking"
+  (message "hi-lock patterns apply with buffer %s" (buffer-name)))
 
 
 (defun lsl-hi-lock-add (whichface)
-  "Add the symbol at point to the patterns highlighted through
-hi-lock-mode; then write the current patterns to the beginning of
-the file.
-
-The argument whichface specifies which face to use for the
-highlighting.
-
-You may want to customize hi-lock-file-patterns-range when you
-have many patterns."
-  (lsl-hi-lock-remove)
+  "Highlight something with a face given in whichface."
   (let* ((regexp (hi-lock-regexp-okay (find-tag-default-as-symbol-regexp))))
     (hi-lock-set-pattern regexp whichface))
-  (save-excursion
-    (goto-char (point-min))
-    (hi-lock-write-interactive-patterns)
-    (beginning-of-line)
-    (kill-line)))
+  (set-buffer-modified-p t))
 
 
 (defun lsl-hi-lock-constant ()
   "add a hi-lock-mode pattern to highlight something that is a
 constant"
   (interactive)
-  (lsl-hi-lock-add font-lock-comment-delimiter-face))
+  (lsl-hi-lock-add 'lsl-constant))
 
 
 (defun lsl-hi-lock-functionlike ()
   "add a hi-lock-mode pattern to highlight something that is like
 a function"
   (interactive)
-  (lsl-hi-lock-add font-lock-warning-face))
+  (lsl-hi-lock-add 'lsl-functionlike))
+
+
+(defun lsl-hi-lock-global-variable ()
+  "add a hi-lock-mode pattern to highlight something that is a
+global variable"
+  (interactive)
+  (lsl-hi-lock-add 'lsl-global-variable))
+
+
+;;
+;; functions for when reloading lsl-mode
+;;
 
 
 (defun lsl-modeset-all-buffers ()
@@ -343,79 +500,33 @@ the buffers´ mode remains unchanged."
 	    (with-current-buffer buffer (set-auto-mode-0 'lsl-mode t)))))))
 
 
-(defun lsl-hi-lock-message (unused)
-  "return non-nil to allow setting hi-lock-mode without asking"
-  (message "hi-lock patterns apply for buffer %s" (buffer-name)))
-
-
-(defadvice hi-lock-set-file-patterns (after lsl-hi-lock-set-file-patterns-advice activate)
-  "Advise \\[hi-lock-set-file-patterns] to set
-`hi-lock-interactive-patterns´ to the highlighting-patterns read
-from the buffer.  This lets the `lsl-hi-lock-*´ functions work as
-intended.
-
-
-In detail:
-
-When visiting a file, \\[hi-lock-find-patterns] extracts the
-highlighting-patterns from the buffer and calls
-\\[hi-lock-set-file-patterns] which puts them into the variable
-`hi-lock-file-patterns´.
-
-When the patterns are prepended to the buffer,
-\\[hi-lock-write-interactive-patterns] takes them from the
-variable `hi-lock-interactive-patterns´.  This variable is added
-to through user actions.
-
-To keep the highlighting-patterns prepended to the buffer up to
-date, the `lsl-hi-lock-*´ functions remove them and use
-\\[hi-lock-write-interactive-patterns] to put them back.  This
-effectively removes all highlighting-patterns which have been
-read from the buffer and leaves only those patterns which have
-been added through user actions recently, i. e. since the file
-has been visited.  Obviously, this is undesirable because the
-already existing patterns are lost.
-
-With \\[lsl-hi-lock-set-file-patterns-advice], the
-highlighting-patterns found in the buffer are put into
-`hi-lock-interactive-patterns´ when \\[hi-lock-set-file-patterns]
-is called.  This ensures that they don´t get lost."
-(setq hi-lock-interactive-patterns (ad-get-arg 0)))
-
-
-;; (defun lsl-hi-lock-set-file-patterns (patterns)
-;;   "Replace file patterns list with PATTERNS and refontify.
-
-;; This is a modified version of \\[hi-lock-set-file-patterns] from
-;; hi-lock.el: When reading highlighting patterns from a buffer,
-;; \\[hi-lock-set-file-patterns] does not assign them to
-;; `hi-lock-interactive-patterns´.  To be able to prepend newly
-;; created patterns as well as those patterns read from the buffer
-;; with the `lsl-hi-lock-*´ functions, this function sets
-;; `hi-lock-interactive-patterns´ to the patterns read from the
-;; buffer."
-;;   (when (or hi-lock-file-patterns patterns)
-;;     (font-lock-remove-keywords nil hi-lock-file-patterns)
-;;     (setq hi-lock-file-patterns patterns)
-;;     (setq hi-lock-interactive-patterns patterns)
-;;     (font-lock-add-keywords nil hi-lock-file-patterns t)
-;;     (font-lock-fontify-buffer)))
-
-
-;; simplify indenting
-;;
-(defun lsl-indent-defun ()
-  "indent the function point is currently within"
-  (interactive)
-  (save-excursion (mark-defun)
-		  (indent-region (point) (mark))))
-
-
 (defun lsl-mode-auto-enable ()
   "automatically enable lsl-mode for some files when visiting,
 unless already enabled"
   (unless (assoc-default "\\.lsl$" auto-mode-alist)
     (add-to-list 'auto-mode-alist '("\\.lsl$" . lsl-mode))))
+
+
+;;
+;; astyle buffer ...
+;;
+(defun lsl-astyle-buffer (mcl)
+  "Ask for code length and pipe all buffer contents through
+  astyle and replace with the output from astyle, then do
+  whitespace-cleanup."
+  (interactive "nMax code length: ")
+  (shell-command-on-region (point-min) (point-max) (format "astyle --max-code-length=%d" mcl) nil t 'shell-command-default-error-buffer t)
+  (whitespace-cleanup))
+
+
+;; simplify indenting
+;;
+(defun lsl-indent-defun ()
+  "Indent the function point is currently within."
+  (interactive)
+  (save-excursion
+    (mark-defun)
+    (indent-region (point) (mark))))
 
 
 ;;
@@ -427,12 +538,16 @@ unless already enabled"
 (setq lsl-mode-map (make-sparse-keymap))
 (define-key lsl-mode-map (kbd "C-c h") 'lsl-lookup-lsl-ref2)
 (define-key lsl-mode-map (kbd "C-c a") 'lsl-astyle-buffer)
+(define-key lsl-mode-map (kbd "<C-f1>") 'recompile)
+(define-key lsl-mode-map (kbd "<C-S-f1>") 'compile)
 
 ;; highlight-symbol-at-point is by default bound to C-x w .
 ;; when hi-lock-mode is enabled
 ;;
 (define-key lsl-mode-map (kbd "C-x w c") 'lsl-hi-lock-constant)
 (define-key lsl-mode-map (kbd "C-x w f") 'lsl-hi-lock-functionlike)
+(define-key lsl-mode-map (kbd "C-x w g") 'lsl-hi-lock-global-variable)
+(define-key lsl-mode-map (kbd "C-x w C-r") 'lsl-hi-lock-revert-patterns)
 
 ;; put indenting on F6
 ;;
@@ -448,9 +563,12 @@ unless already enabled"
   "Major mode for editing LSL.
 \\{lsl-mode-map}"
   (setq font-lock-defaults '((lsl-font-lock-keywords) nil nil))
+  (lsl-mode-auto-enable)
   (auto-complete-mode)
   (hi-lock-mode)
-  (setq hi-lock-file-patterns-range 65536)
-  (setq hi-lock-file-patterns-policy 'lsl-hi-lock-message))
+  (setq hi-lock-file-patterns-policy 'lsl-hi-lock-message)
+  (add-hook 'after-save-hook 'hi-lock-write-patterns-file t t)
+  (lsl-mode-mode))
+
 
 (provide 'lsl-mode)

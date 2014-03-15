@@ -13,25 +13,16 @@
 ;; // <http://www.gnu.org/licenses/>.
 
 
-;; load lsl-mode
-;;
-(load "~/emacs/lsl-mode")
-
-;; enable it automatically for files named like *.lsl
-;;
-(lsl-mode-auto-enable)
-
-  
-
 (defun my-reload-lsl ()
   "Reload lsl-mode --- reloads the mode, enables it for all
 relevant buffers and adds an entry to auto-mode-alist when
 needed."
   (interactive)
-  (unload-feature 'lsl-mode)
+  (when (fboundp 'lsl-mode)
+    (unload-feature 'lsl-mode))
+  (byte-compile-file "~/emacs/lsl-mode.el")
   (load "~/emacs/lsl-mode")
   (lsl-modeset-all-buffers)
-  (lsl-mode-auto-enable)
   (message "lsl-mode reloaded"))
 
 
@@ -55,3 +46,8 @@ needed."
 ;; (add-hook 'lsl-mode 'my-ac-lsl)
 
 ;; (global-hi-lock-mode 1)
+
+
+;; load lsl-mode
+;;
+(load "~/emacs/lsl-mode")
