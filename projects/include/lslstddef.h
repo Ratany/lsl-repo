@@ -1,3 +1,4 @@
+// -*- eval: (tags-mode) -*-
 
 // This program is free software: you can redistribute it and/or
 // modify it under the terms of the GNU General Public License as
@@ -12,6 +13,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see
 // <http://www.gnu.org/licenses/>.
+
+
+// TAG:CREATED quite some time ago
+// TAG:LAST-MODIFIED 2014-05-17 17:16:30 CEST
+// TAG:FILENAME lslstddef.h
 
 
 // standard defines for scripts
@@ -151,6 +157,10 @@ float Dist2Line(vector _linestart, vector _lineend, vector _pos) {
 #define VSameParcel(_v, _k2)                 (llList2Key(llGetParcelDetails(_v, [PARCEL_DETAILS_ID] ), 0) == llList2Key(llGetParcelDetails(RemotePos(_k2), [PARCEL_DETAILS_ID] ), 0) )
 #define VVSameParcel(_v, _v2)                (llList2Key(llGetParcelDetails(_v, [PARCEL_DETAILS_ID] ), 0) == llList2Key(llGetParcelDetails(_v2, [PARCEL_DETAILS_ID] ), 0) )
 
+
+#define sSlurlyfy(_sregion, _v)              ("http://slurl.com/secondlife/" + llEscapeURL(_sregion) + "/" + stringify(/, ([(int)_v.x, (int)_v.y, (int)_v.z])))
+
+
 #define GetMenuChannel                       (-llGetUnixTime() - (int)llFrand((float)llGetUnixTime()) - 100)
 
 // used with growing
@@ -263,7 +273,7 @@ string _SoundAlert = "ed124764-705d-d497-167a-182cd9fa2e6c";
 #define SoundAlert                           llPlaySound("ed124764-705d-d497-167a-182cd9fa2e6c", 1.0)
 #endif
 
-#define SoundRezzing                         llPlaySound("3c8fc726-1fd6-862d-fa01-16c5b2568db6", 1.0)
+#define SoundRezzing                         llPlaySound("f4a0660f-5446-dea2-80b7-6482a082803c", 1.0)
 #define SoundDelete                          llPlaySound("0cb7b00a-4c10-6948-84de-a93c09af2ba9", 1.0)
 #define SoundTyping                          llPlaySound("5e191c7b-8996-9ced-a177-b2ac32bfea06", 1.0)
 
@@ -356,6 +366,7 @@ afootell(string _msg) {
 
 
 // constants
+#define _STD_MAX_MTTDISTANCE                 64.0
 #define _STD_MAXDIALOGBUTTONS                12
 #define _STD_MAXDIALOGTITLELEN               511
 #define _STD_RLVCHANNEL                      -1812221819
@@ -369,6 +380,12 @@ afootell(string _msg) {
 #define _STD_KEYLENGTH                       36
 #define _STD__CONST_e                        2.71828182845904523536
 #define _STD_PROTMESSAGELEN                  7  // 0 -- 8
+
+#define _STD_COORD_MIN_fX                    0.0
+#define _STD_COORD_MIN_fY                    0.0
+#define _STD_COORD_MAX_fX                    255.0
+#define _STD_COORD_MAX_fY                    255.0
+
 
 
 // timestamps: 2014-01-20T00:28:21.383008Z
