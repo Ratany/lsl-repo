@@ -206,7 +206,7 @@ list getlinknumbersbylistnamedappend_attached(list names)
 	do
 		{
                         string thisname = llGetLinkName(n);
-			if(~llListFindList(names, thisname))
+			if(Onlst(names, thisname))
 				{
 					Enlist(strided, thisname, n, _GETLINKNUMBERSBYLISTNAMEDAPPEND_ATTACHED_APPENDIX);
 				}
@@ -237,7 +237,7 @@ list getlinknumbersbylistnamedappend_attached_notnamed(list names)
 	do
 		{
                         string thisname = llGetLinkName(n);
-			if(~llListFindList(names, thisname))
+			if(Onlst(names, thisname))
 				{
 					Enlist(strided, n, _GETLINKNUMBERSBYLISTNAMEDAPPEND_ATTACHED_NOTNAMED_APPENDIX);
 				}
