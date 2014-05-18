@@ -1,0 +1,5 @@
+(("\\_<\\(_\\|\\(USE_\\)\\|v\\|f\\|i\\|l\\|s\\|\\(timer[A-Z]\\)\\|\\(st\\)\\)[A-Z]*\\(_[A-Z]*\\)*\\_>" (0 (quote hi-constant) prepend)))
+(("\\_<FIXME\\_>" (0 (quote hi-yellow) prepend)))
+(("\\_<DEBUG[0-9]\\_>" (0 (quote hi-constant) prepend)))
+(("\\_<VERSION\\_>" (0 (quote hi-constant) prepend)))
+# hi-lock-patterns-end
