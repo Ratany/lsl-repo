@@ -1,4 +1,22 @@
 
+I`m updating lsl-mode with what I currently have, adding an extended
+version of hi-lock mode I made.  Hi-lock is part of emacs, so you need
+to make sure that the version included here is loaded.  It`s not
+required, though.
+
+I`m not sure if it works like this, please let me know if it doesn`t.
+
+
+Take a look at the htmlfontify package[1]; it works awesomely when you
+want to put your scripts on a web server.
+
+[1]: http://www.emacswiki.org/emacs/HtmlFontify
+
+
+2014-05-18
+
+
+
 lsl-mode.el has received some changes and additions.  It is now
 supposed to be used with auto-complete-mode, which in turn is supposed
 to be used with yasnippet.

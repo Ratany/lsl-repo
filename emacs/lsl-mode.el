@@ -77,7 +77,7 @@
   :group 'lsl-font-lock)
 
 (defcustom lsl-macros
-  '("afootell" "aftell" "afwis" "AgentIsHere" "apf" "arst" "BbxCenterPos" "BbxCornerPos" "BbxCorners" "BbxFrontBotLeftCorner" "BbxFrontBotRightCorner" "BbxFrontTopLeftCorner" "BbxFrontTopRightCorner" "BbxRearBotLeftCorner" "BbxRearBotRightCorner" "BbxRearTopLeftCorner" "BbxRearTopRightCorner" "BbxScale" "Begstr" "ClrStatus" "CompStatus" "concat" "concats" "continue" "CSVStrX" "DEBUGmsg" "DEBUGmsg0" "DEBUGmsg1" "DEBUGmsg2" "DEBUGmsg3" "DEBUGmsgLIB" "Dist2Line" "Endstr" "Enlist" "ERRORmsg" "event" "foreach" "fprintl" "fprintlt" "GetMenuChannel" "GetPrimText" "GLPP" "guard" "HasInventory" "HasStatus" "IfAttached" "IfEnlist" "IfElseEnlist" "IfMessage" "IfNotEnlist" "IfNStatus" "IfNStatusDo" "IfStatus" "IfStatusDo" "imp" "impa" "InFrontX" "InFrontXThisRoot" "InFrontXVecR" "InFrontXVecRr" "InFrontY" "InFrontYVecRr" "InFrontZ" "Instr" "InvIsCopy4Owner" "LoopDown" "LoopUp" "MultVec" "MultVec2" "NoPin" "NotInventory" "NotOnlst" "NotStatus" "ObjIsCopy4Owner" "ObjectMaybeNotAround" "Onlst" "opf" "parst" "PrimPercentUsed" "PrimsFree" "PrimsFree" "ProtocolData" "ProtocolID" "ProtocolSimpleData" "RemoteDesc" "RemoteGroup" "RemoteIsAttached" "RemoteName" "RemoteOwner" "RemoteOwnerName" "RemotePhantom" "RemotePhysCost" "RemotePos" "RemotePrimEqv" "RemoteRScriptCount" "RemoteRoot" "RemoteRootPos" "RemoteRootRot" "RemoteRot" "RemoteScriptTime" "RemoteServerCost" "RemoteStreamCost" "RemoteTScriptCount" "RemoteVelocity" "retif" "RPos2Slurl" "SameOwner" "boolSameOwnerOrGroup" "SameParcel" "SetStatus" "SLPPF" "SoundAlert" "SoundDelete" "SoundInvop" "SoundPing" "SoundRezzing" "SoundTyping" "sprintl" "sprintlt" "starst" "Stridx" "stringify" "stringifylt" "Strlen" "Strtrunc" "StrX" "Substr" "tarst" "TruncateDialogButton" "TruncateDialogList" "LstIdx" "Len" "FMin" "FMax" "FVecMax" "FVecMin" "MFree" "Max" "Min" "PosOffset" "Signof" "tif" "unless" "UnStatus" "until" "VecBetween" "VecFabsSum" "VecMult" "VecRound" "VecSubFAbs" "VecSum" "VecWithin" "Velocity" "VSameParcel" "VVSameParcel" "when" "wpf"
+  '("afootell" "aftell" "afwis" "AgentIsHere" "apf" "arst" "BbxCenterPos" "BbxCornerPos" "BbxCorners" "BbxFrontBotLeftCorner" "BbxFrontBotRightCorner" "BbxFrontTopLeftCorner" "BbxFrontTopRightCorner" "BbxRearBotLeftCorner" "BbxRearBotRightCorner" "BbxRearTopLeftCorner" "BbxRearTopRightCorner" "BbxScale" "Begstr" "ClrStatus" "CompStatus" "concat" "concats" "continue" "CSVStrX" "DEBUGmsg" "DEBUGmsg0" "DEBUGmsg1" "DEBUGmsg2" "DEBUGmsg3" "DEBUGmsgLIB" "Dist2Line" "Endstr" "Enlist" "ERRORmsg" "event" "foreach" "fprintl" "fprintlt" "GetMenuChannel" "GetPrimText" "GLPP" "guard" "HasInventory" "HasStatus" "IfAttached" "IfEnlist" "IfElseEnlist" "IfMessage" "IfNotEnlist" "IfNStatus" "IfNStatusDo" "IfStatus" "IfStatusDo" "imp" "impa" "InFrontX" "InFrontXThisRoot" "InFrontXVecR" "InFrontXVecRr" "InFrontY" "InFrontYVecRr" "InFrontZ" "Instr" "InvIsCopy4Owner" "LoopDown" "LoopUp" "MultVec" "MultVec2" "NoPin" "NotInventory" "NotOnlst" "NotStatus" "ObjIsCopy4Owner" "ObjectMaybeNotAround" "Onlst" "opf" "parst" "PrimPercentUsed" "PrimsFree" "PrimsFree" "ProtocolData" "ProtocolID" "ProtocolSimpleData" "RemoteDesc" "RemoteGroup" "RemoteIsAttached" "RemoteName" "RemoteOwner" "RemoteOwnerName" "RemotePhantom" "RemotePhysCost" "RemotePos" "RemotePrimEqv" "RemoteRScriptCount" "RemoteRoot" "RemoteRootPos" "RemoteRootRot" "RemoteRot" "RemoteScriptTime" "RemoteServerCost" "RemoteStreamCost" "RemoteTScriptCount" "RemoteVelocity" "retif" "RPos2Slurl" "SameOwner" "sSlurlyfy" "boolSameOwnerOrGroup" "SameParcel" "SetStatus" "SLPPF" "SoundAlert" "SoundDelete" "SoundInvop" "SoundPing" "SoundRezzing" "SoundTyping" "sprintl" "sprintlt" "starst" "Stridx" "stringify" "stringifylt" "Strlen" "Strtrunc" "StrX" "Substr" "tarst" "TruncateDialogButton" "TruncateDialogList" "LstIdx" "Len" "FMin" "FMax" "FVecMax" "FVecMin" "MFree" "Max" "Min" "PosOffset" "Signof" "tif" "unless" "UnStatus" "until" "VecBetween" "VecFabsSum" "VecMult" "VecRound" "VecSubFAbs" "VecSum" "VecWithin" "Velocity" "VSameParcel" "VVSameParcel" "when" "wpf"
     )
   "cpp macros"
   :type 'list
@@ -218,262 +218,14 @@ See also `lsl-lookup-lsl-ref'."
 ;; above are functions to look up stuff on the wiki
 ;;
 
-;; hi-lock-mode integration
-;;
-;; Much thanks goes to Michael Heerdegen <michael_heerdegen@web.de>
-;; for all his help!
-;;
-;; load the mode to avoid warnings when compiling
-;;
-(require 'hi-lock)
-
-
-(defvar-local lsl-hi-lock-patterns-file nil
-  "Remember the name of the file to read hi-lock
-  highlighting-patterns for this buffer from."
-;; use as buffer or dir local variable
-)
-
-
-(defcustom lsl-hi-lock-file-name-specifier "lsl-hi-lock-patterns-file"
-  "Expression used to find the name of a file to read hi-lock
-highlighting-patterns from.
-
-The default is set such that a line specifying the file variable
-`lsl-hi-lock-patterns-file' can be found.
-
-This can be a regular expression.  See
-`lsl-hi-lock-get-patterns-file-name' for how `lsl-mode' uses this
-expression."
-  :type '(string)
-  :group 'lsl-mode)
-
-
-(defcustom lsl-hi-lock-patterns-end-marker "hi-lock-patterns-end"
-  "Expression used to mark the end of hi-lock
-highlighting-patterns in a buffer.  This can be a regular
-expression.
-
-The expression that will be searched for is the return value of
-`hi-lock-make-reasonable-end-marker'.  It is appended to the
-buffer, in a new line, by `hi-lock-write-patterns-file'.
-
-`lsl-get-patterns-from-file' uses it to figure out when to stop
-reading the buffer."
-  :type '(string)
-  :group 'lsl-mode)
-
-
-(defun lsl-hi-lock-get-patterns-file-name ()
-  "When `lsl-hi-lock-patterns-file' is not `nil',
-attempt to set it from `lsl-hi-lock-file-name-specifier' by
-searching the current buffer.
-
-The search is limited to between `point-min' and (+ (point-min)
-1024)."
-  (interactive)
-  (unless lsl-hi-lock-patterns-file
-    (save-excursion
-      (save-restriction
-	(widen)
-	(goto-char (point-min))
-	(let ((file-name-specifier
-	       (concat "^" comment-start "\\(-\\*- \\)*" lsl-hi-lock-file-name-specifier ": ")))
-	  (when (re-search-forward file-name-specifier (+ (point) 1024) t)
-	    (when (looking-at "\\\"") (forward-char))
-	    (setq lsl-hi-lock-patterns-file (thing-at-point 'filename t))))))))
-
-
-(defun hi-lock-make-reasonable-end-marker (for-writing)
-  "Return a regex which is a reasonable end-marker to indicate
- where hi-lock highlighting-patterns inserted into a buffer end.
- Reasonable particularly means that the marker shall be usable
- even when `comment-start' is `nil'.
-
-When the argument 'for-writing' is `nil', return a regex which
-matches the end-marker used in the patterns´ buffer.
-
-Otherwise, the returned marker is suited to be appended to a
-buffer."
-  (if for-writing
-      ;; when for writing
-      (if (not comment-start)
-	  ;; assume global default as default for comment-start
-	  (concat "# " lsl-hi-lock-patterns-end-marker)
-	(concat comment-start lsl-hi-lock-patterns-end-marker))
-    ;; when not for writing
-    (let ((useful-starter (concat "^" comment-start "\\_<")))
-      (unless comment-start
-	(setq useful-starter "^...?\\_<"))
-      (concat useful-starter lsl-hi-lock-patterns-end-marker "\\_>"))))
-
-
-(defun lsl-get-patterns-from-file (file)
-  "Read hi-lock-mode highlighting-patterns from a file and return
-the patterns read."
-  (with-current-buffer
-      (find-file-noselect file)
-    (goto-char (point-min))
-    (message "searching: %s" (hi-lock-make-reasonable-end-marker nil))
-    (let ((marker-pos (re-search-forward (hi-lock-make-reasonable-end-marker nil) (point-max) t)))
-      (when marker-pos
-	(goto-char marker-pos)
-	(forward-line -1)
-	(end-of-line)
-	(setq marker-pos (point))
-	(goto-char (point-min))
-	(message "reading hi-lock patterns from %s (characters %d..%d)"
-		 (buffer-name)
-		 (point-min) marker-pos)
-	(let ((patterns nil))
-	  (while (< (point) marker-pos)
-	    (setq patterns (append (read (current-buffer)) patterns)))
-	  (setq patterns patterns))))))
-
-
-(defun lsl-mode-apply-hi-lock-patterns ()
-  "Use hi-lock-mode highlighting-patterns from another file.
-
-Which file to read the patterns from is specified through
-´lsl-hi-lock-file-name-specifier'.  To specify a file, put a line
-like
-
-
-// lsl-hi-lock-filename: ../some-file.fontify
-
-
-into the buffer you want to use the file with.  The file will be
-visited in another buffer, and additional patterns are written to
-the other buffer and saved to the file when this file is saved."
-  (lsl-hi-lock-get-patterns-file-name)
-  (when lsl-hi-lock-patterns-file
-    (set-auto-mode-0 'hi-lock-mode t)
-    (let ((patterns (lsl-get-patterns-from-file lsl-hi-lock-patterns-file)))
-      (if (not patterns)
-	  (message "found no patterns to apply to %s in %s"
-		   (buffer-name)
-		   lsl-hi-lock-patterns-file)
-	(hi-lock-set-file-patterns patterns)
-	(message "%d patterns applied from file %s"
-		 (length patterns)
-		 lsl-hi-lock-patterns-file))))
-  ;; also apply patterns in the current buffer itself
-  (hi-lock-find-patterns))
-
-
-(defun hi-lock-write-patterns-file ()
-  "Use this instead of `hi-lock-write-interactive-patterns'."
-  (interactive)
-  (lsl-hi-lock-get-patterns-file-name)
-  (when lsl-hi-lock-patterns-file
-    (let ((all-patterns
-	   (delete-dups (append
-			 ;; put most recently added into first line of buffer
-			 hi-lock-interactive-patterns
-			 (lsl-get-patterns-from-file lsl-hi-lock-patterns-file)))))
-      (with-current-buffer
-	  (find-file-noselect lsl-hi-lock-patterns-file)
-	(erase-buffer)
-	(mapc
-	 (lambda (this)
-	   (insert (format "(%s)\n" (prin1-to-string this))))
-	 all-patterns)
-	(insert (hi-lock-make-reasonable-end-marker t) "\n")
-	(save-buffer)))))
-
-
-(defun lsl-hi-lock-revert-patterns ()
-  "Unset all hi-lock highlighting-patterns for the current buffer
-and apply patterns from the buffers´ patterns file.  Do nothing
-when no file for storing the patterns is specified for the
-current buffer."
-  (interactive)
-  (lsl-hi-lock-get-patterns-file-name)
-  (if (not lsl-hi-lock-patterns-file)
-      (error "No buffer with patterns to revert to has been set")
-    (when hi-lock-interactive-patterns
-      (mapc
-       (lambda (this)
-	 (hi-lock-unface-buffer (car this)))
-       hi-lock-interactive-patterns)
-      (setq hi-lock-interactive-patterns nil))
-    (lsl-mode-apply-hi-lock-patterns)))
-
-
-(defun lsl-mode-mode ()
-  "Do something when lsl-mode is to be enabled."
-  (lsl-mode-apply-hi-lock-patterns))
-
-
-;; define faces (to be used with hi-lock-mode)
-;;
-
-(defgroup lsl-faces nil
-  "Faces for lsl-mode."
-  :group 'lsl-font-lock
-  :group 'faces)
-
-
-(defface lsl-global-variable
-  '(
-    (t (:foreground "Magenta")))
-  "Face to highlight global variables."
-  :group 'lsl-faces)
-
-
-(defface lsl-functionlike
-  '(
-    (t (:foreground "LightGreen")))
-  "Face to highlight something that is like a function.
-
-This face is intended for highlighting #defines that are being
-used like functions."
-  :group 'lsl-faces)
-
-
-(defface lsl-constant
-  '(
-    (t (:foreground "brown4")))
-  "Face to highlight something that is a constant."
-  :group 'lsl-faces)
-
 
 ;;
 ;; lsl-mode specifc functions to use hi-lock-mode
 ;;
 
 (defun lsl-hi-lock-message (unused)
-  "return non-nil to allow setting hi-lock-mode without asking"
-  (message "hi-lock patterns apply with buffer %s" (buffer-name)))
-
-
-(defun lsl-hi-lock-add (whichface)
-  "Highlight something with a face given in whichface."
-  (let* ((regexp (hi-lock-regexp-okay (find-tag-default-as-symbol-regexp))))
-    (hi-lock-set-pattern regexp whichface))
-  (set-buffer-modified-p t))
-
-
-(defun lsl-hi-lock-constant ()
-  "add a hi-lock-mode pattern to highlight something that is a
-constant"
-  (interactive)
-  (lsl-hi-lock-add 'lsl-constant))
-
-
-(defun lsl-hi-lock-functionlike ()
-  "add a hi-lock-mode pattern to highlight something that is like
-a function"
-  (interactive)
-  (lsl-hi-lock-add 'lsl-functionlike))
-
-
-(defun lsl-hi-lock-global-variable ()
-  "add a hi-lock-mode pattern to highlight something that is a
-global variable"
-  (interactive)
-  (lsl-hi-lock-add 'lsl-global-variable))
-
+  "Return non-nil to allow setting hi-lock-mode without asking."
+  t)
 
 ;;
 ;; functions for when reloading lsl-mode
@@ -541,14 +293,6 @@ unless already enabled"
 (define-key lsl-mode-map (kbd "<C-f1>") 'recompile)
 (define-key lsl-mode-map (kbd "<C-S-f1>") 'compile)
 
-;; highlight-symbol-at-point is by default bound to C-x w .
-;; when hi-lock-mode is enabled
-;;
-(define-key lsl-mode-map (kbd "C-x w c") 'lsl-hi-lock-constant)
-(define-key lsl-mode-map (kbd "C-x w f") 'lsl-hi-lock-functionlike)
-(define-key lsl-mode-map (kbd "C-x w g") 'lsl-hi-lock-global-variable)
-(define-key lsl-mode-map (kbd "C-x w C-r") 'lsl-hi-lock-revert-patterns)
-
 ;; put indenting on F6
 ;;
 (define-key lsl-mode-map (kbd "<f6>") 'lsl-indent-defun)
@@ -565,10 +309,8 @@ unless already enabled"
   (setq font-lock-defaults '((lsl-font-lock-keywords) nil nil))
   (lsl-mode-auto-enable)
   (auto-complete-mode)
-  (hi-lock-mode)
-  (setq hi-lock-file-patterns-policy 'lsl-hi-lock-message)
-  (add-hook 'after-save-hook 'hi-lock-write-patterns-file t t)
-  (lsl-mode-mode))
+  (hi-lock-mode 1)
+  (setq hi-lock-file-patterns-policy 'lsl-hi-lock-message))
 
 
 (provide 'lsl-mode)
