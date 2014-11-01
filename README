@@ -1,4 +1,16 @@
 
+Note on Debian (Wheezy):
+
+Debian has perl as /usr/bin/perl.  You may need to adjust the perl
+scripts in the bin/ directory.
+
+Debian has an outdated version of astyle which will give error
+messages that the input stream cannot be processed.  I uninstalled
+Debians version, downloaded astyle 2.04 from
+http://sourceforge.net/projects/astyle/ and, after compiling, copied
+it to /usr/local/bin.
+
+
 For documentation, please refer to
 https://wiki.secondlife.com/wiki/How_to_make_writing_LSL_scripts_easier
 or the "wiki.txt" contained in this repository.
